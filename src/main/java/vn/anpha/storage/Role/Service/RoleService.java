@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import vn.anpha.storage.Role.Entity.Role;
-import vn.anpha.storage.Role.respository.RoleRepository;
+import vn.anpha.storage.Role.Repository.RoleRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 

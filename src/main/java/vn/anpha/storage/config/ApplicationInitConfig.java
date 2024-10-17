@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Role.Entity.Role;
-import vn.anpha.storage.Role.respository.RoleRepository;
+import vn.anpha.storage.Role.Repository.RoleRepository;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 
