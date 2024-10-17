@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +27,11 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Dto.RequestDto.AuthoticationDto;
 import vn.anpha.storage.Auth.Dto.ResponseDto.LoginResponseDto;
+import vn.anpha.storage.Auth.Dto.ResponseDto.TokenResonseDto;
 import vn.anpha.storage.Auth.mapper.LoginMapper;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
@@ -38,15 +42,17 @@ public class AuthoticationService {
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final LoginMapper loginMapper;
+    private final UserService userService;
     // @Value("${SIGNER_KEY}")
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public AuthoticationService(
-            UserRepository userRepository, PasswordEncoder passwordEncoder, LoginMapper loginMapper) {
+    public AuthoticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginMapper loginMapper,
+            UserService userService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginMapper = loginMapper;
+        this.userService = userService;
     }
 
     public User checkPassword(AuthoticationDto authotication) {
@@ -116,11 +122,12 @@ public class AuthoticationService {
         log.info("-------" + this.SIGNER_KEY);
         User user = this.checkPassword(authotication);
         UserResponseDto UserResponseDto = loginMapper.User_To_User_Login(user);
-        String token = generateToken(user);
+        String accessToken = generateToken(user);
         String refreshToken = generateRefreshToken(user);
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
-        LoginResponseDto loginResponseDto = new LoginResponseDto(UserResponseDto, token, refreshToken);
+        TokenResonseDto token = new TokenResonseDto(accessToken, refreshToken);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(UserResponseDto, token);
 
         return loginResponseDto;
     }
@@ -142,5 +149,16 @@ public class AuthoticationService {
         } else {
             throw new AppException(ErrorCode.Token_Not_Valid);
         }
+    }
+
+    public void Logout() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = this.userService.GetUserByEmail(name);
+        user.setRefreshToken("");
+        userRepository.save(user);
+        context.setAuthentication(null);
+        SecurityContextHolder.clearContext();
+
     }
 }

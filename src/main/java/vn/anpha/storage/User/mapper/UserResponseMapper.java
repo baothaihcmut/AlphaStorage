@@ -1,4 +1,4 @@
-package vn.anpha.storage.Auth.mapper;
+package vn.anpha.storage.User.mapper;
 
 import org.mapstruct.Mapper;
 

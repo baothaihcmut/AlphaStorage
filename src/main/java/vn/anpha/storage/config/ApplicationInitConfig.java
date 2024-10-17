@@ -33,13 +33,18 @@ public class ApplicationInitConfig {
                 roleUser.setDescription("User role");
                 roleRepository.save(roleUser);
             }
+            if (roleRepository.findByName("OwnCompany").isEmpty()) {
+                Role roleUser = new Role();
+                roleUser.setName("OwnCompany");
+                roleUser.setDescription("OwnCompany role");
+                roleRepository.save(roleUser);
+            }
             if (userRepository.findByEmail("Admin@gmail.com").isEmpty()) {
                 User user = new User();
                 user.setEmail("admin@gmail.com");
                 user.setPassword(new BCryptPasswordEncoder().encode("admin123"));
                 user.setFullName("Admin");
                 user.setRoleId(roleAdmin);
-
                 userRepository.save(user);
             }
         };

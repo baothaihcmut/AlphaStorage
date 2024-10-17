@@ -29,7 +29,6 @@ public class File {
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private UUID id;
 
-
     @Column(nullable = false)
     private String name;
 
@@ -69,8 +68,9 @@ public class File {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "file")
-    private List<LogUser> logs; 
+    private List<LogUser> logs;
 
     @OneToMany(mappedBy = "file")
     private List<Version> versions;
+
 }

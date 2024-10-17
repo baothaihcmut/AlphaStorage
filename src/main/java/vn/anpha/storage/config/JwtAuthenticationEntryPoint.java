@@ -26,6 +26,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         ApiResponseDto<?> responseDto = new ApiResponseDto();
         responseDto.setStatusCode(errorCode.getStatusCode());
         responseDto.setMessage(errorCode.getMessage());
+        responseDto.setSuccess(false);
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));
         response.flushBuffer();

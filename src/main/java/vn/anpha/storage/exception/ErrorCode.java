@@ -7,6 +7,7 @@ public enum ErrorCode {
     USER_EXISTED("User already exists", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED("User already not exists", HttpStatus.NOT_FOUND),
     USER_PASSWORD_NOT_EXACTLY("User and password are not exactly", HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_EXACTLY("Password are not exactly", HttpStatus.BAD_REQUEST),
     Token_Not_Valid("Token is not valid", HttpStatus.BAD_REQUEST),
     RefreshToken_Not_Valid("RefreshToken is not valid", HttpStatus.BAD_REQUEST),
     Role_Is_EXIST("Role is exists", HttpStatus.NOT_FOUND),

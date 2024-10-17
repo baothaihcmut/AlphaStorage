@@ -9,13 +9,13 @@ import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 @Setter
 @ToString
 public class LoginResponseDto {
-    private UserResponseDto UserResponseDto;
-    private String token;
-    private String refreshToken;
+    private UserResponseDto User;
+    private TokenResonseDto token;
 
-    public LoginResponseDto(UserResponseDto UserResponseDto, String token, String refreshToken) {
-        this.UserResponseDto = UserResponseDto;
+    public LoginResponseDto(vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto userResponseDto,
+            TokenResonseDto token) {
+        User = userResponseDto;
         this.token = token;
-        this.refreshToken = refreshToken;
     }
+
 }

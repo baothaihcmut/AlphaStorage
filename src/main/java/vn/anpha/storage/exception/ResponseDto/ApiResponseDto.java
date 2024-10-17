@@ -4,33 +4,17 @@ import org.springframework.http.HttpStatusCode;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
+
+    private Boolean success = true;
     private HttpStatusCode statusCode;
     private String message;
     private T result;
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getResult() {
-        return result;
-    }
-
-    public void setResult(T result) {
-        this.result = result;
-    }
-
-    public HttpStatusCode getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(HttpStatusCode statusCode) {
-        this.statusCode = statusCode;
-    }
 }

@@ -18,7 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,13 +37,17 @@ public class DetailUser {
     @MapsId
     User user;
 
-    private BigInteger total_size;
-    private BigInteger limit_size;
+    private long total_size;
+    private long limit_size;
 
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public DetailUser() {
+
+    }
 
 }

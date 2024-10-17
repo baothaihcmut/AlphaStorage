@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.JOSEException;
 
+import jakarta.validation.Valid;
 import vn.anpha.storage.Auth.Dto.RequestDto.AuthoticationDto;
 import vn.anpha.storage.Auth.Dto.RequestDto.RefreshTokenDto;
 import vn.anpha.storage.Auth.Dto.ResponseDto.LoginResponseDto;
@@ -16,6 +17,8 @@ import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class AuthoticationController {
@@ -28,7 +31,7 @@ public class AuthoticationController {
     }
 
     @PostMapping("/authent/login")
-    public ApiResponseDto<LoginResponseDto> isAuthenticated(@RequestBody AuthoticationDto authoticationDto) {
+    public ApiResponseDto<LoginResponseDto> isAuthenticated(@RequestBody @Valid AuthoticationDto authoticationDto) {
         ApiResponseDto<LoginResponseDto> response = new ApiResponseDto<>();
         LoginResponseDto loginResponseDto = authenticationService.Login(authoticationDto);
 
@@ -37,8 +40,15 @@ public class AuthoticationController {
         return response;
     }
 
+    @GetMapping("/authent/logout")
+    public ApiResponseDto Logout() {
+        ApiResponseDto response = new ApiResponseDto<>();
+        authenticationService.Logout();
+        return response;
+    }
+
     @PostMapping("/auth/RefreshToken")
-    public ApiResponseDto<String> RefreshToken(@RequestBody RefreshTokenDto refreshToken) {
+    public ApiResponseDto<String> RefreshToken(@RequestBody @Valid RefreshTokenDto refreshToken) {
         ApiResponseDto<String> response = new ApiResponseDto<>();
         String token;
         try {

@@ -36,4 +36,26 @@ public class RoleService {
             throw new AppException(ErrorCode.Role_Is_EXIST);
         }
     }
+
+    public Role CreateUserRole() {
+        if (roleRepository.findByName("User").isEmpty()) {
+            Role role = new Role();
+            role.setName("User");
+            role.setDescription("User role");
+            return roleRepository.save(role);
+        } else {
+            throw new AppException(ErrorCode.Role_Is_EXIST);
+        }
+    }
+
+    public Role CreateOwnCompanyRole() {
+        if (roleRepository.findByName("OwnCompany").isEmpty()) {
+            Role role = new Role();
+            role.setName("OwnCompany");
+            role.setDescription("OwnCompany role");
+            return roleRepository.save(role);
+        } else {
+            throw new AppException(ErrorCode.Role_Is_EXIST);
+        }
+    }
 }
