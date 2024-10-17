@@ -1,0 +1,81 @@
+package vn.anpha.storage.User.Entity;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import vn.anpha.storage.Company.Entity.Company;
+import vn.anpha.storage.Detail.Entity.DetailUser;
+import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.Role.Entity.Role;
+import vn.anpha.storage.User_Folder.Entity.FolderOfUser;
+import vn.anpha.storage.User_company.Entity.UserOfCompany;
+
+@ToString
+@Getter
+@Setter
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+    private UUID id;
+
+    @Column(nullable = true, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    private String address;
+    private String phone;
+
+    @Column(nullable = true, unique = true, columnDefinition = "Text")
+    private String refreshToken;
+
+    @OneToOne(mappedBy = "user")
+    DetailUser details;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role roleId;
+
+    @OneToMany(mappedBy = "createBy")
+    private Set<Company> companyOwn;
+
+    @OneToMany(mappedBy = "EmployeeId", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<UserOfCompany> UserOfCompanys;
+
+    @Column(updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<File> ownFiles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<FolderOfUser> ownFolders;
+}
