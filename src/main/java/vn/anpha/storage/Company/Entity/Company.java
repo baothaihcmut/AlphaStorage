@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -47,6 +48,7 @@ public class Company {
 
     @ManyToOne
     @JoinColumn(name = "created_By")
+    @JsonBackReference
     private User createBy;
 
     @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval =  true)

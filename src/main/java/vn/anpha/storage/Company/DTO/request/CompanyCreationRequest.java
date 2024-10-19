@@ -21,5 +21,4 @@ public class CompanyCreationRequest {
 
     private BigInteger limit_size;
 
-    private String token;
 }

@@ -30,7 +30,7 @@ public class CompanyResponse {
     private BigInteger total_size;
     private BigInteger limit_size;
 
-    private User createBy;
+//    private User createBy;
 
     private Set<UserOfCompany> UserOfCompanys;
 

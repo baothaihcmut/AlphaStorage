@@ -18,6 +18,9 @@ public enum ErrorCode {
     COMPANY_EXISTED("Company already exists", HttpStatus.BAD_REQUEST),
     COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
 
+    //FOR Buy Data
+    THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),
+
     //FOR SERVER
 
     //ELSE

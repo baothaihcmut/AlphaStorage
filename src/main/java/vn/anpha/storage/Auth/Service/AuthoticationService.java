@@ -163,6 +163,7 @@ public class AuthoticationService {
     }
 
     public User getUserByToken() {
+        log.info("In get User By token");
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 

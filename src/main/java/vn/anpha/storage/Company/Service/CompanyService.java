@@ -23,6 +23,7 @@ import vn.anpha.storage.exception.ErrorCode;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,7 +34,7 @@ public class CompanyService {
     CompanyMapper companyMapper;
     AuthoticationService authoticationService;
 
-    public CompanyCreationResponse createCompany(CompanyCreationRequest companyCreationRequest) {
+    public CompanyResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
         User user = authoticationService.getUserByToken();
         if (companyRepository.existsCompanyByName(companyCreationRequest.getName())) {
@@ -49,14 +50,10 @@ public class CompanyService {
         } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
-        CompanyCreationResponse companyCreationResponse;
-        companyCreationResponse = companyMapper.toCompanyCreationResponse(company);
-        companyCreationResponse.setCreateBy(user);
-        companyCreationResponse.setTotal_size(BigInteger.ZERO);
-        return companyCreationResponse;
+        return companyMapper.toCompanyResponse(company);
     }
 
-    public CompanyUpdateResponse updateCompany(CompanyUpdateRequest request) {
+    public CompanyResponse updateCompany(CompanyUpdateRequest request) {
 
         User user = authoticationService.getUserByToken();
         if (!companyRepository.existsCompanyByName(request.getName())) {
@@ -70,16 +67,16 @@ public class CompanyService {
         }
         switch (request.getOption()) {
             case "option1":
-                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(10000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(10000))); // NEED TO RESET VALUE
                 break;
             case "option2":
-                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(20000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(20000))); // NEED TO RESET VALUE
                 break;
             case "option3":
-                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(30000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(30000))); // NEED TO RESET VALUE
                 break;
             default:
-                break;
+                throw new AppException(ErrorCode.THIS_TYPE_DOES_NOT_EXIST);
         }
 
         try {
@@ -89,17 +86,20 @@ public class CompanyService {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
 
-        return companyMapper.toCompanyUpdateResponse(company);
+        return companyMapper.toCompanyResponse(company);
     }
 
-    public List<CompanyResponse> getCompany() {
+    public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
-
+//        log.info("In get companys service");
         var companyList = companyRepository.findAllByCreateBy(user);
-        log.info(user.toString());
-        log.info(companyList.toString());
-
+//        return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
+
+    }
+    public CompanyResponse getCompany(UUID uuid) {
+        User user = authoticationService.getUserByToken();
+        return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));
 
     }
 }

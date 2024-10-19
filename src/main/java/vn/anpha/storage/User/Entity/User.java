@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -65,6 +66,7 @@ public class User {
     private Role roleId;
 
     @OneToMany(mappedBy = "createBy")
+    @JsonManagedReference
     private Set<Company> companyOwn;
 
     @OneToMany(mappedBy = "EmployeeId", cascade = CascadeType.REMOVE, orphanRemoval = true)
