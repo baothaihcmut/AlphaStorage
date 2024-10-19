@@ -3,8 +3,7 @@ package vn.anpha.storage.Company.Controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.*;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
@@ -33,14 +32,14 @@ public class CompanyController {
     }
 
     @PostMapping("/update")
-    ApiResponseDto<CompanyUpdateResponse> updateCompany(@RequestBody CompanyUpdateRequest request){
+    ApiResponseDto<CompanyUpdateResponse> updateCompany(@RequestBody CompanyUpdateRequest request) {
         return ApiResponseDto.<CompanyUpdateResponse>builder()
                 .result(companyService.updateCompany(request))
                 .build();
     }
 
     @GetMapping("/properties")
-    ApiResponseDto<List<CompanyResponse>> getCompanyProperties(@RequestBody CompanyGetRequest request){
+    ApiResponseDto<List<CompanyResponse>> getCompanyProperties(@RequestBody CompanyGetRequest request) {
         return ApiResponseDto.<List<CompanyResponse>>builder()
                 .result(companyService.getCompany(request.getToken()))
                 .build();

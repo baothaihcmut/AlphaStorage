@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
@@ -33,9 +35,11 @@ import vn.anpha.storage.User.Entity.User;
 public class DetailUser {
     @Id
     private UUID id;
+
     @OneToOne(optional = false)
     @MapsId
-    User user;
+    @JsonBackReference // Đánh dấu là thực thể con
+    private User user;
 
     private long total_size;
     private long limit_size;

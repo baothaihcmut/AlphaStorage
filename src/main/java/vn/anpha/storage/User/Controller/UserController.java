@@ -45,12 +45,21 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
+    // @GetMapping("/user")
+    // public ApiResponseDto<UserResponseDto> Getuserbyid(@RequestParam("id") UUID
+    // id) {
+    // ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+    // response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
+    // return response;
+    // }
     @GetMapping("/user")
-    public ApiResponseDto<UserResponseDto> Getuserbyid(@RequestParam("id") UUID id) {
-        ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
-        response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
-        return response;
+    public User Getuserbyid(@RequestParam("id") UUID id) {
+        // ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+        // response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
+        // return response;
+
+        return this.userService.getUsersById(id);
     }
 
     @PostMapping("/user/create")

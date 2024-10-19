@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,7 +57,8 @@ public class User {
     private String refreshToken;
 
     @OneToOne(mappedBy = "user")
-    DetailUser details;
+    @JsonManagedReference // Đánh dấu là thực thể cha
+    private DetailUser details;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

@@ -5,8 +5,9 @@ import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.User.Entity.User;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface CompanyRepository extends JpaRepository<Company, String> {
+public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
     boolean existsCompanyByName(String name);
 
