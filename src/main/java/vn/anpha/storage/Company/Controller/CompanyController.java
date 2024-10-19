@@ -38,10 +38,10 @@ public class CompanyController {
                 .build();
     }
 
-    @GetMapping("/properties")
+    @GetMapping("/GetListCompany")
     ApiResponseDto<List<CompanyResponse>> getCompanyProperties(@RequestBody CompanyGetRequest request) {
         return ApiResponseDto.<List<CompanyResponse>>builder()
-                .result(companyService.getCompany(request.getToken()))
+                .result(companyService.getCompany())
                 .build();
     }
 }

@@ -32,10 +32,11 @@ public class CompanyService {
     CompanyRepository companyRepository;
     CompanyMapper companyMapper;
     AuthoticationService authoticationService;
+
     public CompanyCreationResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
-        User user= authoticationService.getUserByToken(companyCreationRequest.getToken());
-        if (companyRepository.existsCompanyByName(companyCreationRequest.getName())){
+        User user = authoticationService.getUserByToken();
+        if (companyRepository.existsCompanyByName(companyCreationRequest.getName())) {
             throw new AppException(ErrorCode.COMPANY_EXISTED);
         }
 
@@ -45,56 +46,54 @@ public class CompanyService {
             company.setCreateBy(user);
             company.setTotal_size(BigInteger.ZERO);
             company = companyRepository.save(company);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
         CompanyCreationResponse companyCreationResponse;
-        companyCreationResponse=companyMapper.toCompanyCreationResponse(company);
+        companyCreationResponse = companyMapper.toCompanyCreationResponse(company);
         companyCreationResponse.setCreateBy(user);
         companyCreationResponse.setTotal_size(BigInteger.ZERO);
         return companyCreationResponse;
     }
 
-    public CompanyUpdateResponse updateCompany(CompanyUpdateRequest request){
+    public CompanyUpdateResponse updateCompany(CompanyUpdateRequest request) {
 
-        User user= authoticationService.getUserByToken(request.getToken());
-        if (!companyRepository.existsCompanyByName(request.getName())){
+        User user = authoticationService.getUserByToken();
+        if (!companyRepository.existsCompanyByName(request.getName())) {
             throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
         }
 
         Company company = companyRepository.findCompanyByName(request.getName());
 
-        if(!Objects.equals(user.getFullName(), company.getCreateBy().getFullName())){
+        if (!Objects.equals(user.getFullName(), company.getCreateBy().getFullName())) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
-        switch (request.getOption()){
-                case "option1":
-                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(10000))); //NEED TO RESET VALUE
+        switch (request.getOption()) {
+            case "option1":
+                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(10000))); // NEED TO RESET VALUE
                 break;
-                case "option2":
-                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(20000))); //NEED TO RESET VALUE
+            case "option2":
+                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(20000))); // NEED TO RESET VALUE
                 break;
-                case "option3":
-                    company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(30000))); //NEED TO RESET VALUE
-                    break;
-                    default:
-                        break;
+            case "option3":
+                company.setTotal_size(company.getTotal_size().add(BigInteger.valueOf(30000))); // NEED TO RESET VALUE
+                break;
+            default:
+                break;
         }
 
         try {
 
             company = companyRepository.save(company);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
 
         return companyMapper.toCompanyUpdateResponse(company);
     }
 
-    public List<CompanyResponse> getCompany(String token){
-        User user= authoticationService.getUserByToken(token);
+    public List<CompanyResponse> getCompany() {
+        User user = authoticationService.getUserByToken();
 
         var companyList = companyRepository.findAllByCreateBy(user);
         log.info(user.toString());

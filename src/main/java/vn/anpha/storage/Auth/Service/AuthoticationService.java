@@ -162,34 +162,10 @@ public class AuthoticationService {
 
     }
 
-    public User getUserByToken(String token) {
-        try {
-            JWSVerifier verifier = new MACVerifier(this.SIGNER_KEY.getBytes());
+    public User getUserByToken() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
 
-            SignedJWT signedJWT = SignedJWT.parse(token);
-
-            boolean isVerified = signedJWT.verify(verifier);
-
-            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-
-            Date expirationTime = claims.getExpirationTime();
-            boolean isTokenValid = isVerified && expirationTime.after(new Date());
-
-            if (isTokenValid) {
-                String email = claims.getSubject();
-                List<User> users = userRepository.findByEmail(email);
-                if (users.isEmpty()) {
-                    throw new AppException(ErrorCode.USER_PASSWORD_NOT_EXACTLY);
-                }
-                User user = users.get(0);
-                return user;
-
-            } else {
-                throw new AppException(ErrorCode.Token_Not_Valid);
-            }
-
-        } catch (JOSEException | ParseException e) {
-            throw new AppException(ErrorCode.Token_Not_Valid);
-        }
+        return this.userService.GetUserByEmail(name);
     }
 }
