@@ -88,6 +88,7 @@ public class UserService {
         return userResponseMapper.User_To_UserResponseDto(this.GetUserByEmail(name));
     }
 
+
     public User GetUserByEmail(String email) {
         User user = this.userRepository.findByEmail(email).get(0);
         return user;

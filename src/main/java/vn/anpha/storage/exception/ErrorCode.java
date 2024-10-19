@@ -12,7 +12,18 @@ public enum ErrorCode {
     RefreshToken_Not_Valid("RefreshToken is not valid", HttpStatus.BAD_REQUEST),
     Role_Is_EXIST("Role is exists", HttpStatus.NOT_FOUND),
     UNAUTHORIZED("User do not have permission", HttpStatus.FORBIDDEN),
-    UNAUTHOTICATED("Unautheticated", HttpStatus.UNAUTHORIZED);
+    UNAUTHOTICATED("Unautheticated", HttpStatus.UNAUTHORIZED),
+
+    //FOR Company
+    COMPANY_EXISTED("Company already exists", HttpStatus.BAD_REQUEST),
+    COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
+
+    //FOR SERVER
+
+    //ELSE
+    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR);
+
+    ;
 
     private String message;
     private HttpStatusCode statusCode;
