@@ -40,7 +40,7 @@ public class CompanyService {
         Company company = companyMapper.toCompany(companyCreationRequest);
 
         try {
-            company.setCreateBy(user);
+
             company.setTotal_size(BigInteger.ZERO);
             company = companyRepository.save(company);
         } catch (Exception e) {
@@ -58,7 +58,7 @@ public class CompanyService {
 
         Company company = companyRepository.findCompanyByName(request.getName());
 
-        if (!Objects.equals(user.getFullName(), company.getCreateBy().getFullName())) {
+        if (!Objects.equals(user.getEmail(), company.getCreateBy())) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         switch (request.getOption()) {
@@ -88,7 +88,7 @@ public class CompanyService {
     public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
         // log.info("In get companys service");
-        var companyList = companyRepository.findAllByCreateBy(user);
+        var companyList = companyRepository.findAllByCreateBy(user.getEmail());
         // return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
 

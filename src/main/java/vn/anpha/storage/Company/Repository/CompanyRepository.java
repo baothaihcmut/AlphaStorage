@@ -14,5 +14,5 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
     Company findCompanyByName(String name);
 
-    List<Company> findAllByCreateBy(User createBy);
+    List<Company> findAllByCreateBy(String createBy);
 }
