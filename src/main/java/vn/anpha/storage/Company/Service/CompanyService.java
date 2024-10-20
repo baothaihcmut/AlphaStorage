@@ -4,19 +4,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
-import vn.anpha.storage.Company.DTO.response.CompanyCreationResponse;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
-import vn.anpha.storage.Company.DTO.response.CompanyUpdateResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 
@@ -91,12 +87,13 @@ public class CompanyService {
 
     public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
-//        log.info("In get companys service");
+        // log.info("In get companys service");
         var companyList = companyRepository.findAllByCreateBy(user);
-//        return companyList;
+        // return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
 
     }
+
     public CompanyResponse getCompany(UUID uuid) {
         User user = authoticationService.getUserByToken();
         return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));

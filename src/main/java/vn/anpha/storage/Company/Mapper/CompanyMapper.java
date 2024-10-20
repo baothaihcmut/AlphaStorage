@@ -1,8 +1,7 @@
 package vn.anpha.storage.Company.Mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.TargetType;
+
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyCreationResponse;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;

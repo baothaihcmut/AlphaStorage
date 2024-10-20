@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -57,6 +58,15 @@ public class User {
     @Column(nullable = true, unique = true, columnDefinition = "Text")
     private String refreshToken;
 
+    @Column(updatable = false)
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
+    private LocalDateTime updatedAt;
+
     @OneToOne(mappedBy = "user")
     @JsonManagedReference // Đánh dấu là thực thể cha
     private DetailUser details;
@@ -71,12 +81,6 @@ public class User {
 
     @OneToMany(mappedBy = "EmployeeId", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<UserOfCompany> UserOfCompanys;
-
-    @Column(updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "owner")
     private Set<File> ownFiles;

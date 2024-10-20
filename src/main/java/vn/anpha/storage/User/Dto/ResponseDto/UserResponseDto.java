@@ -2,6 +2,8 @@ package vn.anpha.storage.User.Dto.ResponseDto;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +19,8 @@ public class UserResponseDto {
     private String address;
     private String phone;
     private String Role;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Override
     public String toString() {

@@ -22,14 +22,10 @@ public class DetailService {
 
     public void createDetail(User user) {
         long Init_500Mb = 524288000L;
-
         DetailUser userDetail = new DetailUser();
         userDetail.setLimit_size(Init_500Mb);
         userDetail.setTotal_size(0);
-
         userDetail.setUser(user);
-
         this.detailrepository.save(userDetail);
-
     }
 }
