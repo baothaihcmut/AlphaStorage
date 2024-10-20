@@ -9,10 +9,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -44,19 +47,23 @@ public class Folder {
 
     @ManyToOne
     @JoinColumn(name = "company_Id")
+    @JsonBackReference
     private Company CompanyId;
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<File> containFiles;
 
     @ManyToOne
     @JoinColumn(name = "parent_folder_id")
+    @JsonBackReference
     private Folder parentFolder;
 
-    @OneToMany(mappedBy = "parentFolder")
+    @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<Folder> subFolders;
 
-    @OneToMany(mappedBy = "folder", cascade =  CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<FolderOfUser> managers;
 
     @Column(updatable = false)

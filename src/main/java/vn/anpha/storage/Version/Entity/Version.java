@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,18 +28,19 @@ public class Version {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private UUID id;
-    
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
     @Column(nullable = false, columnDefinition = "Text")
     private String link;
-    
+
     @Column(nullable = true, columnDefinition = "Text")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "file_id", nullable = false)
+    @JsonBackReference
     private File file;
 
     @Column(updatable = false)

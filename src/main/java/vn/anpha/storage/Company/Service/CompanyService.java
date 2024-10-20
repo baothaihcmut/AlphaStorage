@@ -87,7 +87,6 @@ public class CompanyService {
 
     public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
-        // log.info("In get companys service");
         var companyList = companyRepository.findAllByCreateBy(user.getEmail());
         // return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();

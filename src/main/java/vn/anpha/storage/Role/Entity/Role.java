@@ -2,6 +2,8 @@ package vn.anpha.storage.Role.Entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,8 @@ public class Role {
 
     private String description;
 
-    @OneToMany(mappedBy = "roleId")
+    @OneToMany(mappedBy = "role")
+    @JsonBackReference // Đánh dấu là thực thể cha
     private Set<User> users;
 
     public Role() {

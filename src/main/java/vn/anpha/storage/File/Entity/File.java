@@ -8,8 +8,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -46,10 +51,12 @@ public class File {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonBackReference
     private User owner;
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)
+    @JsonBackReference
     private Folder folder;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
@@ -67,10 +74,12 @@ public class File {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "file")
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private List<LogUser> logs;
 
-    @OneToMany(mappedBy = "file")
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private List<Version> versions;
 
 }

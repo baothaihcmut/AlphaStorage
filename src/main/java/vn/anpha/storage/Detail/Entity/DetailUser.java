@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 
@@ -52,6 +53,15 @@ public class DetailUser {
     private LocalDateTime updatedAt;
 
     public DetailUser() {
+
+    }
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        long Init_500Mb = 524288000L;
+
+        this.limit_size = Init_500Mb;
+        this.total_size = 0;
 
     }
 

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import vn.anpha.storage.Role.Entity.Role;
 
 @Getter
 @Setter
@@ -18,7 +19,8 @@ public class UserResponseDto {
     private String fullName;
     private String address;
     private String phone;
-    private String Role;
+    private Role role;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

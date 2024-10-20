@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,10 +34,12 @@ public class UserOfCompany {
 
     @ManyToOne
     @JoinColumn(name = "employee_Id")
+    @JsonBackReference
     private User EmployeeId;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
+    @JsonBackReference
     private Company CompanyId;
 
     @Column(updatable = false)

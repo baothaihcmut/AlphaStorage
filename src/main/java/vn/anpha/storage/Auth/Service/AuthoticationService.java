@@ -74,7 +74,7 @@ public class AuthoticationService {
                 .issueTime(new Date())
                 .expirationTime(
                         new Date(Instant.now().plus(15, ChronoUnit.MINUTES).toEpochMilli()))
-                .claim("scope", user.getRoleId().getName())
+                .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject payloadJWSObject = new JWSObject(header, payload);
@@ -98,7 +98,7 @@ public class AuthoticationService {
                 .issuer("hieu.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
-                .claim("scope", user.getRoleId().getName())
+                .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject payloadJWSObject = new JWSObject(header, payload);
@@ -115,7 +115,6 @@ public class AuthoticationService {
     }
 
     public LoginResponseDto Login(AuthoticationDto authotication) {
-        log.info("-------" + this.SIGNER_KEY);
         User user = this.checkPassword(authotication);
         LoginMapper loginMapper = Mappers.getMapper(LoginMapper.class);
         UserResponseDto UserResponseDto = loginMapper.User_To_User_Login(user);
@@ -160,7 +159,7 @@ public class AuthoticationService {
     }
 
     public User getUserByToken() {
-        log.info("In get User By token");
+
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
@@ -168,7 +167,7 @@ public class AuthoticationService {
     }
 
     public static String GetEmailByToken() {
-        log.info("In get User By token");
+
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         return name;

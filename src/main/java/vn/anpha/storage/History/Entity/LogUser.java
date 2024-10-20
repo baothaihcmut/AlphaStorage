@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,5 +49,7 @@ public class LogUser {
 
     @ManyToOne
     @JoinColumn(name = "file_id", nullable = false)
+    @JsonBackReference
     private File file;
+
 }
