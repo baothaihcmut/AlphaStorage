@@ -15,7 +15,7 @@ public class CompanyCreationResponse {
 
     private String name;
 
-    User createBy;
+    String createBy;
 
     private BigInteger total_size;
 
