@@ -95,7 +95,9 @@ public class CompanyService {
 
     public CompanyResponse getCompany(UUID uuid) {
         User user = authoticationService.getUserByToken();
-        return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));
+        Company company = companyRepository.findById(uuid)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        return companyMapper.toCompanyResponse(company);
 
     }
 }
