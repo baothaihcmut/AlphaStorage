@@ -63,7 +63,7 @@ public class UserController {
     public ApiResponseDto<UserPaginateResponseDto> GetAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
         int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
-        int pageSize = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 10;
+        int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
         ApiResponseDto<UserPaginateResponseDto> response = new ApiResponseDto<>();
