@@ -1,6 +1,5 @@
 package vn.anpha.storage.User_company.Entity;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
