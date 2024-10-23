@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
@@ -11,6 +12,7 @@ import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 import java.util.List;
@@ -45,10 +47,11 @@ public class CompanyController {
     }
 
 
-    @GetMapping("/GetCompany/{id}")
-    ApiResponseDto<CompanyResponse> getACompanyProperties(@PathVariable UUID id) {
-        return ApiResponseDto.<CompanyResponse>builder()
-                .result(companyService.getCompany(id))
-                .build();
-    }
+//    @GetMapping("/GetCompany/{id}")
+//    ApiResponseDto<CompanyResponse> getACompanyProperties(@PathVariable UUID id) {
+//        return ApiResponseDto.<CompanyResponse>builder()
+//                .result(companyService.getCompany(id))
+//                .build();
+//    }
+
 }

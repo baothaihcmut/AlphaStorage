@@ -97,9 +97,10 @@ public class CompanyService {
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
 
     }
-    public CompanyResponse getCompany(UUID uuid) {
-        User user = authoticationService.getUserByToken();
-        return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));
+//    public CompanyResponse getCompany(UUID uuid) {
+//        User user = authoticationService.getUserByToken();
+//        return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));
+//
+//    }
 
-    }
 }
