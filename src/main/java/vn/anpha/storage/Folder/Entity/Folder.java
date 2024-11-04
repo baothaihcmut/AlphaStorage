@@ -34,7 +34,8 @@ import vn.anpha.storage.File.Entity.File;
 public class Folder {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "folder_id")
+    private UUID folderId;
 
     @Column(nullable = false)
     private String name;
@@ -46,15 +47,15 @@ public class Folder {
     private BigInteger limit_size;
 
     @ManyToOne
-    @JoinColumn(name = "company_Id")
+    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false)
     @JsonBackReference
-    private Company CompanyId;
+    private Company company;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<File> containFiles;
 
     @ManyToOne
-    @JoinColumn(name = "parent_folder_id")
+    @JoinColumn(name = "parent_folder_id", referencedColumnName = "folder_id")
     @JsonBackReference
     private Folder parentFolder;
 

@@ -28,12 +28,12 @@ public class FolderOfUser {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "folder_id", nullable = false, referencedColumnName = "folder_id")
     @JsonBackReference
     private Folder folder;
 

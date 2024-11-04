@@ -32,14 +32,14 @@ public class UserOfCompany {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "employee_Id")
+    @JoinColumn(name = "employee_Id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
-    private User EmployeeId;
+    private User employee;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = true)
     @JsonBackReference
-    private Company CompanyId;
+    private Company company;
 
     @Column(updatable = false)
     @CreationTimestamp

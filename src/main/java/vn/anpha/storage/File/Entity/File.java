@@ -32,7 +32,8 @@ import vn.anpha.storage.Version.Entity.Version;
 public class File {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "file_id")
+    private UUID fileId;
 
     @Column(nullable = false)
     private String name;
@@ -50,12 +51,12 @@ public class File {
     private String link;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "folder_id", nullable = false, referencedColumnName = "folder_id")
     @JsonBackReference
     private Folder folder;
 

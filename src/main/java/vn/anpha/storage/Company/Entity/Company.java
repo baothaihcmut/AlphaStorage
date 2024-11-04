@@ -42,7 +42,8 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 public class Company {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "company_id")
+    private UUID companyId;
 
     @Column(nullable = false)
     private String name;
@@ -55,13 +56,13 @@ public class Company {
 
     private String createBy;
 
-    @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<UserOfCompany> UserOfCompanys;
+    private Set<UserOfCompany> userOfCompanys;
 
-    @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<Folder> Folders;
+    private Set<Folder> folders;
 
     @Column(updatable = false)
     @CreationTimestamp

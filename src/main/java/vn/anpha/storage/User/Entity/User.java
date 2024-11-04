@@ -42,7 +42,8 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 public class User {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(nullable = true, unique = true)
     private String email;
@@ -70,20 +71,16 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private DetailUser details;
+    private DetailUser detail;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "role_id")
     @JsonManagedReference
     private Role role;
 
-    @OneToMany(mappedBy = "createBy", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Company> companyOwn;
-
-    @OneToMany(mappedBy = "EmployeeId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<UserOfCompany> UserOfCompanys;
+    private Set<UserOfCompany> userOfCompanys;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
