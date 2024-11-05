@@ -21,6 +21,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import vn.anpha.storage.Department.Entity.Department;
+import vn.anpha.storage.File_Tag.Entity.FileTag;
 import vn.anpha.storage.Folder.Entity.Folder;
 import vn.anpha.storage.History.Entity.LogUser;
 import vn.anpha.storage.User.Entity.User;
@@ -50,10 +52,21 @@ public class File {
     @Column(length = 250, nullable = false)
     private String link;
 
+    @Column()
+    private Boolean isPersional;
+
+    @Column()
+    private Boolean isInFolder;
+
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false, referencedColumnName = "user_id")
+    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
     @JsonBackReference
-    private User owner;
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "create_user_id", nullable = false, referencedColumnName = "user_id")
+    @JsonBackReference
+    private User createBy;
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false, referencedColumnName = "folder_id")
@@ -82,5 +95,9 @@ public class File {
     @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private List<Version> versions;
+
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<FileTag> tagOfFiles;
 
 }

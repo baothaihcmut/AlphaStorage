@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
-import vn.anpha.storage.User_Folder.Entity.FolderOfUser;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -22,10 +22,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
-
 import lombok.ToString;
-import vn.anpha.storage.Company.Entity.Company;
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.User.Entity.User;
 
 @ToString
 @Data
@@ -43,13 +43,14 @@ public class Folder {
     @Column(nullable = true, columnDefinition = "Text")
     private String description;
 
+    @Column(nullable = false)
     private BigInteger total_size;
+
+    @Column(nullable = false)
     private BigInteger limit_size;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false)
-    @JsonBackReference
-    private Company company;
+    @Column(name = "is_personal")
+    private Boolean isPersonal;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<File> containFiles;
@@ -63,13 +64,20 @@ public class Folder {
     @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<Folder> subFolders;
 
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<FolderOfUser> managers;
+    @ManyToOne
+    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
+    @JsonBackReference
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "persional_user_id", referencedColumnName = "user_id")
+    @JsonBackReference
+    private User persionalUserId;
 
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 

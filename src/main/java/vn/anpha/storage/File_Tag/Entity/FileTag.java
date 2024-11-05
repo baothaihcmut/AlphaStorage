@@ -1,4 +1,4 @@
-package vn.anpha.storage.User_Folder.Entity;
+package vn.anpha.storage.File_Tag.Entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,31 +16,29 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import vn.anpha.storage.Folder.Entity.Folder;
-import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.Tag.Entity.Tag;
 
-@Data
 @Entity
-@Table(name = "folder_of_user")
-public class FolderOfUser {
+@Data
+@Table(name = "file_tags")
+public class FileTag {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
+    @JoinColumn(name = "file_id", nullable = false, referencedColumnName = "file_id")
     @JsonBackReference
-    private User user;
+    private File file;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false, referencedColumnName = "folder_id")
+    @JoinColumn(name = "tag_id", nullable = false, referencedColumnName = "tag_id")
     @JsonBackReference
-    private Folder folder;
-
+    private Tag tag;
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
-
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
