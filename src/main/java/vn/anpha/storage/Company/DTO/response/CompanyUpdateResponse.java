@@ -21,32 +21,22 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyUpdateResponse {
-    @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+
     private UUID id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true, columnDefinition = "Text")
     private String description;
 
     private BigInteger total_size;
     private BigInteger limit_size;
 
-    @ManyToOne
-    @JoinColumn(name = "created_By")
-    private User createBy;
+    private String createBy;
 
-    @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval =  true)
     private Set<UserOfCompany> UserOfCompanys;
 
-    @OneToMany(mappedBy = "CompanyId")
     private Set<Folder> Folders;
 
-    @Column(updatable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

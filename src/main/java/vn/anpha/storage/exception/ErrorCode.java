@@ -14,16 +14,16 @@ public enum ErrorCode {
     UNAUTHORIZED("User do not have permission", HttpStatus.FORBIDDEN),
     UNAUTHOTICATED("Unautheticated", HttpStatus.UNAUTHORIZED),
 
-    //FOR Company
+    // FOR Company
     COMPANY_EXISTED("Company already exists", HttpStatus.BAD_REQUEST),
     COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
 
-    //FOR Buy Data
+    // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),
 
-    //FOR SERVER
-
-    //ELSE
+    // FOR SERVER
+    METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
+    // ELSE
     SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR);
 
     ;

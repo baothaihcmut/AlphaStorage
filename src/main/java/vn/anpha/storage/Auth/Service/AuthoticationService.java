@@ -6,9 +6,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
+import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,23 +42,16 @@ import vn.anpha.storage.exception.ErrorCode;
 @Slf4j
 @Service
 public class AuthoticationService {
+    @Autowired
     private UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final LoginMapper loginMapper;
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
     // @Value("${SIGNER_KEY}")
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public AuthoticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, LoginMapper loginMapper,
-            UserService userService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.loginMapper = loginMapper;
-        this.userService = userService;
-    }
-
     public User checkPassword(AuthoticationDto authotication) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         List<User> users = userRepository.findByEmail(authotication.getUsername());
         if (users.isEmpty()) {
             throw new AppException(ErrorCode.USER_PASSWORD_NOT_EXACTLY);
@@ -78,7 +74,7 @@ public class AuthoticationService {
                 .issueTime(new Date())
                 .expirationTime(
                         new Date(Instant.now().plus(15, ChronoUnit.MINUTES).toEpochMilli()))
-                .claim("scope", user.getRoleId().getName())
+                .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject payloadJWSObject = new JWSObject(header, payload);
@@ -102,7 +98,7 @@ public class AuthoticationService {
                 .issuer("hieu.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
-                .claim("scope", user.getRoleId().getName())
+                .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject payloadJWSObject = new JWSObject(header, payload);
@@ -119,8 +115,8 @@ public class AuthoticationService {
     }
 
     public LoginResponseDto Login(AuthoticationDto authotication) {
-        log.info("-------" + this.SIGNER_KEY);
         User user = this.checkPassword(authotication);
+        LoginMapper loginMapper = Mappers.getMapper(LoginMapper.class);
         UserResponseDto UserResponseDto = loginMapper.User_To_User_Login(user);
         String accessToken = generateToken(user);
         String refreshToken = generateRefreshToken(user);
@@ -163,10 +159,18 @@ public class AuthoticationService {
     }
 
     public User getUserByToken() {
-        log.info("In get User By token");
+
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         return this.userService.GetUserByEmail(name);
     }
+
+    public static String GetEmailByToken() {
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        return name;
+    }
+
 }

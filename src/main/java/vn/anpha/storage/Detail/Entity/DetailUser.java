@@ -1,13 +1,13 @@
 package vn.anpha.storage.Detail.Entity;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -15,22 +15,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import vn.anpha.storage.Company.Entity.Company;
+import lombok.extern.slf4j.Slf4j;
+import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.User.respository.UserRepository;
 
 @ToString
 @Getter
 @Setter
 @Entity
+@Slf4j
 @Table(name = "detailUsers")
 public class DetailUser {
     @Id
@@ -51,6 +53,15 @@ public class DetailUser {
     private LocalDateTime updatedAt;
 
     public DetailUser() {
+
+    }
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        long Init_500Mb = 524288000L;
+
+        this.limit_size = Init_500Mb;
+        this.total_size = 0;
 
     }
 

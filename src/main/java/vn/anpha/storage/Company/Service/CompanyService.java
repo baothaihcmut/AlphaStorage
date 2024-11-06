@@ -4,19 +4,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
-import vn.anpha.storage.Company.DTO.response.CompanyCreationResponse;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
-import vn.anpha.storage.Company.DTO.response.CompanyUpdateResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 
@@ -44,7 +40,7 @@ public class CompanyService {
         Company company = companyMapper.toCompany(companyCreationRequest);
 
         try {
-            company.setCreateBy(user);
+
             company.setTotal_size(BigInteger.ZERO);
             company = companyRepository.save(company);
         } catch (Exception e) {
@@ -62,7 +58,7 @@ public class CompanyService {
 
         Company company = companyRepository.findCompanyByName(request.getName());
 
-        if (!Objects.equals(user.getFullName(), company.getCreateBy().getFullName())) {
+        if (!Objects.equals(user.getEmail(), company.getCreateBy())) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         switch (request.getOption()) {
@@ -91,15 +87,17 @@ public class CompanyService {
 
     public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
-//        log.info("In get companys service");
-        var companyList = companyRepository.findAllByCreateBy(user);
-//        return companyList;
+        var companyList = companyRepository.findAllByCreateBy(user.getEmail());
+        // return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
 
     }
+
     public CompanyResponse getCompany(UUID uuid) {
         User user = authoticationService.getUserByToken();
-        return companyMapper.toCompanyResponse(companyRepository.findAllById(uuid));
+        Company company = companyRepository.findById(uuid)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        return companyMapper.toCompanyResponse(company);
 
     }
 }

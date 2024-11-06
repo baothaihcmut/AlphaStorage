@@ -8,14 +8,21 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import vn.anpha.storage.Department.Entity.Department;
+import vn.anpha.storage.File_Tag.Entity.FileTag;
 import vn.anpha.storage.Folder.Entity.Folder;
 import vn.anpha.storage.History.Entity.LogUser;
 import vn.anpha.storage.User.Entity.User;
@@ -27,7 +34,8 @@ import vn.anpha.storage.Version.Entity.Version;
 public class File {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "file_id")
+    private UUID fileId;
 
     @Column(nullable = false)
     private String name;
@@ -44,12 +52,25 @@ public class File {
     @Column(length = 250, nullable = false)
     private String link;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @Column()
+    private Boolean isPersional;
+
+    @Column()
+    private Boolean isInFolder;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "department_id", referencedColumnName = "department_id")
+    @JsonBackReference
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "create_user_id", nullable = false, referencedColumnName = "user_id")
+    @JsonBackReference
+    private User createBy;
+
+    @ManyToOne
+    @JoinColumn(name = "folder_id", nullable = false, referencedColumnName = "folder_id")
+    @JsonBackReference
     private Folder folder;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
@@ -67,10 +88,16 @@ public class File {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "file")
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private List<LogUser> logs;
 
-    @OneToMany(mappedBy = "file")
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
     private List<Version> versions;
+
+    @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<FileTag> tagOfFiles;
 
 }

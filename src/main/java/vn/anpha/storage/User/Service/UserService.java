@@ -1,12 +1,11 @@
 package vn.anpha.storage.User.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +17,7 @@ import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
+import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.mapper.UserMapper;
@@ -25,6 +25,7 @@ import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
+import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Slf4j
 @Service
@@ -52,12 +53,11 @@ public class UserService {
         return this.passwordEncoder.encode(password);
     }
 
-    @Async
     public UserResponseDto CreateUser(CreateUserDto userDto) {
         userDto.setPassword(hashPassword(userDto.getPassword()));
         User user = userMapper.createToUser(userDto);
-        // user.setRoleId();
-        user.setRoleId(this.roleService.FindByName("User"));
+        // user.setRole();
+        user.setRole(this.roleService.FindByName("USER"));
         try {
 
             user = this.userRepository.save(user);
@@ -65,6 +65,7 @@ public class UserService {
             this.detailService.createDetail(user);
 
             UserResponseDto userResponseDto = userResponseMapper.User_To_UserResponseDto(user);
+
             return userResponseDto;
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -72,8 +73,22 @@ public class UserService {
 
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public UserPaginateResponseDto GetAllUser(Pageable pageable) {
+        Page<User> pageUser = userRepository.findAll(pageable);
+        var users = pageUser.getContent();
+        MetaPaginate pageMeta = MetaPaginate.builder()
+                .CurrentPage(pageUser.getNumber())
+                .PageSize(pageUser.getSize())
+                .TotalItems(pageUser.getTotalElements())
+                .TotalPages(pageUser.getTotalPages())
+                .build();
+        UserPaginateResponseDto responseDto = UserPaginateResponseDto.builder()
+                .data(users.stream().map(userResponseMapper::User_To_UserResponseDto).toList())
+                .metaPaginate(pageMeta)
+                .build();
+
+        return responseDto;
+
     }
 
     public User getUsersById(UUID id) {
@@ -87,7 +102,6 @@ public class UserService {
 
         return userResponseMapper.User_To_UserResponseDto(this.GetUserByEmail(name));
     }
-
 
     public User GetUserByEmail(String email) {
         User user = this.userRepository.findByEmail(email).get(0);

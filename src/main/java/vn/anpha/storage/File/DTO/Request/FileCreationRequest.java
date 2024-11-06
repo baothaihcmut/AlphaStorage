@@ -1,6 +1,6 @@
-package vn.anpha.storage.Company.DTO.response;
+package vn.anpha.storage.File.DTO.Request;
 
-import java.math.BigInteger;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,13 +14,18 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompanyCreationResponse {
-
+public class FileCreationRequest {
     private String name;
 
-    String createBy;
+    private String description;
 
-    private BigInteger total_size;
+    private Boolean hasPassword;
 
-    private BigInteger limit_size;
+    private String password;
+
+    private String link;
+
+    private Integer fileSize;
+
+    private UUID folderId;
 }

@@ -24,7 +24,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
         ApiResponseDto<?> responseDto = new ApiResponseDto();
-        responseDto.setStatusCode(errorCode.getStatusCode());
         responseDto.setMessage(errorCode.getMessage());
         responseDto.setSuccess(false);
         ObjectMapper objectMapper = new ObjectMapper();

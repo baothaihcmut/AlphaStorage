@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
-    Company findAllById(UUID id);
 
     boolean existsCompanyByName(String name);
 
     Company findCompanyByName(String name);
 
-    List<Company> findAllByCreateBy(User createBy);
+    List<Company> findAllByCreateBy(String createBy);
 }

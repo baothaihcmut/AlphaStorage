@@ -1,4 +1,4 @@
-package vn.anpha.storage.User_company.Entity;
+package vn.anpha.storage.User_Department.Entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,36 +15,32 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import vn.anpha.storage.Company.Entity.Company;
+import lombok.Data;
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
-@ToString
-@Getter
-@Setter
+@Data
 @Entity
-@Table(name = "usersOfCompany")
-public class UserOfCompany {
+@Table(name = "folder_of_user")
+public class DepartmentUser {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "employee_Id", nullable = false, referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
-    private User employee;
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = true)
+    @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "department_id")
     @JsonBackReference
-    private Company company;
+    private Department department;
 
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 }

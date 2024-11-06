@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +30,8 @@ import vn.anpha.storage.File.Entity.File;
 public class LogUser {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "log_id")
+    private UUID logId;
 
     @Column(nullable = true, unique = true, updatable = false)
     private String email;
@@ -46,6 +49,8 @@ public class LogUser {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "file_id", nullable = false)
+    @JoinColumn(name = "file_id", nullable = false, referencedColumnName = "file_id")
+    @JsonBackReference
     private File file;
+
 }

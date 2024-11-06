@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class ApiResponseDto<T> {
 
     private Boolean success = true;
-    private HttpStatusCode statusCode;
+
     private String message;
     private T result;
 

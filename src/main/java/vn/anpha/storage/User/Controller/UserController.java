@@ -2,8 +2,12 @@ package vn.anpha.storage.User.Controller;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
+import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.Service.UserService;
@@ -52,15 +57,19 @@ public class UserController {
         response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
         return response;
     }
-    // @GetMapping("/user")
-    // public User Getuserbyid(@RequestParam("id") UUID id) {
-    // // ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
-    // //
-    // response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
-    // // return response;
 
-    // return this.userService.getUsersById(id);
-    // }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/user/getall")
+    public ApiResponseDto<UserPaginateResponseDto> GetAllUser(@RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
+        int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
+        Pageable pageable = PageRequest.of(current - 1, pageSize);
+
+        ApiResponseDto<UserPaginateResponseDto> response = new ApiResponseDto<>();
+        response.setResult(userService.GetAllUser(pageable));
+        return response;
+    }
 
     @PostMapping("/user/create")
     public ApiResponseDto<UserResponseDto> CreateUser(@RequestBody @Valid CreateUserDto userDto) {
