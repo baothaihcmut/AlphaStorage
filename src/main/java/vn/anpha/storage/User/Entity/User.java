@@ -43,7 +43,7 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)

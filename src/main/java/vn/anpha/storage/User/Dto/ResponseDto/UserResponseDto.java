@@ -14,7 +14,7 @@ import vn.anpha.storage.Role.Entity.Role;
 @Builder
 public class UserResponseDto {
 
-    private UUID id;
+    private UUID userId;
     private String email;
     private String fullName;
     private String address;
@@ -26,6 +26,7 @@ public class UserResponseDto {
 
     @Override
     public String toString() {
-        return "id=" + id + ", email=" + email + ", fullName=" + fullName + ", address=" + address + ", phone=" + phone;
+        return "id=" + userId + ", email=" + email + ", fullName=" + fullName + ", address=" + address + ", phone="
+                + phone;
     }
 }

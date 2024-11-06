@@ -23,10 +23,9 @@ import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
-import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.Service.UserService;
-import vn.anpha.storage.User.mapper.UserMapper;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
+import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
@@ -35,24 +34,26 @@ public class UserController {
 
     private final UserService userService;
     private final UserResponseMapper userResponseMapper;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService, UserResponseMapper userResponseMapper) {
+    public UserController(UserService userService, UserResponseMapper userResponseMapper,
+            UserRepository userRepository) {
         this.userService = userService;
         this.userResponseMapper = userResponseMapper;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("user/myinfo")
-    public ApiResponseDto<UserResponseDto> GetMyInfo() {
-
+    public ApiResponseDto<UserResponseDto> getMyInfo() {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.GetInfo());
         return response;
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user")
-    public ApiResponseDto<UserResponseDto> Getuserbyid(@RequestParam("id") UUID id) {
+    public ApiResponseDto<UserResponseDto> getUserById(@RequestParam("id") UUID id) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
         return response;
@@ -60,7 +61,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/getall")
-    public ApiResponseDto<UserPaginateResponseDto> GetAllUser(@RequestParam("current") Optional<String> currentOptional,
+    public ApiResponseDto<UserPaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
         int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
         int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
@@ -72,14 +73,15 @@ public class UserController {
     }
 
     @PostMapping("/user/create")
-    public ApiResponseDto<UserResponseDto> CreateUser(@RequestBody @Valid CreateUserDto userDto) {
+    public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid CreateUserDto userDto) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.CreateUser(userDto));
+
         return response;
     }
 
     @PostMapping("/user/update")
-    public ApiResponseDto<UserResponseDto> UpdateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
+    public ApiResponseDto<UserResponseDto> updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.UpdateUser(updateUserDto));
         return response;

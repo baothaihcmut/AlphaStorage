@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     User removeByUserId(UUID id);
 
     List<User> findByRefreshToken(String refreshToken);
+
 }
