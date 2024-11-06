@@ -1,6 +1,7 @@
 package vn.anpha.storage.Company.DTO.response;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyCreationResponse {
 
+    private UUID companyId ;
     private String name;
 
     String createBy;
