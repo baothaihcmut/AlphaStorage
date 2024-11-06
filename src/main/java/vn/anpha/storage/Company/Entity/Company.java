@@ -2,36 +2,31 @@ package vn.anpha.storage.Company.Entity;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.Folder.Entity.Folder;
-import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
-import vn.anpha.storage.Auth.Service.AuthoticationService;
 
 @ToString
 @Getter
@@ -42,7 +37,8 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 public class Company {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "company_id")
+    private UUID companyId;
 
     @Column(nullable = false)
     private String name;
@@ -55,13 +51,13 @@ public class Company {
 
     private String createBy;
 
-    @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<UserOfCompany> UserOfCompanys;
+    private Set<UserOfCompany> userOfCompanys;
 
-    @OneToMany(mappedBy = "CompanyId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<Folder> Folders;
+    private List<Department> departments;
 
     @Column(updatable = false)
     @CreationTimestamp

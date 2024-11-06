@@ -3,3 +3,7 @@ jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
+minio:
+  url: http://localhost:9000
+  access_key: 29SQNS6IbTwJLGZRYD7Q
+  secret_key: 7YNJ5DbzFom83Up93W9WthC92rA4pBaiQk2LtK4I

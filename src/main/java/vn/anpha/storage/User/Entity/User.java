@@ -1,16 +1,15 @@
 package vn.anpha.storage.User.Entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -23,15 +22,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Detail.Entity.DetailUser;
 import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.Folder.Entity.Folder;
 import vn.anpha.storage.Role.Entity.Role;
-import vn.anpha.storage.User_Folder.Entity.FolderOfUser;
+import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @ToString
@@ -42,7 +40,8 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 public class User {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(nullable = true, unique = true)
     private String email;
@@ -70,26 +69,26 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private DetailUser details;
+    private DetailUser detail;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "role_id")
     @JsonManagedReference
     private Role role;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
+    private Set<UserOfCompany> userOfCompanys;
+
     @OneToMany(mappedBy = "createBy", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Company> companyOwn;
-
-    @OneToMany(mappedBy = "EmployeeId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<UserOfCompany> UserOfCompanys;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<File> ownFiles;
+    private Set<File> createFiles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private Set<FolderOfUser> ownFolders;
+    private Set<DepartmentUser> departmentManages;
+
+    @OneToMany(mappedBy = "persionalUserId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Folder> persionalFolder;
 }

@@ -111,51 +111,41 @@
 			<artifactId>ea-async</artifactId>
 			<version>1.2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>8.5.1</version> <!-- Use the latest stable version -->
+		</dependency>
+		
 	</dependencies>
 
 	<build>
 		<plugins>
-
 			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>1.7.22</version>
-				<executions>
-					<execution>
-						<id>kapt</id>
-						<goals>
-							<goal>kapt</goal>
-						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>src/main/kotlin</sourceDir>
-								<sourceDir>src/main/java</sourceDir>
-							</sourceDirs>
-							<annotationProcessorPaths>
-								<!-- Specify your annotation processors here. -->
-								<annotationProcessorPath>
-									<groupId>com.google.dagger</groupId>
-									<artifactId>dagger-compiler</artifactId>
-									<version>2.9</version>
-								</annotationProcessorPath>
-							</annotationProcessorPaths>
-						</configuration>
-					</execution>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.34</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.4.2.Final</version>
+						</path>
+					</annotationProcessorPaths>
+					<compilerArgs>
+						<compilerArg>
+							   -Amapstruct.defaultComponentModel=spring
+						</compilerArg>
+					</compilerArgs>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>

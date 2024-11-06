@@ -33,9 +33,9 @@ public class ApplicationInitConfig {
                 roleUser.setDescription("User role");
                 roleRepository.save(roleUser);
             }
-            if (roleRepository.findByName("OwnCompany").isEmpty()) {
+            if (roleRepository.findByName("OWNCOMPANY").isEmpty()) {
                 Role roleUser = new Role();
-                roleUser.setName("OwnCompany");
+                roleUser.setName("OWNCOMPANY");
                 roleUser.setDescription("OwnCompany role");
                 roleRepository.save(roleUser);
             }

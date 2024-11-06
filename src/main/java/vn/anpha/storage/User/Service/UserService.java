@@ -1,12 +1,11 @@
 package vn.anpha.storage.User.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,11 +13,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Detail.Service.DetailService;
-import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
+import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.mapper.UserMapper;
@@ -26,6 +25,7 @@ import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
+import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Slf4j
 @Service
@@ -53,7 +53,6 @@ public class UserService {
         return this.passwordEncoder.encode(password);
     }
 
-    @Async
     public UserResponseDto CreateUser(CreateUserDto userDto) {
         userDto.setPassword(hashPassword(userDto.getPassword()));
         User user = userMapper.createToUser(userDto);
@@ -74,8 +73,22 @@ public class UserService {
 
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public UserPaginateResponseDto GetAllUser(Pageable pageable) {
+        Page<User> pageUser = userRepository.findAll(pageable);
+        var users = pageUser.getContent();
+        MetaPaginate pageMeta = MetaPaginate.builder()
+                .CurrentPage(pageUser.getNumber())
+                .PageSize(pageUser.getSize())
+                .TotalItems(pageUser.getTotalElements())
+                .TotalPages(pageUser.getTotalPages())
+                .build();
+        UserPaginateResponseDto responseDto = UserPaginateResponseDto.builder()
+                .data(users.stream().map(userResponseMapper::User_To_UserResponseDto).toList())
+                .metaPaginate(pageMeta)
+                .build();
+
+        return responseDto;
+
     }
 
     public User getUsersById(UUID id) {
