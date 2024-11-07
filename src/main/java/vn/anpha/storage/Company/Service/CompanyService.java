@@ -93,10 +93,18 @@ public class CompanyService {
     }
 
     public CompanyResponse getCompany(UUID uuid) {
-        authoticationService.getUserByToken();
+
         Company company = companyRepository.findById(uuid)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         return companyMapper.toCompanyResponse(company);
+    }
 
+    public boolean checkOwnCompany(User user, UUID companyId) {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        if (user.getEmail() == company.getCreateBy()) {
+            return true;
+        }
+        throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
     }
 }

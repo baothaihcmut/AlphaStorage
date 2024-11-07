@@ -17,6 +17,16 @@ public enum ErrorCode {
     // FOR Company
     COMPANY_EXISTED("Company already exists", HttpStatus.BAD_REQUEST),
     COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
+    USER_NOT_OWNCOMPANY("User does not have permission", HttpStatus.BAD_REQUEST),
+
+    // FOR DEPARTMENT
+    DEPARTMENT_EXISTED("Department already exists", HttpStatus.BAD_REQUEST),
+    DEPARTMENT_NOT_EXISTED("Department not exists", HttpStatus.BAD_REQUEST),
+    // FOR User_of_Department
+    USER_OF_DEPARTMENT_EXISTED("User of department already exists", HttpStatus.BAD_REQUEST),
+    USER_OF_DEPARTMENT_NOT_EXISTED("User of department not exists", HttpStatus.BAD_REQUEST),
+
+    USER_OF_DEPARTMENT_NOT_YOURS("User of department not yours", HttpStatus.BAD_REQUEST),
 
     // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),

@@ -9,7 +9,6 @@ import lombok.Setter;
 @Builder
 public class MetaPaginate {
     private int CurrentPage;
-
     private long TotalItems;
     private int TotalPages;
     private int PageSize;

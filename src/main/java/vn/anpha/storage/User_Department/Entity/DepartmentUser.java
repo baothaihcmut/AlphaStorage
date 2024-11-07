@@ -15,12 +15,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
 @Data
 @Entity
+@Builder
+@Getter
+@Setter
 @Table(name = "department_of_user")
 public class DepartmentUser {
     @Id
@@ -32,7 +38,6 @@ public class DepartmentUser {
     @JsonBackReference
     private User user;
 
-    @Column(columnDefinition = " default false")
     private boolean isManager;
 
     @ManyToOne
