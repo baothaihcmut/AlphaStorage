@@ -13,5 +13,6 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmentUpdateRequest {
-    private UUID managerId;
+    private UUID departmentId;
+    private String name;
 }

@@ -9,9 +9,8 @@ import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Getter
 @Setter
-@Builder
-public class UserPaginateResponseDto {
+public class PaginateResponseDto<T> {
     private MetaPaginate metaPaginate;
-    private List<UserResponseDto> data;
+    private List<T> data;
 
 }

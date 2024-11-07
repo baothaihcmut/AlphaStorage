@@ -1,9 +1,8 @@
 package vn.anpha.storage.History.Entity;
 
 public enum ActionEnum {
-    CREATE,
-    UPDATE,
-    DELETE,
-    READ,
-    SEARCH
+    CREATE, // normal
+    UPDATE, // warring
+    DELETE, // warring
+    READ, // normal and warring(sai password)
 }

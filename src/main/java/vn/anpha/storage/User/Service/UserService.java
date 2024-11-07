@@ -17,7 +17,7 @@ import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
-import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
+import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.mapper.UserMapper;
@@ -73,8 +73,8 @@ public class UserService {
 
     }
 
-    public UserPaginateResponseDto GetAllUser(Pageable pageable) {
-        Page<User> pageUser = userRepository.findAll(pageable);
+    public PaginateResponseDto<UserResponseDto> GetAllUser(Pageable pageable) {
+        Page<User> pageUser = userRepository.findAll(pageable); // tư set limit offset
         var users = pageUser.getContent();
         MetaPaginate pageMeta = MetaPaginate.builder()
                 .CurrentPage(pageUser.getNumber())
@@ -82,10 +82,9 @@ public class UserService {
                 .TotalItems(pageUser.getTotalElements())
                 .TotalPages(pageUser.getTotalPages())
                 .build();
-        UserPaginateResponseDto responseDto = UserPaginateResponseDto.builder()
-                .data(users.stream().map(userResponseMapper::User_To_UserResponseDto).toList())
-                .metaPaginate(pageMeta)
-                .build();
+        PaginateResponseDto<UserResponseDto> responseDto = new PaginateResponseDto<UserResponseDto>();
+        responseDto.setData(users.stream().map(userResponseMapper::User_To_UserResponseDto).toList());
+        responseDto.setMetaPaginate(pageMeta);
 
         return responseDto;
 

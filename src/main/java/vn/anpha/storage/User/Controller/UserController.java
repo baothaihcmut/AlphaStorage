@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
-import vn.anpha.storage.User.Dto.ResponseDto.UserPaginateResponseDto;
+import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
@@ -61,13 +61,13 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/getall")
-    public ApiResponseDto<UserPaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
+    public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
         int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
         int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
-        ApiResponseDto<UserPaginateResponseDto> response = new ApiResponseDto<>();
+        ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
         response.setResult(userService.GetAllUser(pageable));
         return response;
     }
