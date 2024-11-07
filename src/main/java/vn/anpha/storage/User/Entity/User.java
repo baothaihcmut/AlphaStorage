@@ -88,7 +88,7 @@ public class User {
     @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<DepartmentUser> departmentManages;
 
-    @OneToMany(mappedBy = "persionalUserId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "persionalUser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Folder> persionalFolder;
 }

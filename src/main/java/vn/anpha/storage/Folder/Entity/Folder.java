@@ -72,7 +72,7 @@ public class Folder {
     @ManyToOne
     @JoinColumn(name = "persional_user_id", referencedColumnName = "user_id")
     @JsonBackReference
-    private User persionalUserId;
+    private User persionalUser;
 
     @Column(updatable = false)
     @CreationTimestamp

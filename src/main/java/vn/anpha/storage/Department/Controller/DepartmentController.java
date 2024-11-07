@@ -1,21 +1,18 @@
 package vn.anpha.storage.Department.Controller;
 
-import java.util.List;
-import java.util.UUID;
+//import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
-import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
-import vn.anpha.storage.Company.DTO.response.CompanyResponse;
-import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreateRequest;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Service.DepartmentService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
-
-import org.springframework.web.bind.annotation.*;
-//import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 
 @RestController
 @RequestMapping("/department")
