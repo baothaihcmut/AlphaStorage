@@ -1,6 +1,6 @@
-package vn.anpha.storage.Company.DTO.response;
+package vn.anpha.storage.Department.DTO.response;
 
-import java.math.BigInteger;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AccessLevel;
@@ -9,20 +9,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompanyCreationResponse {
+public class DepartmenResponse {
+    private UUID departmentId;
 
-    private UUID companyId ;
     private String name;
 
-    String createBy;
+    private UUID companyid;
 
-    private BigInteger total_size;
+    private List<DepartmentUser> employees;
 
-    private BigInteger limit_size;
+    private List<DepartmentUser> managers;
+
 }

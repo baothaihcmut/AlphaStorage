@@ -42,7 +42,7 @@ public class Department {
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
-    private List<DepartmentUser> managers;
+    private List<DepartmentUser> employees;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference

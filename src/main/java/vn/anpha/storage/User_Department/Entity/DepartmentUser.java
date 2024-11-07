@@ -21,7 +21,7 @@ import vn.anpha.storage.User.Entity.User;
 
 @Data
 @Entity
-@Table(name = "folder_of_user")
+@Table(name = "department_of_user")
 public class DepartmentUser {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
@@ -31,6 +31,9 @@ public class DepartmentUser {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
     private User user;
+
+    @Column(columnDefinition = " default false")
+    private boolean isManager;
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "department_id")

@@ -32,7 +32,6 @@ public class CompanyService {
 
     public CompanyResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
-        User user = authoticationService.getUserByToken();
         if (companyRepository.existsCompanyByName(companyCreationRequest.getName())) {
             throw new AppException(ErrorCode.COMPANY_EXISTED);
         }
@@ -46,6 +45,7 @@ public class CompanyService {
         } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
+
         return companyMapper.toCompanyResponse(company);
     }
 
@@ -88,13 +88,12 @@ public class CompanyService {
     public List<CompanyResponse> getCompanies() {
         User user = authoticationService.getUserByToken();
         var companyList = companyRepository.findAllByCreateBy(user.getEmail());
-        // return companyList;
         return companyList.stream().map(companyMapper::toCompanyResponse).toList();
 
     }
 
     public CompanyResponse getCompany(UUID uuid) {
-        User user = authoticationService.getUserByToken();
+        authoticationService.getUserByToken();
         Company company = companyRepository.findById(uuid)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         return companyMapper.toCompanyResponse(company);
