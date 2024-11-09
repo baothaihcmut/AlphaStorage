@@ -3,6 +3,7 @@ package vn.anpha.storage.Company.Controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
-import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
+import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -37,11 +38,20 @@ public class CompanyController {
                                 .build();
         }
 
-        @PatchMapping("/update")
-        ApiResponseDto<CompanyResponse> updateCompany(
-                        @RequestBody CompanyUpdateRequest request) {
+        @PatchMapping("/update/{id}")
+        ApiResponseDto<CompanyResponse> updateInfoCompany(@PathVariable UUID id,
+                        @RequestBody UpGradeCompanyRequest request) {
                 return ApiResponseDto.<CompanyResponse>builder()
-                                .result(companyService.updateCompany(request))
+                                .result(companyService.updateGradeCompany(id, request))
+                                .build();
+        }
+
+        @PatchMapping("/upgrade/{id}")
+        ApiResponseDto<CompanyResponse> updateGradeCompany(
+                        @RequestBody UpGradeCompanyRequest request, @PathVariable UUID id) {
+
+                return ApiResponseDto.<CompanyResponse>builder()
+                                .result(companyService.updateGradeCompany(id, request))
                                 .build();
         }
 
@@ -59,4 +69,12 @@ public class CompanyController {
                                 .result(companyService.getCompany(id))
                                 .build();
         }
+
+        @DeleteMapping("/{id}")
+        ApiResponseDto<Boolean> deleteCompany(@PathVariable UUID id) {
+                return ApiResponseDto.<Boolean>builder()
+                                .result(companyService.deleteCompanyById(id))
+                                .build();
+        }
+
 }

@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompanyUpdateRequest {
-    String name;
-    String description;
+public class UpGradeCompanyRequest {
+    private String option;
 }

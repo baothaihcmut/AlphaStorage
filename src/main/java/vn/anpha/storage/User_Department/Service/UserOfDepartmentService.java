@@ -16,6 +16,7 @@ import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Repository.UserOfDepartmentRepository;
 import vn.anpha.storage.exception.AppException;
@@ -68,7 +69,7 @@ public class UserOfDepartmentService {
     }
 
     public DepartmentUser updateUserOfDepartment(
-            vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate updateDTO) {
+            UserDepartmentUpdate updateDTO) {
         Department department = departmentRepository.findDepartmentById(updateDTO.getDepartmentId());
         companyService.checkOwnCompany(authoticationService.getUserByToken(),
                 department.getCompany().getCompanyId());
