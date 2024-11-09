@@ -58,7 +58,7 @@ public class DepartmentService {
                 return response;
         }
 
-        public void deleteDepartmentById(UUID id) {
+        public Boolean deleteDepartmentById(UUID id) {
                 Department department = departmentRepository.findById(id)
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
@@ -66,6 +66,7 @@ public class DepartmentService {
                                 department.getCompany().getCompanyId());
 
                 departmentRepository.delete(department);
+                return true;
 
         }
 

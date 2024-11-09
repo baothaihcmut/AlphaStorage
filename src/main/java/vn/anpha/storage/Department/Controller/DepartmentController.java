@@ -1,5 +1,9 @@
 package vn.anpha.storage.Department.Controller;
 
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,26 +33,19 @@ public class DepartmentController {
                                 .build();
         }
 
-        // @PostMapping("/update")
-        // ApiResponseDto<CompanyResponse> updateCompany(
-        // @RequestBody CompanyUpdateRequest request) {
-        // return ApiResponseDto.<CompanyResponse>builder()
-        // .result(companyService.updateCompany(request))
-        // .build();
-        // }
+        @GetMapping("/GetUserOfDepartment/{id}")
+        ApiResponseDto<DepartmenResponse> getACompanyProperties(
+                        @PathVariable UUID id) {
+                return ApiResponseDto.<DepartmenResponse>builder()
+                                .result(departmentService.getDepartmentById(id))
+                                .build();
+        }
 
-        // @GetMapping("/GetListCompany")
-        // ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
-        // return ApiResponseDto.<List<CompanyResponse>>builder()
-        // .result(companyService.getCompanies())
-        // .build();
-        // }
-
-        // @GetMapping("/GetCompany/{id}")
-        // ApiResponseDto<CompanyResponse> getACompanyProperties(
-        // @PathVariable UUID id) {
-        // return ApiResponseDto.<CompanyResponse>builder()
-        // .result(companyService.getCompany(id))
-        // .build();
-        // }
+        @PostMapping("/deleteUserOfDepartment/{id}")
+        ApiResponseDto<Boolean> deleteUserOfDepartment(
+                        @PathVariable UUID id) {
+                return ApiResponseDto.<Boolean>builder()
+                                .result(departmentService.deleteDepartmentById(id))
+                                .build();
+        }
 }
