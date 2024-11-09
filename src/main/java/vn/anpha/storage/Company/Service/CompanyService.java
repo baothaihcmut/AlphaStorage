@@ -122,13 +122,14 @@ public class CompanyService {
 
     }
 
-    public boolean checkOwnCompany(User user, UUID companyId) {
+    public Company checkOwnCompany(User user, UUID companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         if (user.getEmail().equals(company.getCreateBy())) {
-            return true;
-        }
+            return company;
+        } else {
+            throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
 
-        throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
+        }
     }
 }

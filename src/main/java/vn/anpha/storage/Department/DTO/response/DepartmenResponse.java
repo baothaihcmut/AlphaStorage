@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 
 @Data
@@ -20,11 +21,5 @@ public class DepartmenResponse {
     private UUID departmentId;
 
     private String name;
-
-    private UUID companyid;
-
-    private List<DepartmentUser> employees;
-
-    private List<DepartmentUser> managers;
 
 }

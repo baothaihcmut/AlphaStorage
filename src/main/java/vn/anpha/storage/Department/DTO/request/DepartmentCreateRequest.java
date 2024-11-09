@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmentCreateRequest {
     private String name;
-
+    private String description;
     private UUID companyId;
 
 }

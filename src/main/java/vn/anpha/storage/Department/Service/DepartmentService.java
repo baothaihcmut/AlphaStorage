@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreateRequest;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateRequest;
@@ -37,10 +38,11 @@ public class DepartmentService {
         CompanyService companyService;
 
         public DepartmenResponse createDepartment(DepartmentCreateRequest departmentCreateRequest) {
-                companyService.checkOwnCompany(authoticationService.getUserByToken(),
+                Company company = companyService.checkOwnCompany(authoticationService.getUserByToken(),
                                 departmentCreateRequest.getCompanyId());
                 User user = authoticationService.getUserByToken();
                 Department department = departmentMapper.toDepartment(departmentCreateRequest);
+                department.setCompany(company);
                 department = departmentRepository.save(department);
                 userOfDepartmentService.createManger(user, department);
                 DepartmenResponse response = departmentMapper.toDepartmentResponse(department);
