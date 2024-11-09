@@ -1,11 +1,16 @@
 package vn.anpha.storage.User_company.Service;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
@@ -17,10 +22,6 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 import vn.anpha.storage.User_company.Repository.UserCompanyRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,10 +37,9 @@ public class UserOfCompanyService {
         return this.userRepository.findByEmail(email).get(0);
     }
 
-    public  Company getCompany(UUID uuid) {
+    public Company getCompany(UUID uuid) {
         return companyRepository.findById(uuid).orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
     }
-
 
     public UserOfCompany addUserToCompany(@NotNull addUserToCompanyRequestDto data) {
         User user = authoticationService.getUserByToken();
@@ -65,11 +65,10 @@ public class UserOfCompanyService {
         User user = authoticationService.getUserByToken();
         Company company = this.getCompany(uuid);
 
-
         List<UserOfCompany> userCompany = this.userCompanyRepository.findByCompany(company);
         List<User> users = userCompany.stream()
                 .map(UserOfCompany::getEmployee) // Lấy user từ từng đối tượng UserOfCompany
                 .collect(Collectors.toList()); // Chuyển thành danh sách
-        return  users;
+        return users;
     }
 }

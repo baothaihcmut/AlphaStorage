@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +41,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("user/myinfo")
+    @GetMapping("user/myInfo")
     public ApiResponseDto<UserResponseDto> getMyInfo() {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.GetInfo());
@@ -51,7 +50,7 @@ public class UserController {
     }
 
     // @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/get/{id}")
     public ApiResponseDto<UserResponseDto> getUserById(@PathVariable() UUID id) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
@@ -59,7 +58,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/user/getall")
+    @GetMapping("/user/getAll")
     public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
         int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
@@ -86,7 +85,7 @@ public class UserController {
         return response;
     }
 
-    @PutMapping("/user/changePassword")
+    @PatchMapping("/user/changePassword")
     public ApiResponseDto ChangePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
         ApiResponseDto response = new ApiResponseDto<>();
         this.userService.ChangePassword(changePasswordDto);

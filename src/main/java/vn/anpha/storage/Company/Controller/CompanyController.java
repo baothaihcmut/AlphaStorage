@@ -55,14 +55,14 @@ public class CompanyController {
                                 .build();
         }
 
-        @GetMapping("")
+        @GetMapping("/getOwn")
         ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
                 return ApiResponseDto.<List<CompanyResponse>>builder()
                                 .result(companyService.getCompanies())
                                 .build();
         }
 
-        @GetMapping("/{id}")
+        @GetMapping("/get/{id}")
         ApiResponseDto<CompanyResponse> getACompanyProperties(
                         @PathVariable UUID id) {
                 return ApiResponseDto.<CompanyResponse>builder()
@@ -70,7 +70,7 @@ public class CompanyController {
                                 .build();
         }
 
-        @DeleteMapping("/{id}")
+        @DeleteMapping("/delete/{id}")
         ApiResponseDto<Boolean> deleteCompany(@PathVariable UUID id) {
                 return ApiResponseDto.<Boolean>builder()
                                 .result(companyService.deleteCompanyById(id))

@@ -6,8 +6,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

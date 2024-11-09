@@ -35,7 +35,7 @@ public class DepartmentController {
                                 .build();
         }
 
-        @GetMapping("/{id}")
+        @GetMapping("/get/{id}")
         ApiResponseDto<DepartmenResponse> getACompanyProperties(@PathVariable UUID id) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.getDepartmentById(id))
