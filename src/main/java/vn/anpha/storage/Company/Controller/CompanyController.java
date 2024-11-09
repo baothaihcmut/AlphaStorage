@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +37,7 @@ public class CompanyController {
                 .build();
     }
 
-    @PostMapping("/update")
+    @PatchMapping("/update")
     ApiResponseDto<CompanyResponse> updateCompany(
             @RequestBody CompanyUpdateRequest request) {
         return ApiResponseDto.<CompanyResponse>builder()
@@ -44,14 +45,14 @@ public class CompanyController {
                 .build();
     }
 
-    @GetMapping("/GetListCompany")
+    @GetMapping("/getall")
     ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
         return ApiResponseDto.<List<CompanyResponse>>builder()
                 .result(companyService.getCompanies())
                 .build();
     }
 
-    @GetMapping("/GetCompany/{id}")
+    @GetMapping("/{id}")
     ApiResponseDto<CompanyResponse> getACompanyProperties(
             @PathVariable UUID id) {
         return ApiResponseDto.<CompanyResponse>builder()

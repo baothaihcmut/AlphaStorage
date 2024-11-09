@@ -70,7 +70,7 @@ public class DepartmentService {
 
         }
 
-        public Department updateDepartmentName(DepartmentUpdateRequest departmentUpdateRequest) {
+        public DepartmenResponse updateDepartmentName(DepartmentUpdateRequest departmentUpdateRequest) {
 
                 Department department = departmentRepository.findById(departmentUpdateRequest.getDepartmentId())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
@@ -79,7 +79,8 @@ public class DepartmentService {
                                 department.getCompany().getCompanyId());
 
                 department.setName(departmentUpdateRequest.getName());
-                return departmentRepository.save(department);
+                departmentRepository.save(department);
+                return departmentMapper.toDepartmentResponse(department);
 
         }
 

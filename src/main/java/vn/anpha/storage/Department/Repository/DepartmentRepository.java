@@ -12,4 +12,5 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
 
         @Query(value = "SELECT * FROM departments WHERE department_id=:id LIMIT 1", nativeQuery = true)
         Department findDepartmentById(@Param("id") UUID id);
+
 }

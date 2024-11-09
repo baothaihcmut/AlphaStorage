@@ -31,7 +31,7 @@ public class AuthoticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/authent/login")
+    @PostMapping("/auth/login")
     public ApiResponseDto<LoginResponseDto> isAuthenticated(@RequestBody @Valid AuthoticationDto authoticationDto) {
         ApiResponseDto<LoginResponseDto> response = new ApiResponseDto<>();
         LoginResponseDto loginResponseDto = authenticationService.Login(authoticationDto);
@@ -41,14 +41,14 @@ public class AuthoticationController {
         return response;
     }
 
-    @GetMapping("/authent/logout")
+    @GetMapping("/auth/logout")
     public ApiResponseDto Logout() {
         ApiResponseDto response = new ApiResponseDto<>();
         authenticationService.Logout();
         return response;
     }
 
-    @PostMapping("/auth/RefreshToken")
+    @PostMapping("/auth/refresh")
     public ApiResponseDto<String> RefreshToken(@RequestBody @Valid RefreshTokenDto refreshToken) {
         ApiResponseDto<String> response = new ApiResponseDto<>();
         String token;

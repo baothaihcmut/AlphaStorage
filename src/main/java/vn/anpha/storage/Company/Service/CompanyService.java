@@ -1,10 +1,16 @@
 package vn.anpha.storage.Company.Service;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
@@ -15,11 +21,6 @@ import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
-
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -32,7 +33,7 @@ public class CompanyService {
 
     public CompanyResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
-        if (companyRepository.existsCompanyByName(companyCreationRequest.getName())) {
+        if (companyRepository.existsCompanyByName(companyCreationRequest.getName()) != 0) {
             throw new AppException(ErrorCode.COMPANY_EXISTED);
         }
 
@@ -52,7 +53,7 @@ public class CompanyService {
     public CompanyResponse updateCompany(CompanyUpdateRequest request) {
 
         User user = authoticationService.getUserByToken();
-        if (!companyRepository.existsCompanyByName(request.getName())) {
+        if (companyRepository.existsCompanyByName(request.getName()) == 0) {
             throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
         }
 

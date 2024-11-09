@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreateRequest;
+import vn.anpha.storage.Department.DTO.request.DepartmentUpdateRequest;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Service.DepartmentService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -33,19 +34,40 @@ public class DepartmentController {
                                 .build();
         }
 
-        @GetMapping("/GetUserOfDepartment/{id}")
-        ApiResponseDto<DepartmenResponse> getACompanyProperties(
-                        @PathVariable UUID id) {
+        @GetMapping("/GetDepartment/{id}")
+        ApiResponseDto<DepartmenResponse> getACompanyProperties(@PathVariable UUID id) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.getDepartmentById(id))
                                 .build();
         }
 
-        @PostMapping("/deleteUserOfDepartment/{id}")
-        ApiResponseDto<Boolean> deleteUserOfDepartment(
-                        @PathVariable UUID id) {
+        @PostMapping("/deleteDepartment/{id}")
+        ApiResponseDto<Boolean> deleteUserOfDepartment(@PathVariable UUID id) {
                 return ApiResponseDto.<Boolean>builder()
                                 .result(departmentService.deleteDepartmentById(id))
                                 .build();
         }
+
+        @PostMapping("/updateNameDepartment/{id}")
+        ApiResponseDto<DepartmenResponse> updateNameDepartment(@PathVariable UUID id,
+                        @RequestBody DepartmentUpdateRequest request) {
+                return ApiResponseDto.<DepartmenResponse>builder()
+                                .result(departmentService.updateDepartmentName(request))
+                                .build();
+        }
+
+        // @GetMapping("/getAllDepartment")
+        // public ApiResponseDto<PaginateResponseDto> getAllDepartment(
+        // @RequestParam("current") Optional<String> currentOptional,
+        // @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        // int current = currentOptional.isPresent() ?
+        // Integer.parseInt(currentOptional.get()) : 1;
+        // int pageSize = pageSizeOptional.isPresent() ?
+        // Integer.parseInt(pageSizeOptional.get()) : 10;
+        // // Pageable pageable = PageRequest.of(current - 1, pageSize);
+
+        // ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
+        // response.setResult(departmentService.GetAllDepartment(pageable));
+        // return response;
+        // }
 }
