@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreateRequest;
-import vn.anpha.storage.Department.DTO.request.DepartmentUpdateManagerRequestDto;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateRequest;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Entity.Department;
@@ -21,7 +20,6 @@ import vn.anpha.storage.Department.Mapper.DepartmentMapper;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
@@ -47,6 +45,7 @@ public class DepartmentService {
                 userOfDepartmentService.createManger(user, department);
                 DepartmenResponse response = departmentMapper.toDepartmentResponse(department);
                 return response;
+
         }
 
         public DepartmenResponse getDepartmentById(UUID id) {
@@ -81,20 +80,6 @@ public class DepartmentService {
                 department.setName(departmentUpdateRequest.getName());
                 return departmentRepository.save(department);
 
-        }
-
-        public Department updateDepartmentManager(DepartmentUpdateManagerRequestDto requestDto) {
-
-                Department department = departmentRepository.findById(requestDto.getDepartmentId())
-                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-
-                companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                department.getCompany().getCompanyId());
-                DepartmentUser departmentUser = userOfDepartmentService.findUserAndDepartment(requestDto.getUserId(),
-                                requestDto.getDepartmentId());
-                userOfDepartmentService.updateUserOfDepartment(departmentUser.getId(), true);
-
-                return department;
         }
 
         public PaginateResponseDto<Department> GetAllDepartment(Pageable pageable) {

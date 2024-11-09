@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 
 @Repository
