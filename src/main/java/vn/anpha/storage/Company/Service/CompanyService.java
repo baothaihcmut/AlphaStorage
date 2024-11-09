@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
+import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
@@ -50,39 +53,51 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(company);
     }
 
-    public CompanyResponse updateCompany(CompanyUpdateRequest request) {
+    public CompanyResponse updateCompany(UUID id, CompanyUpdateRequest request) {
 
         User user = authoticationService.getUserByToken();
-        if (companyRepository.existsCompanyByName(request.getName()) == 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+
+        if (!Objects.equals(user.getEmail(), company.getCreateBy())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        if (request.getName() != null && request.getName().length() > 0) {
+            company.setName(request.getName());
+        }
+        if (request.getDescription() != null && request.getDescription().length() > 0) {
+            company.setDescription(request.getDescription());
         }
 
-        Company company = companyRepository.findCompanyByName(request.getName());
+        company = companyRepository.save(company);
+        return companyMapper.toCompanyResponse(company);
+
+    }
+
+    public CompanyResponse updateGradeCompany(UUID id, UpGradeCompanyRequest request) {
+        User user = authoticationService.getUserByToken();
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
 
         if (!Objects.equals(user.getEmail(), company.getCreateBy())) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         switch (request.getOption()) {
             case "option1":
-                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(10000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(10000)));
+                // NEED TO RESET VALUE
                 break;
             case "option2":
-                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(20000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(20000)));
+                // NEED TO RESET VALUE
                 break;
             case "option3":
-                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(30000))); // NEED TO RESET VALUE
+                company.setLimit_size(company.getLimit_size().add(BigInteger.valueOf(30000)));
+                // NEED TO RESET VALUE
                 break;
             default:
                 throw new AppException(ErrorCode.THIS_TYPE_DOES_NOT_EXIST);
         }
-
-        try {
-
-            company = companyRepository.save(company);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.SERVER_ERROR);
-        }
-
         return companyMapper.toCompanyResponse(company);
     }
 
@@ -100,12 +115,22 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(company);
     }
 
+    public boolean deleteCompanyById(UUID id) {
+        checkOwnCompany(authoticationService.getUserByToken(), id);
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        this.companyRepository.deleteById(id);
+        return true;
+
+    }
+
     public boolean checkOwnCompany(User user, UUID companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-        if (user.getEmail() == company.getCreateBy()) {
+        if (user.getEmail().equals(company.getCreateBy())) {
             return true;
         }
+
         throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
     }
 }

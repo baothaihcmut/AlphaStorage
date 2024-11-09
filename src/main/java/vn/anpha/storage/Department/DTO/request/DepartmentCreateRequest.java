@@ -17,6 +17,6 @@ import lombok.experimental.FieldDefaults;
 public class DepartmentCreateRequest {
     private String name;
 
-    private UUID companyid;
+    private UUID companyId;
 
 }

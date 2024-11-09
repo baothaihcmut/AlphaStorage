@@ -22,5 +22,4 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
         @Query(value = "SELECT count(*) FROM companys WHERE name = :name", nativeQuery = true)
         int existsCompanyByName(@Param("name") String name);
-
 }

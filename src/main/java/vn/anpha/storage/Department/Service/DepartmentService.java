@@ -38,7 +38,7 @@ public class DepartmentService {
 
         public DepartmenResponse createDepartment(DepartmentCreateRequest departmentCreateRequest) {
                 companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                departmentCreateRequest.getCompanyid());
+                                departmentCreateRequest.getCompanyId());
                 User user = authoticationService.getUserByToken();
                 Department department = departmentMapper.toDepartment(departmentCreateRequest);
                 department = departmentRepository.save(department);
