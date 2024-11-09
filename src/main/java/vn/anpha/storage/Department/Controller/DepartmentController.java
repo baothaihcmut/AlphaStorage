@@ -2,6 +2,7 @@ package vn.anpha.storage.Department.Controller;
 
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
@@ -34,21 +35,21 @@ public class DepartmentController {
                                 .build();
         }
 
-        @GetMapping("/GetDepartment/{id}")
+        @GetMapping("/{id}")
         ApiResponseDto<DepartmenResponse> getACompanyProperties(@PathVariable UUID id) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.getDepartmentById(id))
                                 .build();
         }
 
-        @PostMapping("/deleteDepartment/{id}")
+        @DeleteMapping("/delete/{id}")
         ApiResponseDto<Boolean> deleteUserOfDepartment(@PathVariable UUID id) {
                 return ApiResponseDto.<Boolean>builder()
                                 .result(departmentService.deleteDepartmentById(id))
                                 .build();
         }
 
-        @PostMapping("/updateNameDepartment/{id}")
+        @PostMapping("/update/{id}")
         ApiResponseDto<DepartmenResponse> updateNameDepartment(@PathVariable UUID id,
                         @RequestBody DepartmentUpdateRequest request) {
                 return ApiResponseDto.<DepartmenResponse>builder()

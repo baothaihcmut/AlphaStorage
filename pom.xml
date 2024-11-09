@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.3.4</version>
-		<relativePath/>
+		<relativePath />
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>vn.AnphaStorage</groupId>
@@ -90,7 +91,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.30.1</version>
+			<version>9.45</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -116,7 +117,7 @@
 			<artifactId>minio</artifactId>
 			<version>8.5.1</version> <!-- Use the latest stable version -->
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -142,7 +143,7 @@
 					</annotationProcessorPaths>
 					<compilerArgs>
 						<compilerArg>
-							   -Amapstruct.defaultComponentModel=spring
+							-Amapstruct.defaultComponentModel=spring
 						</compilerArg>
 					</compilerArgs>
 				</configuration>
@@ -154,14 +155,14 @@
 				<configuration>
 					<java>
 						<removeUnusedImports />
-						<toggleOffOn/>
-						<trimTrailingWhitespace/>
-						<endWithNewline/>
+						<toggleOffOn />
+						<trimTrailingWhitespace />
+						<endWithNewline />
 						<indent>
 							<tabs>true</tabs>
 							<spacesPerTab>4</spacesPerTab>
 						</indent>
-						<palantirJavaFormat/>
+						<palantirJavaFormat />
 						<importOrder>
 							<!-- Specify either order or file, but not both -->
 							<order>java,jakarta,org,com,com.diffplug,</order>
@@ -169,7 +170,10 @@
 					</java>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 

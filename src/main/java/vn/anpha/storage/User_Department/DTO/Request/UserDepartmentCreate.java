@@ -1,4 +1,4 @@
-package vn.anpha.storage.Department.DTO.request;
+package vn.anpha.storage.User_Department.DTO.Request;
 
 import java.util.UUID;
 
@@ -14,9 +14,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DepartmentCreateRequest {
-    private String name;
-
-    private UUID companyId;
-
+public class UserDepartmentCreate {
+    private UUID userId;
+    private UUID departmentId;
 }

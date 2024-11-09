@@ -27,36 +27,36 @@ import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CompanyController {
 
-    CompanyService companyService;
+        CompanyService companyService;
 
-    @PostMapping("/create")
-    ApiResponseDto<CompanyResponse> createCompany(
-            @RequestBody CompanyCreationRequest request) {
-        return ApiResponseDto.<CompanyResponse>builder()
-                .result(companyService.createCompany(request))
-                .build();
-    }
+        @PostMapping("/create")
+        ApiResponseDto<CompanyResponse> createCompany(
+                        @RequestBody CompanyCreationRequest request) {
+                return ApiResponseDto.<CompanyResponse>builder()
+                                .result(companyService.createCompany(request))
+                                .build();
+        }
 
-    @PatchMapping("/update")
-    ApiResponseDto<CompanyResponse> updateCompany(
-            @RequestBody CompanyUpdateRequest request) {
-        return ApiResponseDto.<CompanyResponse>builder()
-                .result(companyService.updateCompany(request))
-                .build();
-    }
+        @PatchMapping("/update")
+        ApiResponseDto<CompanyResponse> updateCompany(
+                        @RequestBody CompanyUpdateRequest request) {
+                return ApiResponseDto.<CompanyResponse>builder()
+                                .result(companyService.updateCompany(request))
+                                .build();
+        }
 
-    @GetMapping("/getall")
-    ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
-        return ApiResponseDto.<List<CompanyResponse>>builder()
-                .result(companyService.getCompanies())
-                .build();
-    }
+        @GetMapping("")
+        ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
+                return ApiResponseDto.<List<CompanyResponse>>builder()
+                                .result(companyService.getCompanies())
+                                .build();
+        }
 
-    @GetMapping("/{id}")
-    ApiResponseDto<CompanyResponse> getACompanyProperties(
-            @PathVariable UUID id) {
-        return ApiResponseDto.<CompanyResponse>builder()
-                .result(companyService.getCompany(id))
-                .build();
-    }
+        @GetMapping("/{id}")
+        ApiResponseDto<CompanyResponse> getACompanyProperties(
+                        @PathVariable UUID id) {
+                return ApiResponseDto.<CompanyResponse>builder()
+                                .result(companyService.getCompany(id))
+                                .build();
+        }
 }
