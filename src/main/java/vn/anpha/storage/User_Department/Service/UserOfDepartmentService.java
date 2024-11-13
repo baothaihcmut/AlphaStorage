@@ -36,7 +36,7 @@ public class UserOfDepartmentService {
     private void checkManagerOfDepartment(Department department) {
         User userToken = authoticationService.getUserByToken();
         DepartmentUser own = userOfDepartmentRepository.findUserOfDepartment(userToken.getUserId(),
-                department.getDepartmentId());
+                department.getDepartmentId()).orElse(null);
 
         boolean isOwner = own != null && own.isManager();
         if (!isOwner) {
@@ -45,16 +45,14 @@ public class UserOfDepartmentService {
     }
 
     private void checkUserExistInDepartment(UUID userId, Department department) {
-        DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(userId,
-                department.getDepartmentId());
-        if (userOfDepartment != null) {
-            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED);
-        }
+        userOfDepartmentRepository.findUserOfDepartment(userId,
+                department.getDepartmentId()).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
+
     }
 
     public DepartmentUser createManger(User user, Department department) {
         DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
-                department.getDepartmentId());
+                department.getDepartmentId()).orElse(null);
         if (userOfDepartment == null) {
             userOfDepartment = DepartmentUser.builder().department(department).user(user).isManager(true).build();
             userOfDepartmentRepository.save(userOfDepartment);
@@ -70,15 +68,14 @@ public class UserOfDepartmentService {
 
     public DepartmentUser updateUserOfDepartment(
             UserDepartmentUpdate updateDTO) {
-        Department department = departmentRepository.findDepartmentById(updateDTO.getDepartmentId());
+        Department department = departmentRepository.findDepartmentById(updateDTO.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         companyService.checkOwnCompany(authoticationService.getUserByToken(),
                 department.getCompany().getCompanyId());
         DepartmentUser userOfDepartment = this.userOfDepartmentRepository.findUserOfDepartment(
                 updateDTO.getUserId(),
-                updateDTO.getDepartmentId());
-        if (userOfDepartment == null) {
-            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED);
-        }
+                updateDTO.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
         userOfDepartment.setManager(updateDTO.isManager());
         userOfDepartmentRepository.save(userOfDepartment);
         return userOfDepartment;
@@ -96,16 +93,15 @@ public class UserOfDepartmentService {
     }
 
     public void deleteUserOfDepartmentBy(UUID userId, UUID departmentId) {
-        DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId);
-        if (departmentUser != null) {
-            userOfDepartmentRepository.delete(departmentUser);
-        } else {
-            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED);
-        }
+        DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
+
+        userOfDepartmentRepository.delete(departmentUser);
+
     }
 
     public DepartmentUser findUserAndDepartment(UUID user_id, UUID department_id) {
-        return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id);
+        return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id).orElse(null);
     }
 
     public PaginateResponseDto<DepartmentUser> GetAllUser(Pageable pageable) {

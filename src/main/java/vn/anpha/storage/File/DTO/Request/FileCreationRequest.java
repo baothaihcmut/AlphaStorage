@@ -28,4 +28,11 @@ public class FileCreationRequest {
     private Integer fileSize;
 
     private UUID folderId;
+
+    private UUID departmentId;
+
+    private Boolean isInFolder;
+
+    private Boolean isPersional;
+
 }

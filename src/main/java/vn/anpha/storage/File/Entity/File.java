@@ -82,6 +82,12 @@ public class File {
     @Column(nullable = false)
     private Integer fileSize;
 
+    @Column(nullable = true)
+    private String path;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isUploaded;
+
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

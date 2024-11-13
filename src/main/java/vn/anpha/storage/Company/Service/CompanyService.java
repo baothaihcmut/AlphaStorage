@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -130,5 +131,25 @@ public class CompanyService {
         }
 
         throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
+    }
+
+    @Transactional
+    public Company updateCompanySize(UUID companyId, BigInteger addtionSize) {
+        Company company = this.companyRepository.findCompanyNameAndSize(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        if (company.getTotal_size().add(addtionSize).compareTo(company.getLimit_size()) == 1) {
+            throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
+        }
+        company.setTotal_size(company.getTotal_size().add(addtionSize));
+        company = this.companyRepository.save(company);
+        return company;
+    }
+
+    @Transactional
+    public Company removeFileCompany(UUID companyId, Integer size) {
+        Company company = this.companyRepository.findCompanyNameAndSize(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        company.setTotal_size(company.getTotal_size().subtract(BigInteger.valueOf(size.longValue())));
+        return this.companyRepository.save(company);
     }
 }
