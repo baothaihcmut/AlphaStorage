@@ -5,12 +5,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
     List<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
@@ -19,4 +23,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     List<User> findByRefreshToken(String refreshToken);
 
+    @Query(value = "SELECT * FROM users WHERE email=:email LIMIT 1", nativeQuery = true)
+
+    UserRepositoryDto findTest(@Param("email") String email);
 }

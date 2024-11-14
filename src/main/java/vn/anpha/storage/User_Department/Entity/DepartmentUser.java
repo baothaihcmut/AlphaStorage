@@ -20,14 +20,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
-@Data
-@Entity
-@Builder
+@ToString
 @Getter
 @Setter
+@Entity
+@Data
 @Table(name = "department_of_user")
 public class DepartmentUser {
     @Id
@@ -54,4 +55,14 @@ public class DepartmentUser {
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
     private LocalDateTime updatedAt;
+
+    public DepartmentUser(User user, boolean isManager, Department department) {
+        this.user = user;
+        this.isManager = isManager;
+        this.department = department;
+    }
+
+    public DepartmentUser() {
+    }
+
 }

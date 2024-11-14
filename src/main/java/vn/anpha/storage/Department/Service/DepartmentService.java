@@ -1,9 +1,12 @@
 package vn.anpha.storage.Department.Service;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -18,6 +21,7 @@ import vn.anpha.storage.Department.DTO.request.DepartmentUpdateRequest;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Mapper.DepartmentMapper;
+import vn.anpha.storage.Department.Repository.DepartmenResponseProjection;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
@@ -50,13 +54,32 @@ public class DepartmentService {
 
         }
 
+        public UUID byteArrayToUUID(byte[] byteArray) {
+                // Kiểm tra nếu mảng byte không hợp lệ hoặc không có độ dài 16 byte
+                if (byteArray == null || byteArray.length != 16) {
+                        throw new IllegalArgumentException("Mảng byte phải có độ dài 16 byte.");
+                }
+
+                // Sử dụng ByteBuffer để chuyển đổi byte[] thành UUID
+                ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+                long mostSigBits = buffer.getLong(); // 8 byte đầu tiên của UUID
+                long leastSigBits = buffer.getLong(); // 8 byte cuối cùng của UUID
+
+                // Tạo và trả về UUID từ các phần mostSignificantBits và leastSignificantBits
+                return new UUID(mostSigBits, leastSigBits);
+        }
+
         public DepartmenResponse getDepartmentById(UUID id) {
 
-                Department department = departmentRepository.findById(id)
-                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-                companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                department.getCompany().getCompanyId());
-                DepartmenResponse response = departmentMapper.toDepartmentResponse(department);
+                SecurityContext context = SecurityContextHolder.getContext();
+                String emailLogin = context.getAuthentication().getName();
+                DepartmenResponseProjection departmenResponseProjection = departmentRepository
+                                .findDepartmentByIdAndCheckOwn(id, emailLogin);
+
+                DepartmenResponse response = DepartmenResponse.builder()
+                                .departmentId(byteArrayToUUID(departmenResponseProjection.getDepartmentId()))
+                                .name(departmenResponseProjection.getName())
+                                .build();
                 return response;
         }
 
