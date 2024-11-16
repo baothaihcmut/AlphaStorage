@@ -91,4 +91,5 @@ public class User {
     @OneToMany(mappedBy = "persionalUser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Folder> persionalFolder;
+
 }

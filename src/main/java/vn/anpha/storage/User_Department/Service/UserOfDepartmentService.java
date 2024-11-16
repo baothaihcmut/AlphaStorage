@@ -56,7 +56,8 @@ public class UserOfDepartmentService {
         DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
                 department.getDepartmentId());
         if (userOfDepartment == null) {
-            userOfDepartment = DepartmentUser.builder().department(department).user(user).isManager(true).build();
+            userOfDepartment = new DepartmentUser(user, true, department);
+
             userOfDepartmentRepository.save(userOfDepartment);
             return userOfDepartment;
         } else {
@@ -89,8 +90,7 @@ public class UserOfDepartmentService {
         // check if user exist in deparment
         this.checkManagerOfDepartment(department);
         this.checkUserExistInDepartment(user.getUserId(), department);
-        DepartmentUser newUserOfDepartment = DepartmentUser.builder().department(department).user(user).isManager(false)
-                .build();
+        DepartmentUser newUserOfDepartment = new DepartmentUser(user, false, department);
         userOfDepartmentRepository.save(newUserOfDepartment);
         return newUserOfDepartment;
     }

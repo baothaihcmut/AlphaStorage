@@ -22,4 +22,9 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
         @Query(value = "SELECT count(*) FROM companys WHERE name = :name", nativeQuery = true)
         int existsCompanyByName(@Param("name") String name);
+
+        @Query(value = "SELECT * "
+                        + "FROM companys WHERE company_id = :companyId and create_by=:create_by", nativeQuery = true)
+        Company findCompanyByIdAndOwn(@Param("companyId") UUID companyId,
+                        @Param("create_by") String create_by);
 }

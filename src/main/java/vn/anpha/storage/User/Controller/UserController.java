@@ -21,9 +21,11 @@ import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
+import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
+import vn.anpha.storage.User.respository.UserRepositoryDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
@@ -42,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping("user/myInfo")
-    public ApiResponseDto<UserResponseDto> getMyInfo() {
-        ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+    public ApiResponseDto<User> getMyInfo() {
+        ApiResponseDto<User> response = new ApiResponseDto<>();
         response.setResult(this.userService.GetInfo());
         return response;
 
@@ -91,4 +93,10 @@ public class UserController {
         this.userService.ChangePassword(changePasswordDto);
         return response;
     }
+
+    @GetMapping("test1/{email}")
+    public UserRepositoryDto test1(@PathVariable() String email) {
+        return this.userService.test1(email);
+    }
+
 }

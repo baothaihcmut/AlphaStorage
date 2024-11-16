@@ -21,6 +21,7 @@ import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/company")

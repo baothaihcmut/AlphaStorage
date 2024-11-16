@@ -34,7 +34,13 @@ public class UserOfCompanyService {
     CompanyRepository companyRepository;
 
     public User GetUserByEmail(String email) {
-        return this.userRepository.findByEmail(email).get(0);
+
+        List<User> users = this.userRepository.findByEmail(email);
+        if (users.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        } else {
+            return users.get(0);
+        }
     }
 
     public Company getCompany(UUID uuid) {
