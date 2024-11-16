@@ -76,5 +76,4 @@ public class CompanyController {
                                 .result(companyService.deleteCompanyById(id))
                                 .build();
         }
-
 }
