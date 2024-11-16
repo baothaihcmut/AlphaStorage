@@ -63,8 +63,8 @@ public class UserController {
     @GetMapping("/user/getAll")
     public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-        int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
-        int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
+        int current = currentOptional.map(Integer::parseInt).orElse(1);
+        int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
         ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
