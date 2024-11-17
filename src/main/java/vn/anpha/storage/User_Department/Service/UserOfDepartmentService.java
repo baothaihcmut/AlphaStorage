@@ -1,5 +1,6 @@
 package vn.anpha.storage.User_Department.Service;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -32,6 +33,21 @@ public class UserOfDepartmentService {
     private AuthoticationService authoticationService;
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
+
+    public UUID byteArrayToUUID(byte[] byteArray) {
+        // Kiểm tra nếu mảng byte không hợp lệ hoặc không có độ dài 16 byte
+        if (byteArray == null || byteArray.length != 16) {
+            throw new IllegalArgumentException("Mảng byte phải có độ dài 16 byte.");
+        }
+
+        // Sử dụng ByteBuffer để chuyển đổi byte[] thành UUID
+        ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+        long mostSigBits = buffer.getLong(); // 8 byte đầu tiên của UUID
+        long leastSigBits = buffer.getLong(); // 8 byte cuối cùng của UUID
+
+        // Tạo và trả về UUID từ các phần mostSignificantBits và leastSignificantBits
+        return new UUID(mostSigBits, leastSigBits);
+    }
 
     private void checkManagerOfDepartment(Department department) {
         User userToken = authoticationService.getUserByToken();
@@ -110,8 +126,11 @@ public class UserOfDepartmentService {
         return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id);
     }
 
-    public PaginateResponseDto<DepartmentUser> GetAllUser(Pageable pageable) {
-        Page<DepartmentUser> pageUser = userOfDepartmentRepository.findAll(pageable); // tư set limit offset
+    public PaginateResponseDto<DepartmentUser> GetAllUser(Pageable pageable, UUID DepartmentId) {
+        Page<DepartmentUser> pageUser = userOfDepartmentRepository.findAllUserOfDepartment(DepartmentId, pageable); // tư
+                                                                                                                    // set
+                                                                                                                    // limit
+                                                                                                                    // offset
         var userOfDepartment = pageUser.getContent();
         MetaPaginate pageMeta = MetaPaginate.builder()
                 .CurrentPage(pageUser.getNumber())
