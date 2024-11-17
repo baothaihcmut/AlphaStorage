@@ -3,19 +3,22 @@ package vn.anpha.storage.Department.Repository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Entity.Department;
 
 public interface DepartmentRepository extends JpaRepository<Department, UUID> {
 
         @Query(value = "SELECT department_id,name FROM departments WHERE department_id=:id LIMIT 1", nativeQuery = true)
-
         Department findDepartmentById(@Param("id") UUID id);
 
+        // trả về department theo id
         @Query(value = "SELECT d.department_id  as departmentId, d.name " +
                         "FROM departments d " +
                         "WHERE d.department_id = :id" +
@@ -29,5 +32,11 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
                         "LIMIT 1", nativeQuery = true)
         DepartmenResponseProjection findDepartmentByIdAndCheckOwn(@Param("id") UUID id,
                         @Param("create_by") String emailLogin);
+
+        // trả về department Of company_id
+        @Query(value = "SELECT d.department_id, d.name, d.description " +
+                        "FROM departments d WHERE d.company_id = :companyId", countQuery = "SELECT COUNT(d.department_id) FROM departments d WHERE d.company_id = :companyId", nativeQuery = true)
+        Page<DepartmenResponseProjection> FindDepartmentOfCompany(@Param("companyId") UUID companyId,
+                        Pageable pageable);
 
 }

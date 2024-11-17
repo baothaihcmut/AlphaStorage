@@ -1,6 +1,8 @@
 package vn.anpha.storage.Department.Service;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -109,19 +111,31 @@ public class DepartmentService {
 
         }
 
-        public PaginateResponseDto<Department> GetAllDepartment(Pageable pageable) {
-                Page<Department> pageUser = departmentRepository.findAll(pageable); // tư set limit offset
-                var userOfDepartment = pageUser.getContent();
-                MetaPaginate pageMeta = MetaPaginate.builder()
-                                .CurrentPage(pageUser.getNumber())
-                                .PageSize(pageUser.getSize())
-                                .TotalItems(pageUser.getTotalElements())
-                                .TotalPages(pageUser.getTotalPages())
-                                .build();
-                PaginateResponseDto<Department> responseDto = new PaginateResponseDto<Department>();
-                responseDto.setData(userOfDepartment);
-                responseDto.setMetaPaginate(pageMeta);
+        public PaginateResponseDto<DepartmenResponse> GetAllDepartment(Pageable pageable, UUID companyId) {
+                Page<DepartmenResponseProjection> pageDepartment = departmentRepository.FindDepartmentOfCompany(
+                                companyId,
+                                pageable);
+                var departments = pageDepartment.getContent();
+                List<DepartmenResponse> departmentList = new ArrayList<>();
 
+                // Lặp qua từng phòng ban và chuyển đổi thông tin
+                for (DepartmenResponseProjection department : departments) {
+                        DepartmenResponse project = new DepartmenResponse();
+                        project.setDepartmentId(byteArrayToUUID(department.getDepartmentId()));
+                        project.setName(department.getName());
+                        departmentList.add(project);
+                }
+                MetaPaginate pageMeta = MetaPaginate.builder()
+                                .CurrentPage(pageDepartment.getNumber())
+                                .PageSize(pageDepartment.getSize())
+                                .TotalItems(pageDepartment.getTotalElements())
+                                .TotalPages(pageDepartment.getTotalPages())
+                                .build();
+                PaginateResponseDto<DepartmenResponse> responseDto = new PaginateResponseDto<DepartmenResponse>();
+
+                responseDto.setData(departmentList);
+                responseDto.setMetaPaginate(pageMeta);
+                // FindDepartmentOfComapny
                 return responseDto;
 
         }

@@ -72,7 +72,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/user/create")
+    @PostMapping("/user/signUp")
     public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid CreateUserDto userDto) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.CreateUser(userDto));

@@ -57,16 +57,18 @@ public class DepartmentController {
                                 .build();
         }
 
-         @GetMapping("/getAllDepartment")
-         public ApiResponseDto<PaginateResponseDto> getAllDepartment(
-         @RequestParam("current") Optional<String> currentOptional,
-         @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-         int current = currentOptional.map(Integer::parseInt).orElse(1);
-         int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
-          Pageable pageable = PageRequest.of(current - 1, pageSize);
+        @GetMapping("/getAllDepartment/{companyId}")
+        public ApiResponseDto<PaginateResponseDto> getAllDepartment(
+                        @RequestParam("current") Optional<String> currentOptional,
+                        @RequestParam("pageSize") Optional<String> pageSizeOptional,
+                        @PathVariable UUID companyId) {
 
-         ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
-         response.setResult(departmentService.GetAllDepartment(pageable));
-         return response;
-         }
+                int current = currentOptional.map(Integer::parseInt).orElse(1);
+                int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
+                Pageable pageable = PageRequest.of(current - 1, pageSize);
+
+                ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
+                response.setResult(departmentService.GetAllDepartment(pageable, companyId));
+                return response;
+        }
 }

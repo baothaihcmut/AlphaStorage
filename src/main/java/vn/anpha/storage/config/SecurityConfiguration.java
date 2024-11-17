@@ -25,7 +25,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    private static final String[] PUBLIC_ENPOINT = { "/user/create", "/auth/login", "/auth/refresh" };
+    private static final String[] PUBLIC_ENPOINT = { "/user/signUp", "/auth/login", "/auth/refresh" };
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
