@@ -90,8 +90,10 @@ public class UserOfDepartmentService {
         // check if user exist in deparment
         this.checkManagerOfDepartment(department);
         this.checkUserExistInDepartment(user.getUserId(), department);
+        //
+        System.err.println(department.getName());
         DepartmentUser newUserOfDepartment = new DepartmentUser(user, false, department);
-        userOfDepartmentRepository.save(newUserOfDepartment);
+        // userOfDepartmentRepository.save(newUserOfDepartment);
         return newUserOfDepartment;
     }
 

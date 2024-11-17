@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,12 +18,8 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
         Company findCompanyByName(@Param("name") String name);
 
         @Query(value = "SELECT company_id, name, description, total_size, limit_size, create_by, created_at, updated_at "
-                        +
-                        "FROM companys WHERE create_by = :createBy", nativeQuery = true)
-
-        Page<Company> findAllByCreateBy(@Param("createBy") String createBy);
-
-
+                        + "FROM companys WHERE create_by = :createBy", nativeQuery = true)
+        Page<Company> findAllByCreateBy(@Param("createBy") String createBy, Pageable pageable);
 
         @Query(value = "SELECT count(*) FROM companys WHERE name = :name", nativeQuery = true)
         int existsCompanyByName(@Param("name") String name);

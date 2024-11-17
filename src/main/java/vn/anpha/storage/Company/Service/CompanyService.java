@@ -107,7 +107,7 @@ public class CompanyService {
     public PaginateResponseDto<CompanyResponse> getCompanies(Pageable pageable) {
         User user = authoticationService.getUserByToken();
 
-        Page<Company> companyList = companyRepository.findAllByCreateBy(user.getEmail());
+        Page<Company> companyList = companyRepository.findAllByCreateBy(user.getEmail(), pageable);
         var companys = companyList.getContent();
         MetaPaginate pageMeta = MetaPaginate.builder()
                 .CurrentPage(companyList.getNumber())
@@ -119,7 +119,7 @@ public class CompanyService {
         responseDto.setData(companys.stream().map(companyMapper::toCompanyResponse).toList());
         responseDto.setMetaPaginate(pageMeta);
         return responseDto;
-        
+
     }
 
     public CompanyResponse getCompany(UUID uuid) {

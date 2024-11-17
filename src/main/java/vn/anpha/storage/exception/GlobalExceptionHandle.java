@@ -6,6 +6,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
@@ -58,5 +59,17 @@ public class GlobalExceptionHandle {
 
         response.setMessage(exception.getMessage());
         return ResponseEntity.badRequest().body(response);
+    }
+
+    // IllegalStateException
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<ApiResponseDto> handleNoResourceFoundException(
+            NoResourceFoundException exception) {
+        ErrorCode errorCode = ErrorCode.API_NOT_EXIST;
+        ApiResponseDto response = new ApiResponseDto();
+        response.setSuccess(false);
+
+        response.setMessage("api not found");
+        return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }
 }
