@@ -33,7 +33,7 @@ public class AuthoticationController {
 
     @PostMapping("/auth/login")
     public ApiResponseDto<LoginResponseDto> isAuthenticated(@RequestBody @Valid AuthoticationDto authoticationDto) {
-        System.err.println("controller");
+
         ApiResponseDto<LoginResponseDto> response = new ApiResponseDto<>();
         LoginResponseDto loginResponseDto = authenticationService.Login(authoticationDto);
 

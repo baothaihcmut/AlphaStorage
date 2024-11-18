@@ -59,7 +59,7 @@ public class UserController {
         return response;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/getAll")
     public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {

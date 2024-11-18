@@ -49,7 +49,7 @@ public class UserOfDepartmentController {
     UserRepository userRepository;
 
     @PostMapping("/add")
-    public ApiResponseDto<DepartmentUser> addUserToCompany(@RequestBody UserDepartmentCreate payload) {
+    public ApiResponseDto<DepartmentUser> addUserDepartment(@RequestBody UserDepartmentCreate payload) {
         boolean userExist = userRepository.existsById(payload.getUserId());
         if (!userExist) {
             throw new EntityNotFoundException("User not found");

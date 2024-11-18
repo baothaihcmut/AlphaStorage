@@ -28,7 +28,7 @@ public class DepartmentController {
         DepartmentService departmentService;
 
         @PostMapping("/create")
-        ApiResponseDto<DepartmenResponse> createCompany(
+        ApiResponseDto<DepartmenResponse> createDepartment(
                         @RequestBody DepartmentCreateRequest request) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.createDepartment(request))
@@ -36,21 +36,21 @@ public class DepartmentController {
         }
 
         @GetMapping("/get/{id}")
-        ApiResponseDto<DepartmenResponse> getACompanyProperties(@PathVariable UUID id) {
+        ApiResponseDto<DepartmenResponse> getDepartmentById(@PathVariable UUID id) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.getDepartmentById(id))
                                 .build();
         }
 
         @DeleteMapping("/delete/{id}")
-        ApiResponseDto<Boolean> deleteUserOfDepartment(@PathVariable UUID id) {
+        ApiResponseDto<Boolean> deleteDepartmentById(@PathVariable UUID id) {
                 return ApiResponseDto.<Boolean>builder()
                                 .result(departmentService.deleteDepartmentById(id))
                                 .build();
         }
 
         @PostMapping("/update/{id}")
-        ApiResponseDto<DepartmenResponse> updateNameDepartment(@PathVariable UUID id,
+        ApiResponseDto<DepartmenResponse> updateDepartmentName(@PathVariable UUID id,
                         @RequestBody DepartmentUpdateRequest request) {
                 return ApiResponseDto.<DepartmenResponse>builder()
                                 .result(departmentService.updateDepartmentName(request))

@@ -19,6 +19,7 @@ import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_Department.DTO.request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
+import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
 import vn.anpha.storage.User_Department.Repository.UserOfDepartmentRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
@@ -109,7 +110,7 @@ public class UserOfDepartmentService {
         //
         System.err.println(department.getName());
         DepartmentUser newUserOfDepartment = new DepartmentUser(user, false, department);
-        // userOfDepartmentRepository.save(newUserOfDepartment);
+        userOfDepartmentRepository.save(newUserOfDepartment);
         return newUserOfDepartment;
     }
 
@@ -126,11 +127,12 @@ public class UserOfDepartmentService {
         return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id);
     }
 
-    public PaginateResponseDto<DepartmentUser> GetAllUser(Pageable pageable, UUID DepartmentId) {
-        Page<DepartmentUser> pageUser = userOfDepartmentRepository.findAllUserOfDepartment(DepartmentId, pageable); // tư
-                                                                                                                    // set
-                                                                                                                    // limit
-                                                                                                                    // offset
+    public PaginateResponseDto<UserDepartmentResponseProjection> GetAllUser(Pageable pageable, UUID DepartmentId) {
+        Page<UserDepartmentResponseProjection> pageUser = userOfDepartmentRepository
+                .findAllUserOfDepartment(DepartmentId, pageable); // tư
+        // set
+        // limit
+        // offset
         var userOfDepartment = pageUser.getContent();
         MetaPaginate pageMeta = MetaPaginate.builder()
                 .CurrentPage(pageUser.getNumber())
@@ -138,7 +140,7 @@ public class UserOfDepartmentService {
                 .TotalItems(pageUser.getTotalElements())
                 .TotalPages(pageUser.getTotalPages())
                 .build();
-        PaginateResponseDto<DepartmentUser> responseDto = new PaginateResponseDto<DepartmentUser>();
+        PaginateResponseDto<UserDepartmentResponseProjection> responseDto = new PaginateResponseDto<UserDepartmentResponseProjection>();
         responseDto.setData(userOfDepartment);
         responseDto.setMetaPaginate(pageMeta);
 
