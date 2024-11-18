@@ -1,6 +1,4 @@
-package vn.anpha.storage.Folder.DTO.Request;
-
-import java.math.BigInteger;
+package vn.anpha.storage.File.DTO.Request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,13 +12,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FolderUpdateRequest {
-    private String name;
-
-    private String description;
-
-    private BigInteger total_size;
-
-    private BigInteger limit_size;
-
+public class FileDetailCreationRequest {
+    private Integer size;
 }

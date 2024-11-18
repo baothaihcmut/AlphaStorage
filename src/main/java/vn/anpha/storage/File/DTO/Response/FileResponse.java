@@ -23,13 +23,13 @@ public class FileResponse {
 
     private Boolean hasPassword;
 
-    private String password;
-
-    private String link;
-
-    private Integer fileSize;
-
     private UUID ownerId;
 
-    private UUID folderId;
+    private UUID parentFileId;
+
+    private UUID departmentId;
+
+    private UUID[] tagIds;
+
+    private FileDetailResponse fileDetail;
 }

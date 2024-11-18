@@ -20,7 +20,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.File.Entity.File;
-import vn.anpha.storage.Folder.Entity.Folder;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 
 @Data
@@ -43,10 +42,6 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private List<DepartmentUser> employees;
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Folder> folders;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference

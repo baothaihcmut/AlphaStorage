@@ -1,5 +1,8 @@
 package vn.anpha.storage.Storage.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.ObjectNotFoundException;
@@ -52,9 +55,15 @@ public class StorageService {
 
     }
 
-    public String getPresignUrlForPut(String bucketName, String objectName, int expireration)
+    public SimpleEntry<String, String> getPresignUrlForPut(String bucketName, String objectName, int expireration)
             throws Exception {
-        return this.minioClient.getPresignedObjectUrl(
+        LocalDateTime now = LocalDateTime.now();
+
+        // Format the date-time to a string
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = now.format(formatter);
+        objectName = String.format("%s%s", formattedTime, objectName);
+        String url = this.minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.PUT)
                         .bucket(bucketName)
@@ -62,6 +71,7 @@ public class StorageService {
                         .expiry(expireration, TimeUnit.HOURS)
                         // .extraQueryParams(param)
                         .build());
+        return new SimpleEntry<>(objectName, url);
 
     }
 

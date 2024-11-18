@@ -1,7 +1,6 @@
 package vn.anpha.storage.User.Entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +26,6 @@ import lombok.Setter;
 import lombok.ToString;
 import vn.anpha.storage.Detail.Entity.DetailUser;
 import vn.anpha.storage.File.Entity.File;
-import vn.anpha.storage.Folder.Entity.Folder;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
@@ -88,7 +86,4 @@ public class User {
     @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<DepartmentUser> departmentManages;
 
-    @OneToMany(mappedBy = "persionalUser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Folder> persionalFolder;
 }

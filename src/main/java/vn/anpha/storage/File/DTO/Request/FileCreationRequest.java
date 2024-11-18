@@ -21,18 +21,22 @@ public class FileCreationRequest {
 
     private Boolean hasPassword;
 
-    private String password;
-
-    private String link;
-
-    private Integer fileSize;
-
-    private UUID folderId;
+    private UUID fileId;
 
     private UUID departmentId;
 
-    private Boolean isInFolder;
+    private String password;
+
+    private Boolean isInDirectory;
 
     private Boolean isPersional;
+
+    private Boolean isDirectory;
+
+    private Boolean isPrivate;
+
+    private UUID[] tagIds;
+
+    private FileDetailCreationRequest fileDetail;
 
 }
