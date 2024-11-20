@@ -1,4 +1,4 @@
-package vn.anpha.storage.FileDetail.Entity;
+package vn.anpha.storage.File.Entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +15,6 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import vn.anpha.storage.File.Entity.File;
 
 @Entity
 @Data
@@ -48,5 +47,8 @@ public class FileDetail {
     @Column
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isVersion;
 
 }

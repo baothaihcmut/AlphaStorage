@@ -23,7 +23,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import vn.anpha.storage.Department.Entity.Department;
-import vn.anpha.storage.FileDetail.Entity.FileDetail;
 import vn.anpha.storage.File_Tag.Entity.FileTag;
 import vn.anpha.storage.History.Entity.LogUser;
 import vn.anpha.storage.User.Entity.User;
@@ -53,12 +52,6 @@ public class File {
     private boolean hasPassword;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean isPrivate;
-
-    @Column(columnDefinition = "BOOLEAN DEFAULT true")
-    private Boolean isPersional;
-
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isInDirectory;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT true")
@@ -85,7 +78,7 @@ public class File {
     @JsonBackReference
     private File parentFile;
 
-    @OneToMany(mappedBy = "parentFile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentFile", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<File> containFiles;
 

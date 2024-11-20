@@ -1,5 +1,7 @@
 package vn.anpha.storage.File.DTO.Response;
 
+import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +15,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FileDetailResponse {
+    private UUID id;
     private Integer size;
     private String link;
+    private Boolean isUploaded;
+    private Boolean isVersion;
+
 }

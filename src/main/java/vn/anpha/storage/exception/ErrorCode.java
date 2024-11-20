@@ -37,6 +37,12 @@ public enum ErrorCode {
     DEPARTMENT_ID_REQUIRED("Department id is required", HttpStatus.BAD_REQUEST),
     FOLDER_ID_REQUIRED("Folder id is required", HttpStatus.BAD_REQUEST),
     FILE_PERMISSION_NOT_ALLOWED("You don't have permission for this operation", HttpStatus.FORBIDDEN),
+    PARENT_FILE_NOT_EXIST("Parent file not exist", HttpStatus.NOT_FOUND),
+    DIRECTORY_UNVALID("The parent file is not directory", HttpStatus.BAD_REQUEST),
+    NEW_DIRECTORY_NOT_IN_DEPARTMENT("New directory is not in the same department", HttpStatus.CONFLICT),
+    FILE_IS_DIRECTORY("File is directory", HttpStatus.BAD_REQUEST),
+    FILE_NOT_IN_TRASH("File is not in trash", HttpStatus.NOT_FOUND),
+
     // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),
 

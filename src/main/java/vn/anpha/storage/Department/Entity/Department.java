@@ -47,4 +47,13 @@ public class Department {
     @JsonManagedReference
     private List<File> files;
 
+    // parent department
+    @ManyToOne
+    @JoinColumn(name = "parent_department_id", nullable = true)
+    @JsonBackReference
+    private Department parentDepartment;
+
+    @OneToMany(mappedBy = "parentDepartment", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Department> subDepartments;
 }
