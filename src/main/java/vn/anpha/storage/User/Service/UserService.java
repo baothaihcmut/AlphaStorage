@@ -1,5 +1,6 @@
 package vn.anpha.storage.User.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +23,7 @@ import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.mapper.UserMapper;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
+import vn.anpha.storage.User.respository.UserRepositoryDto;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
@@ -94,16 +96,21 @@ public class UserService {
         return user;
     }
 
-    public UserResponseDto GetInfo() {
+    public User GetInfo() {
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        return userResponseMapper.User_To_UserResponseDto(this.GetUserByEmail(name));
+        return this.GetUserByEmail(name);
     }
 
     public User GetUserByEmail(String email) {
-        User user = this.userRepository.findByEmail(email).get(0);
-        return user;
+
+        List<User> users = this.userRepository.findByEmail(email);
+        if (users.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        } else {
+            return users.get(0);
+        }
     }
 
     public UserResponseDto UpdateUser(UpdateUserDto update) {
@@ -128,5 +135,15 @@ public class UserService {
             throw new AppException(ErrorCode.PASSWORD_NOT_EXACTLY);
         }
 
+    }
+
+    public UserRepositoryDto test1(String email) {
+        // Implement your logic here
+        UserRepositoryDto result = this.userRepository.findTest(email);
+        return result;
+    }
+
+    public User test2() {
+        return GetUserByEmail("test1@email.com");
     }
 }

@@ -1,5 +1,6 @@
 package vn.anpha.storage.User_Department.Service;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
+import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
 import vn.anpha.storage.User_Department.Repository.UserOfDepartmentRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
@@ -32,6 +34,21 @@ public class UserOfDepartmentService {
     private AuthoticationService authoticationService;
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
+
+    public UUID byteArrayToUUID(byte[] byteArray) {
+        // Kiểm tra nếu mảng byte không hợp lệ hoặc không có độ dài 16 byte
+        if (byteArray == null || byteArray.length != 16) {
+            throw new IllegalArgumentException("Mảng byte phải có độ dài 16 byte.");
+        }
+
+        // Sử dụng ByteBuffer để chuyển đổi byte[] thành UUID
+        ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+        long mostSigBits = buffer.getLong(); // 8 byte đầu tiên của UUID
+        long leastSigBits = buffer.getLong(); // 8 byte cuối cùng của UUID
+
+        // Tạo và trả về UUID từ các phần mostSignificantBits và leastSignificantBits
+        return new UUID(mostSigBits, leastSigBits);
+    }
 
     private void checkManagerOfDepartment(Department department) {
         User userToken = authoticationService.getUserByToken();
@@ -54,7 +71,8 @@ public class UserOfDepartmentService {
         DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
                 department.getDepartmentId()).orElse(null);
         if (userOfDepartment == null) {
-            userOfDepartment = DepartmentUser.builder().department(department).user(user).isManager(true).build();
+            userOfDepartment = new DepartmentUser(user, true, department);
+
             userOfDepartmentRepository.save(userOfDepartment);
             return userOfDepartment;
         } else {
@@ -86,8 +104,9 @@ public class UserOfDepartmentService {
         // check if user exist in deparment
         this.checkManagerOfDepartment(department);
         this.checkUserExistInDepartment(user.getUserId(), department);
-        DepartmentUser newUserOfDepartment = DepartmentUser.builder().department(department).user(user).isManager(false)
-                .build();
+        //
+        System.err.println(department.getName());
+        DepartmentUser newUserOfDepartment = new DepartmentUser(user, false, department);
         userOfDepartmentRepository.save(newUserOfDepartment);
         return newUserOfDepartment;
     }
@@ -104,8 +123,12 @@ public class UserOfDepartmentService {
         return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id).orElse(null);
     }
 
-    public PaginateResponseDto<DepartmentUser> GetAllUser(Pageable pageable) {
-        Page<DepartmentUser> pageUser = userOfDepartmentRepository.findAll(pageable); // tư set limit offset
+    public PaginateResponseDto<UserDepartmentResponseProjection> GetAllUser(Pageable pageable, UUID DepartmentId) {
+        Page<UserDepartmentResponseProjection> pageUser = userOfDepartmentRepository
+                .findAllUserOfDepartment(DepartmentId, pageable); // tư
+        // set
+        // limit
+        // offset
         var userOfDepartment = pageUser.getContent();
         MetaPaginate pageMeta = MetaPaginate.builder()
                 .CurrentPage(pageUser.getNumber())
@@ -113,7 +136,7 @@ public class UserOfDepartmentService {
                 .TotalItems(pageUser.getTotalElements())
                 .TotalPages(pageUser.getTotalPages())
                 .build();
-        PaginateResponseDto<DepartmentUser> responseDto = new PaginateResponseDto<DepartmentUser>();
+        PaginateResponseDto<UserDepartmentResponseProjection> responseDto = new PaginateResponseDto<UserDepartmentResponseProjection>();
         responseDto.setData(userOfDepartment);
         responseDto.setMetaPaginate(pageMeta);
 

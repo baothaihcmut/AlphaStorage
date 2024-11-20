@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 public enum ErrorCode {
+
+    // FOR USER
     USER_EXISTED("User already exists", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED("User already not exists", HttpStatus.NOT_FOUND),
     USER_PASSWORD_NOT_EXACTLY("User and password are not exactly", HttpStatus.BAD_REQUEST),
@@ -48,6 +50,7 @@ public enum ErrorCode {
 
     // FOR SERVER
     METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
+    API_NOT_EXIST("API not Exist", HttpStatus.NOT_FOUND),
     // ELSE
     SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR);
 

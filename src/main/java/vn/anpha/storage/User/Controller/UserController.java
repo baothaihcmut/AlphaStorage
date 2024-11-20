@@ -21,9 +21,11 @@ import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
+import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
+import vn.anpha.storage.User.respository.UserRepositoryDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
@@ -42,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping("user/myInfo")
-    public ApiResponseDto<UserResponseDto> getMyInfo() {
-        ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+    public ApiResponseDto<User> getMyInfo() {
+        ApiResponseDto<User> response = new ApiResponseDto<>();
         response.setResult(this.userService.GetInfo());
         return response;
 
@@ -57,12 +59,12 @@ public class UserController {
         return response;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/getAll")
     public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-        int current = currentOptional.isPresent() ? Integer.parseInt(currentOptional.get()) : 1;
-        int pageSize = pageSizeOptional.isPresent() ? Integer.parseInt(pageSizeOptional.get()) : 10;
+        int current = currentOptional.map(Integer::parseInt).orElse(1);
+        int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
         ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
@@ -70,7 +72,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/user/create")
+    @PostMapping("/user/signUp")
     public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid CreateUserDto userDto) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.CreateUser(userDto));
@@ -91,4 +93,10 @@ public class UserController {
         this.userService.ChangePassword(changePasswordDto);
         return response;
     }
+
+    @GetMapping("test1/{email}")
+    public UserRepositoryDto test1(@PathVariable() String email) {
+        return this.userService.test1(email);
+    }
+
 }

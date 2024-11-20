@@ -1,8 +1,11 @@
 package vn.anpha.storage.Company.Controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,7 +23,9 @@ import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/company")
@@ -56,9 +61,14 @@ public class CompanyController {
         }
 
         @GetMapping("/getOwn")
-        ApiResponseDto<List<CompanyResponse>> getCompanyProperties() {
-                return ApiResponseDto.<List<CompanyResponse>>builder()
-                                .result(companyService.getCompanies())
+        ApiResponseDto<PaginateResponseDto> getCompanyProperties(
+                @RequestParam("current") Optional<String> currentOptional,
+                @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+                int current = currentOptional.map(Integer::parseInt).orElse(1);
+                int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
+                Pageable pageable = PageRequest.of(current - 1, pageSize);
+                return ApiResponseDto.<PaginateResponseDto>builder()
+                                .result(companyService.getCompanies(pageable))
                                 .build();
         }
 
@@ -76,5 +86,4 @@ public class CompanyController {
                                 .result(companyService.deleteCompanyById(id))
                                 .build();
         }
-
 }

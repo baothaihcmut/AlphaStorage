@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -20,9 +22,12 @@ import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
+import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
+import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
+import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Slf4j
 @Service
@@ -100,10 +105,21 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(company);
     }
 
-    public List<CompanyResponse> getCompanies() {
+    public PaginateResponseDto<CompanyResponse> getCompanies(Pageable pageable) {
         User user = authoticationService.getUserByToken();
-        var companyList = companyRepository.findAllByCreateBy(user.getEmail());
-        return companyList.stream().map(companyMapper::toCompanyResponse).toList();
+
+        Page<Company> companyList = companyRepository.findAllByCreateBy(user.getEmail(), pageable);
+        var companys = companyList.getContent();
+        MetaPaginate pageMeta = MetaPaginate.builder()
+                .CurrentPage(companyList.getNumber())
+                .PageSize(companyList.getSize())
+                .TotalItems(companyList.getTotalElements())
+                .TotalPages(companyList.getTotalPages())
+                .build();
+        PaginateResponseDto<CompanyResponse> responseDto = new PaginateResponseDto<CompanyResponse>();
+        responseDto.setData(companys.stream().map(companyMapper::toCompanyResponse).toList());
+        responseDto.setMetaPaginate(pageMeta);
+        return responseDto;
 
     }
 
@@ -123,14 +139,15 @@ public class CompanyService {
 
     }
 
-    public boolean checkOwnCompany(User user, UUID companyId) {
+    public Company checkOwnCompany(User user, UUID companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         if (user.getEmail().equals(company.getCreateBy())) {
-            return true;
-        }
+            return company;
+        } else {
+            throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
 
-        throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
+        }
     }
 
     @Transactional

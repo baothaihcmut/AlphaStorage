@@ -34,6 +34,9 @@ public class Department {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = true)
+    private String description = "";
+
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "company_id")
     @JsonBackReference
