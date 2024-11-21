@@ -35,7 +35,7 @@ public enum ErrorCode {
     PARENT_FOLDER_NOT_EXIST("Folder not exist", HttpStatus.NOT_FOUND),
     FOLDER_NOT_EXIST("Folder not Exist", HttpStatus.NOT_FOUND),
     // For File
-    FILE_NOT_EXIST("Fild not Exist", HttpStatus.NOT_FOUND),
+    FILE_NOT_EXIST("File not Exist", HttpStatus.NOT_FOUND),
     DEPARTMENT_ID_REQUIRED("Department id is required", HttpStatus.BAD_REQUEST),
     FOLDER_ID_REQUIRED("Folder id is required", HttpStatus.BAD_REQUEST),
     FILE_PERMISSION_NOT_ALLOWED("You don't have permission for this operation", HttpStatus.FORBIDDEN),

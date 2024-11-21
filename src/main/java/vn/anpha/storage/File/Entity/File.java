@@ -74,7 +74,7 @@ public class File {
 
     // relation for file parent
     @ManyToOne
-    @JoinColumn(name = "parent_file_id", nullable = false, referencedColumnName = "file_id")
+    @JoinColumn(name = "parent_file_id", nullable = true, referencedColumnName = "file_id")
     @JsonBackReference
     private File parentFile;
 

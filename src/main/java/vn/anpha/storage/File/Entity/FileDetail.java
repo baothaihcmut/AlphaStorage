@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -21,7 +22,8 @@ import lombok.Data;
 @Table(name = "file_details")
 public class FileDetail {
     @Id
-    private UUID id;
+    @Column(name = "file_id")
+    private UUID fileId;
 
     // file detail
     @Column(nullable = false)
@@ -30,12 +32,13 @@ public class FileDetail {
     @Column(length = 250, nullable = false)
     private String link;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false)
     private Boolean isUploaded;
 
     // relation with file
     @OneToOne(optional = false)
     @MapsId
+    @JoinColumn(name = "file_id")
     @JsonBackReference
     private File file;
 
@@ -48,7 +51,10 @@ public class FileDetail {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false)
     private Boolean isVersion;
+
+    @Column(nullable = false)
+    private String bucketName;
 
 }

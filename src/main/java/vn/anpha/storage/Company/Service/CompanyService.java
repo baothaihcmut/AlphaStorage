@@ -1,7 +1,6 @@
 package vn.anpha.storage.Company.Service;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
+import vn.anpha.storage.Company.DTO.projections.CompanySizeProjection;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
@@ -22,8 +22,8 @@ import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
+import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
-import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
@@ -37,6 +37,7 @@ public class CompanyService {
     CompanyRepository companyRepository;
     CompanyMapper companyMapper;
     AuthoticationService authoticationService;
+    StorageService storageService;
 
     public CompanyResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
@@ -47,9 +48,10 @@ public class CompanyService {
         Company company = companyMapper.toCompany(companyCreationRequest);
 
         try {
-
             company.setTotal_size(BigInteger.ZERO);
             company = companyRepository.save(company);
+            // create company bucket
+            this.storageService.createBucket(company.getCompanyId().toString(), false);
         } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
@@ -151,22 +153,35 @@ public class CompanyService {
     }
 
     @Transactional
-    public Company updateCompanySize(UUID companyId, BigInteger addtionSize) {
-        Company company = this.companyRepository.findCompanyNameAndSize(companyId)
+    public void createNewFileCompanySize(UUID companyId, Integer iaddtionSize) {
+        CompanySizeProjection companySize = this.companyRepository.findCompanyNameAndSize(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-        if (company.getTotal_size().add(addtionSize).compareTo(company.getLimit_size()) == 1) {
+        BigInteger addtionSize = BigInteger.valueOf(iaddtionSize.longValue());
+        if (companySize.getTotalSize().add(addtionSize).compareTo(companySize.getLimitSize()) == 1) {
             throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
         }
-        company.setTotal_size(company.getTotal_size().add(addtionSize));
-        company = this.companyRepository.save(company);
-        return company;
+        BigInteger newSize = companySize.getTotalSize().add(addtionSize);
+        this.companyRepository.updateCompanySize(companyId, newSize);
     }
 
     @Transactional
-    public Company removeFileCompany(UUID companyId, Integer size) {
-        Company company = this.companyRepository.findCompanyNameAndSize(companyId)
+    public void updateFileCompanySize(UUID companyId, Integer oldSize, Integer newSize) {
+        CompanySizeProjection company = this.companyRepository.findCompanyNameAndSize(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-        company.setTotal_size(company.getTotal_size().subtract(BigInteger.valueOf(size.longValue())));
-        return this.companyRepository.save(company);
+        BigInteger newSizeBig = BigInteger.valueOf(newSize.longValue());
+        BigInteger oldSizeBig = BigInteger.valueOf(oldSize.longValue());
+        BigInteger newSizeOfCompany = company.getTotalSize().subtract(oldSizeBig).add(newSizeBig);
+        if (newSizeOfCompany.compareTo(company.getLimitSize()) == 1) {
+            throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
+        }
+        this.companyRepository.updateCompanySize(companyId, newSizeOfCompany);
+    }
+
+    @Transactional
+    public void removeFileCompany(UUID companyId, Integer size) {
+        CompanySizeProjection company = this.companyRepository.findCompanyNameAndSize(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        BigInteger newSize = company.getTotalSize().subtract(BigInteger.valueOf(size.longValue()));
+        this.companyRepository.updateCompanySize(companyId, newSize);
     }
 }

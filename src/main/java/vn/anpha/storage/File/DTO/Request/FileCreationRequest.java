@@ -25,7 +25,6 @@ public class FileCreationRequest {
     @Size(max = 1000, message = "Description must not exceed 1000 characters.")
     private String description;
 
-    @NotNull(message = "hasPassword flag is required.")
     private Boolean hasPassword;
 
     private UUID parentFileId;
