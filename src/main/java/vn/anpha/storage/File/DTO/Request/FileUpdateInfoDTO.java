@@ -1,7 +1,5 @@
 package vn.anpha.storage.File.DTO.Request;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FileUpdateInfoRequest {
+public class FileUpdateInfoDTO {
+
     @Size(max = 255, message = "Name must not exceed 255 characters.")
     private String name;
 
@@ -23,7 +22,4 @@ public class FileUpdateInfoRequest {
 
     @Size(max = 255, message = "Password must not exceed 255 characters.")
     private String password;
-
-    @Size(max = 10, min = 0, message = "You can associate up to 10 tags only.")
-    private UUID[] tagIds;
 }

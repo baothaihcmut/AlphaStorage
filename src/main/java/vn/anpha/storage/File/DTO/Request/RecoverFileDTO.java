@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecoverFileRequest {
-    @NotNull(message = "Recover parent id is required")
-    @NotEmpty(message = "Recover parent id is required")
-    private UUID recoverParentFileId;
+public class RecoverFileDTO {
+    @NotNull(message = "Recover directory is required")
+    @NotEmpty(message = "Recover directory id is required")
+    private UUID recoverDirectoryId;
 }

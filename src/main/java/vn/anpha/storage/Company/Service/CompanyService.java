@@ -39,6 +39,7 @@ public class CompanyService {
     AuthoticationService authoticationService;
     StorageService storageService;
 
+    @Transactional
     public CompanyResponse createCompany(CompanyCreationRequest companyCreationRequest) {
 
         if (companyRepository.existsCompanyByName(companyCreationRequest.getName()) != 0) {
@@ -53,6 +54,7 @@ public class CompanyService {
             // create company bucket
             this.storageService.createBucket(company.getCompanyId().toString(), false);
         } catch (Exception e) {
+            System.out.println(e);
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
 

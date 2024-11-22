@@ -17,7 +17,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FileCreationRequest {
+public class FileCreationDTO {
+    private UUID fileId;
+
     @NotBlank(message = "Name is required.")
     @Size(max = 255, message = "Name must not exceed 255 characters.")
     private String name;
@@ -32,6 +34,8 @@ public class FileCreationRequest {
     @NotNull(message = "Department ID is required.")
     private UUID departmentId;
 
+    private UUID createUserId;
+
     @Size(max = 255, message = "Password must not exceed 255 characters.")
     private String password;
 
@@ -44,6 +48,6 @@ public class FileCreationRequest {
     @Size(max = 10, min = 0, message = "You can associate up to 10 tags only.")
     private UUID[] tagIds;
 
-    private FileDetailCreationRequest fileDetail;
+    private FileDetailCreationDTO fileDetail;
 
 }

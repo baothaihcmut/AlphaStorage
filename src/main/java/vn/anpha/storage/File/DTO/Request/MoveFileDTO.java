@@ -2,6 +2,7 @@ package vn.anpha.storage.File.DTO.Request;
 
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoveFileRequest {
-    private UUID newFileId;
+public class MoveFileDTO {
+
+    @NotNull(message = "New Directory Id is required")
+    private UUID newDirectoryId;
 }

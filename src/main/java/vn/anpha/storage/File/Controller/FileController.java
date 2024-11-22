@@ -2,7 +2,8 @@ package vn.anpha.storage.File.Controller;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,14 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.anpha.storage.File.DTO.Projection.FileExistProjection;
-import vn.anpha.storage.File.DTO.Projection.FileProjection;
-import vn.anpha.storage.File.DTO.Request.FileCreationRequest;
+import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
+import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
+import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
 import vn.anpha.storage.File.Interface.IFileStructureService;
-import vn.anpha.storage.File.Interface.IWriteFilePermissionService;
-import vn.anpha.storage.File.Repository.FileRepository;
-import vn.anpha.storage.exception.AppException;
-import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @RestController
@@ -26,22 +25,35 @@ import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 @RequiredArgsConstructor
 public class FileController {
     private final IFileStructureService fileStructureService;
-    private final FileRepository fileRepository;
-    private final IWriteFilePermissionService writeFilePermissionService;
 
-    @PostMapping("/test")
-    public ApiResponseDto<Object> test(@RequestBody @Valid FileCreationRequest fileCreationRequest) throws Exception {
-        FileProjection fileProjection = this.fileStructureService.createFile(fileCreationRequest);
-        System.out.println(fileProjection.getFileId());
-        return ApiResponseDto.builder().success(true).message("sucess").result(fileProjection.getFileId()).build();
+    @PostMapping("/create")
+    @PreAuthorize("@permissionFileService.hasCreatePermission(#dto.departmentId)")
+    public ApiResponseDto<FileDetailUploadLinkDTO> createFile(@RequestBody @Valid FileCreationDTO dto)
+            throws Exception {
+        return ApiResponseDto.<FileDetailUploadLinkDTO>builder().success(true).message("Create file sucess")
+                .result(this.fileStructureService.createFile(dto)).build();
     }
 
-    @GetMapping("/test/{id}")
-    public ApiResponseDto<Object> test(@PathVariable("id") UUID id) throws Exception {
-        System.out.println(id);
-        FileExistProjection fileProjection = this.fileRepository.findFileById(id, false)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
-        System.out.println(fileProjection);
-        return ApiResponseDto.builder().success(true).message("sucess").result(fileProjection).build();
+    @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
+    @PatchMapping("/updateInfo/{fileId}")
+    public ApiResponseDto<FileDetailDTO> updateFileInfo(@PathVariable("fileId") UUID fileId,
+            @RequestBody @Valid FileUpdateInfoDTO dto) {
+        return ApiResponseDto.<FileDetailDTO>builder().success(true).message("Update file infomation success")
+                .result(this.fileStructureService.updateFileInfo(fileId, dto)).build();
     }
+
+    @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
+    @PatchMapping("/softDelete/{fileId}")
+    public ApiResponseDto<Object> softDeleteFile(@PathVariable("fileId") UUID fileId) {
+        return ApiResponseDto.<Object>builder().success(false).message("Soft delete file sucess").result(null).build();
+    }
+
+    @PreAuthorize("@permissionFileService.hasPermissionManager(#fileId)")
+    @PatchMapping("/recover/{fileId}")
+    public ApiResponseDto<FileDetailDTO> recoverFile(@PathVariable("fileId") UUID fileId,
+            @RequestBody @Valid RecoverFileDTO recoverFileDTO) {
+        return ApiResponseDto.<FileDetailDTO>builder().success(true).message("Recover file success")
+                .result(this.fileStructureService.recoverFile(fileId, recoverFileDTO)).build();
+    }
+
 }

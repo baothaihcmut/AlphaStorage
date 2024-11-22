@@ -54,6 +54,7 @@ public class GlobalExceptionHandle {
     // Method Not Allowed
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponseDto> handleRuntimeException(RuntimeException exception) {
+        System.out.println(exception);
         ApiResponseDto response = new ApiResponseDto();
         response.setSuccess(false);
 

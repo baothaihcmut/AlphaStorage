@@ -19,7 +19,7 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
         // trả về department theo id
         @Query(value = "SELECT d.department_id  as departmentId, d.name " +
                         "FROM departments d " +
-                        "WHERE d.department_id = :id" +
+                        "WHERE d.department_id = :id " +
                         "LIMIT 1", nativeQuery = true)
         DepartmenResponseProjection findDepartmentwithId(@Param("id") UUID id);
 

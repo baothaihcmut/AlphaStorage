@@ -2,21 +2,21 @@ package vn.anpha.storage.File.Interface;
 
 import java.util.UUID;
 
-import vn.anpha.storage.File.DTO.Projection.FileProjection;
-import vn.anpha.storage.File.DTO.Request.FileCreationRequest;
-import vn.anpha.storage.File.DTO.Request.FileUpdateInfoRequest;
-import vn.anpha.storage.File.DTO.Request.MoveFileRequest;
-import vn.anpha.storage.File.DTO.Request.RecoverFileRequest;
-import vn.anpha.storage.File.DTO.Response.FileResponse;
+import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
+import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
+import vn.anpha.storage.File.DTO.Request.MoveFileDTO;
+import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
 
 public interface IFileStructureService {
-    public FileProjection createFile(FileCreationRequest dto) throws Exception;
+    public FileDetailUploadLinkDTO createFile(FileCreationDTO dto) throws Exception;
 
-    public FileResponse updateFileInfo(UUID fileId, FileUpdateInfoRequest fileUpdateInfoRequest);
+    public FileDetailDTO updateFileInfo(UUID fileId, FileUpdateInfoDTO fileUpdateInfoRequest);
 
     public void deleteFileSoft(UUID fileId);
 
-    public void moveFile(UUID fileId, MoveFileRequest moveFileRequest);
+    public void moveFile(UUID fileId, MoveFileDTO moveFileRequest);
 
-    public void recoverFile(UUID fileId, RecoverFileRequest recoverFileRequest);
+    public FileDetailDTO recoverFile(UUID fileId, RecoverFileDTO recoverFileRequest);
 }

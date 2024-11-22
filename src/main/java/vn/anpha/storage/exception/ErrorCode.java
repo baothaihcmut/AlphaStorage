@@ -44,6 +44,7 @@ public enum ErrorCode {
     NEW_DIRECTORY_NOT_IN_DEPARTMENT("New directory is not in the same department", HttpStatus.CONFLICT),
     FILE_IS_DIRECTORY("File is directory", HttpStatus.BAD_REQUEST),
     FILE_NOT_IN_TRASH("File is not in trash", HttpStatus.NOT_FOUND),
+    FILE_NAME_EXIST_NAME("File name exist in directory", HttpStatus.CONFLICT),
 
     // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),

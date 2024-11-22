@@ -1,7 +1,7 @@
 package vn.anpha.storage.File.Service;
 
-import java.time.LocalDateTime;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -12,16 +12,15 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
-import vn.anpha.storage.File.DTO.Projection.FileExistProjection;
-import vn.anpha.storage.File.DTO.Projection.FileProjection;
-import vn.anpha.storage.File.DTO.Request.FileCreationRequest;
-import vn.anpha.storage.File.DTO.Request.FileUpdateInfoRequest;
-import vn.anpha.storage.File.DTO.Request.MoveFileRequest;
-import vn.anpha.storage.File.DTO.Request.RecoverFileRequest;
-import vn.anpha.storage.File.DTO.Response.FileResponse;
-import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
+import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
+import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
+import vn.anpha.storage.File.DTO.Request.MoveFileDTO;
+import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
+import vn.anpha.storage.File.DTO.Response.FileDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
+import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
 import vn.anpha.storage.File.Interface.IFileStructureService;
-import vn.anpha.storage.File.Mapper.FileMapper;
 import vn.anpha.storage.File.Repository.FileDetailRepository;
 import vn.anpha.storage.File.Repository.FileRepository;
 import vn.anpha.storage.Storage.service.StorageService;
@@ -33,46 +32,53 @@ import vn.anpha.storage.exception.ErrorCode;
 @RequiredArgsConstructor
 public class FileStructureService implements IFileStructureService {
     private final FileRepository fileRepository;
-    private final FileMapper fileMapper;
     private final AuthoticationService authService;
     private final DepartmentRepository departmentRepository;
     private final StorageService storageService;
     private final FileDetailRepository fileDetailRepository;
     private final CompanyService companyService;
 
-    private FileProjection getPresignUrlAndSave(File file, String bucket) throws Exception {
+    private SimpleEntry<FileDetailDTO, String> getPresignUrlAndSave(FileCreationDTO file, String bucket)
+            throws Exception {
         SimpleEntry<String, String> uploadRes = this.storageService.getPresignUrlForPut(bucket,
                 file.getName(), 3);
-        // set file entity field
-        file.getFileDetail().setLink(uploadRes.getKey());
-        file.getFileDetail().setBucketName(bucket);
+        // set file id
         file.setFileId(UUID.randomUUID());
-        file.setPassword(file.getFileId().toString());
         this.fileRepository.insertFile(file);
         // set field detail field
-        System.out.println(file.getFileId());
-        file.getFileDetail().setFileId(file.getFileId());
-        file.getFileDetail().setIsVersion(false);
-        file.getFileDetail().setIsUploaded(false);
+        FileDetailCreationDTO fileDetailCreationDTO = file.getFileDetail();
+        fileDetailCreationDTO.setFileId(file.getFileId());
+        fileDetailCreationDTO.setBucketName(bucket);
+        fileDetailCreationDTO.setIsUploaded(false);
+        fileDetailCreationDTO.setIsVersion(false);
+        fileDetailCreationDTO.setLink(uploadRes.getKey());
         this.fileDetailRepository.insertFileDetail(file.getFileDetail());
-        file.getFileDetail().setLink(uploadRes.getValue());
-        return this.fileRepository.findFileDetailById(file.getFileId(), false)
+        FileDetailDTO fileDetailDTO = this.fileRepository.findFileDetailById(file.getFileId(), false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
+        return new SimpleEntry<>(fileDetailDTO, uploadRes.getValue());
+    }
+
+    private void checkFileNameInDirectory(UUID fileParentId, String name) {
+        List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
+        boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
+        if (fileNameExist) {
+            throw new AppException(ErrorCode.FILE_NAME_EXIST_NAME);
+        }
     }
 
     @Transactional
-    public FileProjection createFile(FileCreationRequest dto) throws Exception {
-        File file = this.fileMapper.toFile(dto);
+    public FileDetailUploadLinkDTO createFile(FileCreationDTO dto) throws Exception {
         User user = this.authService.getUserByToken();
         // set owner of file
-        file.setCreateBy(user);
-
+        dto.setCreateUserId(user.getUserId());
         // check parent exist
         if (dto.getIsInDirectory()) {
-            FileExistProjection parentfileExistProjection = this.checkFileExist(file.getParentFile().getFileId());
+            FileDTO parentfileExistProjection = this.checkFileExist(dto.getParentFileId());
             if (parentfileExistProjection.getIsDirectory()) {
                 throw new AppException(ErrorCode.DIRECTORY_UNVALID);
             }
+            // check file name exist in directory
+            this.checkFileNameInDirectory(parentfileExistProjection.getFileId(), dto.getName());
         }
         // add to File tags table
         // update company size
@@ -80,69 +86,80 @@ public class FileStructureService implements IFileStructureService {
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         // check company size
         this.companyService.createNewFileCompanySize(department.getCompany().getCompanyId(),
-                file.getFileDetail().getSize());
+                dto.getFileDetail().getSize());
         // upload file
-        return this.getPresignUrlAndSave(file, department.getCompany().getCompanyId().toString());
+        SimpleEntry<FileDetailDTO, String> res = this.getPresignUrlAndSave(dto,
+                department.getCompany().getCompanyId().toString());
+        return new FileDetailUploadLinkDTO(res.getKey(), res.getValue());
+
     }
 
     @Transactional
-    public FileResponse updateFileInfo(UUID fileId, FileUpdateInfoRequest fileUpdateInfoRequest) {
-        File file = this.fileMapper.toFile(fileUpdateInfoRequest);
-        file.setFileId(fileId);
-        // check tag exist
-
-        // update file
-        file = this.fileRepository.save(file);
-        return this.fileMapper.toFileResponse(file);
+    public FileDetailDTO updateFileInfo(UUID fileId, FileUpdateInfoDTO fileUpdateInfoRequest) {
+        FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
+        if (fileDTO.getIsDirectory() && fileUpdateInfoRequest.getName() != null) {
+            this.checkFileNameInDirectory(fileDTO.getParentFileId(), fileUpdateInfoRequest.getName());
+        }
+        this.fileRepository.updateFile(fileId, fileUpdateInfoRequest);
+        return this.fileRepository.findFileDetailById(fileId, false)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
     }
 
     @Transactional
     public void deleteFileSoft(UUID fileId) {
-        FileExistProjection fileExistProjection = this.fileRepository.findFileById(fileId, false)
+        FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
-        if (fileExistProjection.getIsDirectory()) {
-            this.fileRepository.updateDeleteChildFile(fileId, true, LocalDateTime.now());
-        } else {
-            this.fileRepository.updateDeleteFile(fileId, true, LocalDateTime.now());
+        this.fileRepository.softDeleteFile(fileId);
+        if (fileDTO.getIsDirectory()) {
+            this.fileRepository.softDeleteChild(fileId);
         }
     }
 
     @Transactional
-    public void moveFile(UUID fileId, MoveFileRequest moveFileRequest) {
-        FileExistProjection fileExistProjection = this.fileRepository.findFileById(fileId, false)
+    public void moveFile(UUID fileId, MoveFileDTO moveFileRequest) {
+        FileDTO file = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
+
         // check directory
-        FileExistProjection newDir = this.checkFileExist(moveFileRequest.getNewFileId());
+        FileDTO newDir = this.checkFileExist(moveFileRequest.getNewDirectoryId());
         if (!newDir.getIsDirectory()) {
             throw new AppException(ErrorCode.DIRECTORY_UNVALID);
         }
+
         // Check if new Dir out of department
-        if (!fileExistProjection.getDepartmentId().equals(newDir.getDepartmentId())) {
+        if (!file.getDepartmentId().equals(newDir.getDepartmentId())) {
             throw new AppException(ErrorCode.NEW_DIRECTORY_NOT_IN_DEPARTMENT);
         }
-        this.fileRepository.moveFile(fileId, newDir.getFileId());
+
+        // check name exist in new dir
+        this.checkFileNameInDirectory(newDir.getFileId(), file.getName());
+
+        // update in db
+        this.fileRepository.moveFile(fileId, moveFileRequest);
     }
 
     @Transactional
-    public void recoverFile(UUID fileId, RecoverFileRequest recoverFileRequest) {
-        FileExistProjection fileExistProjection = this.fileRepository.findFileById(fileId, true)
+    public FileDetailDTO recoverFile(UUID fileId, RecoverFileDTO recoverFileRequest) {
+        FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
-        FileExistProjection parentFileExistProjection = this.fileRepository
-                .findFileById(recoverFileRequest.getRecoverParentFileId(), true)
+        FileDTO parentFileExistProjection = this.fileRepository
+                .findFileById(recoverFileRequest.getRecoverDirectoryId(), true)
                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
         if (parentFileExistProjection.getIsDirectory()) {
             throw new AppException(ErrorCode.DIRECTORY_UNVALID);
         }
-        if (fileExistProjection.getIsDirectory()) {
-            this.fileRepository.updateDeleteChildFile(fileId, false, null);
-        } else {
-            this.fileRepository.updateDeleteFile(fileId, false, null);
+        this.fileRepository.recoverFile(fileId, recoverFileRequest);
+        if (fileDTO.getIsDirectory()) {
+            this.fileRepository.recoverChild(fileId);
         }
+        return this.fileRepository.findFileDetailById(fileId, false)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
 
     }
 
-    private FileExistProjection checkFileExist(UUID fileId) {
-        FileExistProjection file = this.fileRepository.findFileById(fileId, false)
+    private FileDTO checkFileExist(UUID fileId) {
+        FileDTO file = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
         return file;
     }
