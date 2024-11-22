@@ -1,4 +1,4 @@
-package vn.anpha.storage.User_Department.DTO.request;
+package vn.anpha.storage.User_Department.DTO.Request;
 
 import java.util.UUID;
 
