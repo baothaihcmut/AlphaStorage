@@ -3,6 +3,7 @@ package vn.anpha.storage.File.Controller;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,8 @@ import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
+import vn.anpha.storage.File.DTO.Response.FileMetaDataLinkDTO;
+import vn.anpha.storage.File.Interface.IFileService;
 import vn.anpha.storage.File.Interface.IFileStructureService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
@@ -25,13 +28,21 @@ import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 @RequiredArgsConstructor
 public class FileController {
     private final IFileStructureService fileStructureService;
+    private final IFileService fileService;
 
-    @PostMapping("/create")
+    @PostMapping("/upload")
     @PreAuthorize("@permissionFileService.hasCreatePermission(#dto.departmentId)")
-    public ApiResponseDto<FileDetailUploadLinkDTO> createFile(@RequestBody @Valid FileCreationDTO dto)
+    public ApiResponseDto<FileDetailUploadLinkDTO> uploadFile(@RequestBody @Valid FileCreationDTO dto)
             throws Exception {
         return ApiResponseDto.<FileDetailUploadLinkDTO>builder().success(true).message("Create file sucess")
-                .result(this.fileStructureService.createFile(dto)).build();
+                .result(this.fileService.uploadFile(dto)).build();
+    }
+
+    @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
+    @GetMapping("/download/{fileId}")
+    public ApiResponseDto<FileMetaDataLinkDTO> downloadFile(@PathVariable("fileId") UUID fileId) throws Exception {
+        return ApiResponseDto.<FileMetaDataLinkDTO>builder().success(true).message("Get metadata for download success")
+                .result(this.fileService.downloadFile(fileId)).build();
     }
 
     @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
@@ -45,10 +56,11 @@ public class FileController {
     @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
     @PatchMapping("/softDelete/{fileId}")
     public ApiResponseDto<Object> softDeleteFile(@PathVariable("fileId") UUID fileId) {
+        this.fileStructureService.deleteFileSoft(fileId);
         return ApiResponseDto.<Object>builder().success(false).message("Soft delete file sucess").result(null).build();
     }
 
-    @PreAuthorize("@permissionFileService.hasPermissionManager(#fileId)")
+    @PreAuthorize("@permissionFileService.hasRecoverPermission(#fileId)")
     @PatchMapping("/recover/{fileId}")
     public ApiResponseDto<FileDetailDTO> recoverFile(@PathVariable("fileId") UUID fileId,
             @RequestBody @Valid RecoverFileDTO recoverFileDTO) {

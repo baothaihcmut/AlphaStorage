@@ -2,6 +2,7 @@ package vn.anpha.storage.File.DTO.Request;
 
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -48,6 +49,7 @@ public class FileCreationDTO {
     @Size(max = 10, min = 0, message = "You can associate up to 10 tags only.")
     private UUID[] tagIds;
 
+    @Valid
     private FileDetailCreationDTO fileDetail;
 
 }

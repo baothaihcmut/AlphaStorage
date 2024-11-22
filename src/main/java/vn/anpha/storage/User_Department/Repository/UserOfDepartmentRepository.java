@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 
 @Repository
@@ -23,7 +22,7 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
 
         @Query(value = "SELECT * "
                         + "FROM department_of_user "
-                        + "where is_manager=true And department_id=:department_id And ", nativeQuery = true)
+                        + "where is_manager=true And department_id=:department_id", nativeQuery = true)
         List<DepartmentUser> findManagerOfDepartment(
                         @Param("department_id") UUID department_id);
 

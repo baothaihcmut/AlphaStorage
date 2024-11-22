@@ -92,8 +92,9 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
             UPDATE files
             SET
                 is_deleted = false,
-                parent_file_id = :#{#recoverFileDTO.recoverDirectoryId}
-                updated_at = CURRENT_TIMESTAMP
+                parent_file_id = :#{#recoverFileDTO.recoverDirectoryId},
+                updated_at = CURRENT_TIMESTAMP,
+                deleted_at = NULL
             WHERE file_id=:fileId
             """, nativeQuery = true)
     void recoverFile(@Param("fileId") UUID fileId, @Param("recoverFileDTO") RecoverFileDTO recoverFileDTO);

@@ -95,7 +95,7 @@ public class FileDetailDTO extends BaseDTO {
     }
 
     public UUID getParentFileId() {
-        return this.bytetoUuid(parentFileId);
+        return isInDirectory ? this.bytetoUuid(parentFileId) : null;
     }
 
     public CreateUser getCreateUser() {
@@ -107,7 +107,7 @@ public class FileDetailDTO extends BaseDTO {
     }
 
     public FileDetail getFileDetail() {
-        return new FileDetail(fileDetailSize, fileDetailIsUploaded, fileDetailIsVersion);
+        return isDirectory ? null : new FileDetail(fileDetailSize, fileDetailIsUploaded, fileDetailIsVersion);
     }
 
 }

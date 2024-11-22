@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.File.DTO.Response.FileDTO;
 import vn.anpha.storage.File.Repository.FileRepository;
 import vn.anpha.storage.User.Entity.User;
@@ -19,7 +18,6 @@ import vn.anpha.storage.exception.ErrorCode;
 public class PermissionFileService {
         private final AuthoticationService authService;
         private final FileRepository fileRepository;
-        private final DepartmentRepository departmentRepository;
         private final UserOfDepartmentRepository userOfDepartmentRepository;
 
         private FileDTO checkFileExist(UUID fileId) {
@@ -35,9 +33,10 @@ public class PermissionFileService {
                 return true;
         }
 
-        public boolean hasPermissionManager(UUID fileId) {
+        public boolean hasRecoverPermission(UUID fileId) {
                 User user = this.authService.getUserByToken();
-                FileDTO fileDTO = this.checkFileExist(fileId);
+                FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
                 this.userOfDepartmentRepository.findManagerOfDepartment(fileDTO.getDepartmentId()).stream()
                                 .anyMatch((userDepartment) -> userDepartment.getUser().getUserId()
                                                 .equals(user.getUserId()));
