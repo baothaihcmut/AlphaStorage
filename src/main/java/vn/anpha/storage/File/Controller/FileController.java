@@ -17,6 +17,7 @@ import vn.anpha.storage.File.DTO.Request.AnnounceUploadDTO;
 import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
 import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
+import vn.anpha.storage.File.DTO.Request.UpdateFileDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
 import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
@@ -38,6 +39,14 @@ public class FileController {
             throws Exception {
         return ApiResponseDto.<FileDetailUploadLinkDTO>builder().success(true).message("Create file sucess")
                 .result(this.fileService.uploadFile(dto)).build();
+    }
+
+    @PatchMapping("/update/{fileId}")
+    @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
+    public ApiResponseDto<FileMetaDataLinkDTO> updateFile(@PathVariable("fileId") UUID fileId,
+            @RequestBody @Valid UpdateFileDTO updateFileDTO) throws Exception {
+        return ApiResponseDto.<FileMetaDataLinkDTO>builder().success(true).message("Update file success")
+                .result(this.fileService.updateFile(fileId, updateFileDTO)).build();
     }
 
     @PostMapping("/announceUpload/{fileId}")

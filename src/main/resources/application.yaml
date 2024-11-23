@@ -6,8 +6,7 @@ minio:
   url: http://localhost:9000
   access_key: pibxclsPJjhMTzfTblYg
   secret_key: KelFAOe0ZVANmG7HFs7KX11E71QLMFUq6LyLErhM
-# spring:
-#   datasource: 
-#     url: jdbc:mysql://127.0.0.1:3306/alphastorage
-#     username: alphastorage
-#     password: alphastorage
+  urlDuration: 10
+
+version:
+  numOfVersion: 2

@@ -39,7 +39,7 @@ public interface FileDetailRepository
                         SET
                                 size = :fileSize
                         WHERE file_id = :detailId
-                        """)
+                        """, nativeQuery = true)
         void updateFileSize(@Param("detailId") UUID detailId, @Param("fileSize") Integer fileSize);
 
         @Query(name = "FileDetail.FindFileMetaDataById", nativeQuery = true)

@@ -181,6 +181,7 @@ public class FileService implements IFileService {
                 // file erliest version for delete
                 VersionDTO deletedVersions = versions.stream().min(Comparator.comparing(VersionDTO::getCreatedAt))
                         .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
+                System.out.println(deletedVersions);
                 // update in company
                 this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
                         fileMetaDataDTO.getSize(), dto.getNewFileSize(), true, deletedVersions.getSize());

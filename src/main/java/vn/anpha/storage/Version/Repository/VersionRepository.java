@@ -21,7 +21,7 @@ public interface VersionRepository extends JpaRepository<Version, UUID> {
                 (:#{#versionDTO.versionId}, :#{#versionDTO.link},
                  :#{#versionDTO.description}, :#{#versionDTO.size},
                  :#{#versionDTO.fileId}, :#{#versionDTO.updateUserId},
-                 :#{#versionDTO.created_at}
+                 :#{#versionDTO.createdAt}
                 )
             """, nativeQuery = true)
     void insertVersion(@Param("versionDTO") VersionCreationDTO versionDTO);

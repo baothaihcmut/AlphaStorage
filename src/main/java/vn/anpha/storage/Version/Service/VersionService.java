@@ -28,7 +28,7 @@ public class VersionService {
                 // create new version create dto
                 VersionCreationDTO versionCreationDTO = new VersionCreationDTO(
                                 UUID.randomUUID(), versionLinkDTO.getLink(), description, versionLinkDTO.getSize(),
-                                fileMetaDataDTO.getFileId(), user.getUserId());
+                                fileMetaDataDTO.getFileId(), user.getUserId(), versionLinkDTO.getCreateAt());
                 // persistence to db
                 this.versionRepository.insertVersion(versionCreationDTO);
                 // response version

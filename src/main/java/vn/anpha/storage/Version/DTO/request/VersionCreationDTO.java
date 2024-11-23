@@ -1,5 +1,6 @@
 package vn.anpha.storage.Version.DTO.request;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -16,4 +17,5 @@ public class VersionCreationDTO {
     private Integer size;
     private UUID fileId;
     private UUID updateUserId;
+    private LocalDateTime createdAt;
 }
