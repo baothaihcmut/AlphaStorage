@@ -14,4 +14,6 @@ public interface CompanySizeProjection {
     BigInteger getTotalSize();
 
     BigInteger getLimitSize();
+
+    Boolean getHasVersion();
 }

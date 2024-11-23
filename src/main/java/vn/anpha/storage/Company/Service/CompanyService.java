@@ -52,7 +52,7 @@ public class CompanyService {
             company.setTotal_size(BigInteger.ZERO);
             company = companyRepository.save(company);
             // create company bucket
-            this.storageService.createBucket(company.getCompanyId().toString(), false);
+            this.storageService.createBucket(company.getCompanyId().toString(), companyCreationRequest.getHasVersion());
         } catch (Exception e) {
             System.out.println(e);
             throw new AppException(ErrorCode.SERVER_ERROR);
@@ -155,7 +155,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public void createNewFileCompanySize(UUID companyId, Integer iaddtionSize) {
+    public CompanySizeProjection createNewFileCompanySize(UUID companyId, Integer iaddtionSize) {
         CompanySizeProjection companySize = this.companyRepository.findCompanyNameAndSize(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         BigInteger addtionSize = BigInteger.valueOf(iaddtionSize.longValue());
@@ -164,15 +164,22 @@ public class CompanyService {
         }
         BigInteger newSize = companySize.getTotalSize().add(addtionSize);
         this.companyRepository.updateCompanySize(companyId, newSize);
+        return companySize;
     }
 
     @Transactional
-    public void updateFileCompanySize(UUID companyId, Integer oldSize, Integer newSize) {
+    public void updateFileCompanySize(UUID companyId, Integer oldSize, Integer newSize, boolean isVersion,
+            Integer deletedVersionSize) {
         CompanySizeProjection company = this.companyRepository.findCompanyNameAndSize(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-        BigInteger newSizeBig = BigInteger.valueOf(newSize.longValue());
-        BigInteger oldSizeBig = BigInteger.valueOf(oldSize.longValue());
-        BigInteger newSizeOfCompany = company.getTotalSize().subtract(oldSizeBig).add(newSizeBig);
+        BigInteger newSizeOfCompany;
+        if (isVersion) {
+            newSizeOfCompany = company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
+                    .subtract(BigInteger.valueOf(deletedVersionSize.longValue()));
+        } else {
+            newSizeOfCompany = company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
+                    .subtract(BigInteger.valueOf(oldSize.longValue()));
+        }
         if (newSizeOfCompany.compareTo(company.getLimitSize()) == 1) {
             throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
         }

@@ -1,9 +1,14 @@
 package vn.anpha.storage.Company.DTO.request;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.math.BigInteger;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +24,8 @@ public class CompanyCreationRequest {
     private String description;
 
     private BigInteger limit_size;
+
+    @NotNull(message = "has version is required")
+    private Boolean hasVersion;
 
 }

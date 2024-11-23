@@ -1,6 +1,7 @@
 package vn.anpha.storage.User.Entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import vn.anpha.storage.File.Entity.File;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
+import vn.anpha.storage.Version.Entity.Version;
 
 @ToString
 @Getter
@@ -85,5 +87,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<DepartmentUser> departmentManages;
+
+    @OneToMany(mappedBy = "updateUser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Version> updateVersions;
 
 }

@@ -33,9 +33,9 @@ import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
                     fd.file_id as fileId,
                     fd.size as size,
                     fd.link as link,
-                    fd.isUploaded as isUploaded,
-                    fd.isVersion as isVersion,
-                    fd.bucketName as bucketName
+                    fd.is_uploaded as isUploaded,
+                    fd.is_version as isVersion,
+                    fd.bucket_name as bucketName
                 FROM file_details fd
                 WHERE fd.file_id=:fileId
                 """, resultSetMapping = "MetaDataDTOMapping")

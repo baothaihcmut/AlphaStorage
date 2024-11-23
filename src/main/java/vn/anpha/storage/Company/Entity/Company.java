@@ -46,6 +46,9 @@ public class Company {
     @Column(nullable = true, columnDefinition = "Text")
     private String description;
 
+    @Column(nullable = false)
+    private Boolean hasVersion;
+
     private BigInteger total_size;
     private BigInteger limit_size;
 

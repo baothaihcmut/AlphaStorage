@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FileMetaDataLinkDTO {
+    private Action action;
     private FileMetaDataDTO metaData;
-    private String downloadLink;
+    private String url;
     private Integer duration;
 }

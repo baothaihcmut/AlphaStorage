@@ -47,6 +47,8 @@ public enum ErrorCode {
     FILE_NAME_EXIST_NAME("File name exist in directory", HttpStatus.CONFLICT),
     FILE_NOT_EXIST_OR_NOT_FILE("File not exist or file is directory", HttpStatus.BAD_REQUEST),
     FILE_NOT_UPLOAD("File is not uploaded", HttpStatus.NOT_FOUND),
+    // For Version
+    VERSION_NOT_EXIST("Version not found or file not versioning", HttpStatus.NOT_FOUND),
 
     // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),

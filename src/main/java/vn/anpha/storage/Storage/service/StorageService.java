@@ -13,12 +13,16 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
+import io.minio.Result;
 import io.minio.SetBucketVersioningArgs;
 import io.minio.http.Method;
+import io.minio.messages.Item;
 import io.minio.messages.VersioningConfiguration;
+import vn.anpha.storage.Storage.DTO.VersionLinkDTO;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 
@@ -82,6 +86,38 @@ public class StorageService {
                             .object(objName).build());
         } catch (ObjectNotFoundException e) {
             throw new AppException(ErrorCode.FILE_NOT_EXIST);
+        }
+    }
+
+    public VersionLinkDTO getLastVersion(String bucket, String object) {
+        Iterable<Result<Item>> items = minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .includeVersions(true)
+                        .bucket(bucket).prefix(object)
+                        .build());
+        for (Result<Item> item : items) {
+            try {
+                Item version = item.get();
+                if (version.isLatest()) {
+                    return new VersionLinkDTO(version.versionId(), Long.valueOf(version.size()).intValue(),
+                            version.lastModified().toLocalDateTime());
+                }
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.SERVER_ERROR);
+            }
+        }
+        throw new AppException(ErrorCode.FILE_NOT_UPLOAD);
+    }
+
+    public void removeVersionOfFile(String bucket, String object, String versionId) {
+        try {
+            this.minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucket)
+                            .versionId(versionId)
+                            .object(object).build());
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.SERVER_ERROR);
         }
     }
 

@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import vn.anpha.storage.File.DTO.Request.AnnounceUploadDTO;
 import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
 import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
+import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
 import vn.anpha.storage.File.DTO.Response.FileMetaDataLinkDTO;
 import vn.anpha.storage.File.Interface.IFileService;
 import vn.anpha.storage.File.Interface.IFileStructureService;
@@ -36,6 +38,14 @@ public class FileController {
             throws Exception {
         return ApiResponseDto.<FileDetailUploadLinkDTO>builder().success(true).message("Create file sucess")
                 .result(this.fileService.uploadFile(dto)).build();
+    }
+
+    @PostMapping("/announceUpload/{fileId}")
+    @PreAuthorize("@permissionFileService.hasPermission(#fileId)")
+    public ApiResponseDto<FileMetaDataDTO> announceUpload(@PathVariable("fileId") UUID fileId,
+            @RequestBody @Valid AnnounceUploadDTO annouceUploadDTO) {
+        return ApiResponseDto.<FileMetaDataDTO>builder().success(true).message("Announce upload success")
+                .result(this.fileService.announceUploadFile(fileId, annouceUploadDTO)).build();
     }
 
     @PreAuthorize("@permissionFileService.hasPermission(#fileId)")

@@ -27,10 +27,20 @@ public interface FileDetailRepository
         @Modifying
         @Query(value = """
                         UPDATE file_details
-                        SET is_uploaded = :isUploaded
-                        WHERE id = :detailId
+                        SET
+                                is_uploaded = :isUploaded
+                        WHERE file_id = :detailId
                         """, nativeQuery = true)
         void updateUploadStatus(@Param("detailId") UUID detailId, @Param("isUploaded") Boolean isUploaded);
+
+        @Modifying
+        @Query(value = """
+                        UPDATE file_details
+                        SET
+                                size = :fileSize
+                        WHERE file_id = :detailId
+                        """)
+        void updateFileSize(@Param("detailId") UUID detailId, @Param("fileSize") Integer fileSize);
 
         @Query(name = "FileDetail.FindFileMetaDataById", nativeQuery = true)
         Optional<FileMetaDataDTO> findFileMetaDataById(@Param("fileId") UUID fileID);
