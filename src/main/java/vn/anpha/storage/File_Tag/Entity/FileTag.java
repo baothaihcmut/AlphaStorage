@@ -1,7 +1,6 @@
 package vn.anpha.storage.File_Tag.Entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,7 +24,7 @@ import vn.anpha.storage.Tag.Entity.Tag;
 public class FileTag {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "file_id", nullable = false, referencedColumnName = "file_id")

@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -38,7 +37,7 @@ public class Company {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.AUTO)
     @Column(name = "company_id")
-    private UUID companyId;
+    private String companyId;
 
     @Column(nullable = false)
     private String name;

@@ -1,9 +1,6 @@
 package vn.anpha.storage.Tag.Entity;
 
 import java.util.List;
-import java.util.UUID;
-
-import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -22,9 +19,8 @@ import vn.anpha.storage.File_Tag.Entity.FileTag;
 @Table(name = "tags")
 public class Tag {
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "tag_id")
-    private UUID tagId;
+    private String tagId;
 
     @Column(nullable = false)
     private String name;

@@ -54,7 +54,6 @@ public class FileStructureService implements IFileStructureService {
         // set isDeleted to true
         this.fileRepository.softDeleteFile(fileId);
 
-        System.out.println("hello");
         // if file have field set child deleted
         if (fileDTO.getIsDirectory()) {
             this.fileRepository.softDeleteChild(fileId);

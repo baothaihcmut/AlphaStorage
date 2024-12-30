@@ -3,11 +3,9 @@ package vn.anpha.storage.User.Entity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -39,9 +37,8 @@ import vn.anpha.storage.Version.Entity.Version;
 @Table(name = "users")
 public class User {
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "user_id")
-    private UUID userId;
+    private String userId;
 
     @Column(nullable = false, unique = true)
     private String email;

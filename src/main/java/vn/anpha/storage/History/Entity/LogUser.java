@@ -1,10 +1,8 @@
 package vn.anpha.storage.History.Entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -16,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,9 +26,8 @@ import vn.anpha.storage.File.Entity.File;
 @Table(name = "logUsers")
 public class LogUser {
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "log_id")
-    private UUID logId;
+    private String logId;
 
     @Column(nullable = true, unique = true, updatable = false)
     private String email;
