@@ -17,27 +17,27 @@ import vn.anpha.storage.Company.Entity.Company;
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
         @Query(value = "SELECT company_id, name, description, total_size, limit_size, create_by, created_at, updated_at "
                         +
-                        "FROM companys WHERE name = :name LIMIT 1", nativeQuery = true)
+                        "FROM companies WHERE name = :name LIMIT 1", nativeQuery = true)
         Company findCompanyByName(@Param("name") String name);
 
         @Query(value = "SELECT company_id, name, description, total_size, limit_size, create_by, created_at, updated_at "
-                        + "FROM companys WHERE create_by = :createBy", nativeQuery = true)
+                        + "FROM companies WHERE create_by = :createBy", nativeQuery = true)
         Page<Company> findAllByCreateBy(@Param("createBy") String createBy, Pageable pageable);
 
-        @Query(value = "SELECT count(*) FROM companys WHERE name = :name", nativeQuery = true)
+        @Query(value = "SELECT count(*) FROM companies WHERE name = :name", nativeQuery = true)
         int existsCompanyByName(@Param("name") String name);
 
-        @Query(value = "SELECT company_id as companyId,name as name, total_size as totalSize, limit_size as limitSize, has_version as hasVersion FROM companys WHERE company_id=:company_id LIMIT 1", nativeQuery = true)
+        @Query(value = "SELECT company_id as companyId,name as name, total_size as totalSize, limit_size as limitSize, has_version as hasVersion FROM companies WHERE company_id=:company_id LIMIT 1", nativeQuery = true)
         Optional<CompanySizeProjection> findCompanyNameAndSize(@Param("company_id") UUID companyId);
 
         @Query(value = "SELECT * "
-                        + "FROM companys WHERE company_id = :companyId and create_by=:create_by", nativeQuery = true)
+                        + "FROM companies WHERE company_id = :companyId and create_by=:create_by", nativeQuery = true)
         Company findCompanyByIdAndOwn(@Param("companyId") UUID companyId,
                         @Param("create_by") String create_by);
 
         @Modifying
         @Query(value = """
-                        UPDATE companys
+                        UPDATE companies
                         SET total_size = :newSize
                         WHERE company_id = :companyId
                         """, nativeQuery = true)

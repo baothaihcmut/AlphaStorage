@@ -19,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FileCreationDTO {
-    private UUID fileId;
+    private String fileId;
 
     @NotBlank(message = "Name is required.")
     @Size(max = 255, message = "Name must not exceed 255 characters.")

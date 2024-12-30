@@ -1,7 +1,5 @@
 package vn.anpha.storage.File.DTO.Request;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FileDetailCreationDTO {
-    private UUID fileId;
+    private String fileId;
 
     @NotNull(message = "File size is required")
     private Integer size;
@@ -24,9 +22,8 @@ public class FileDetailCreationDTO {
     private String link;
 
     private Boolean isUploaded;
-
+    private Boolean isUploading;
     private Boolean isVersion;
-
     private String bucketName;
 
 }

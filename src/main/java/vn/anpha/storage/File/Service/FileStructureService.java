@@ -42,7 +42,7 @@ public class FileStructureService implements IFileStructureService {
         // update file in db
         this.fileRepository.updateFile(fileId, fileUpdateInfoRequest);
         // response file info
-        return this.fileRepository.findFileDetailById(fileId, false)
+        return this.fileRepository.findFileDetailById(fileId.toString(), false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
     }
 
@@ -106,7 +106,7 @@ public class FileStructureService implements IFileStructureService {
             this.fileRepository.recoverChild(fileId);
         }
         // response file information
-        return this.fileRepository.findFileDetailById(fileId, false)
+        return this.fileRepository.findFileDetailById(fileId.toString(), false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
 
     }

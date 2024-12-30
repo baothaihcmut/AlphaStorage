@@ -126,7 +126,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
             @Param("parentFileId") UUID parentId);
 
     @Query(name = "File.findFileDetailById", nativeQuery = true)
-    public Optional<FileDetailDTO> findFileDetailById(@Param("fileId") UUID fileId,
+    public Optional<FileDetailDTO> findFileDetailById(@Param("fileId") String fileId,
             @Param("isDeleted") boolean isDeleted);
 
     @Query(name = "File.findFileById", nativeQuery = true)

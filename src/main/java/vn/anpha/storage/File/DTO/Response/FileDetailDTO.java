@@ -1,113 +1,47 @@
 package vn.anpha.storage.File.DTO.Response;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import vn.anpha.storage.common.BaseDTO;
+public interface FileDetailDTO {
+    public String getFileId();
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class FileDetailDTO extends BaseDTO {
-    @Getter(AccessLevel.NONE)
-    private byte[] fileId;
+    public String getName();
 
-    private String name;
+    public String getDescription();
 
-    private String description;
+    public Boolean getHasPassword();
 
-    private Boolean hasPassword;
+    public Boolean getIsInDirectory();
 
-    private Boolean isInDirectory;
+    public Boolean getIsDirectory();
 
-    private Boolean isDirectory;
+    public Boolean getIsDeleted();
 
-    private Boolean isDeleted;
-
-    @Getter(AccessLevel.NONE)
-    private byte[] parentFileId;
+    public String getParentFileId();
 
     // department field
-    @Getter(AccessLevel.NONE)
-    private byte[] departmentId;
+    public String getDepartmentId();
 
-    @Getter(AccessLevel.NONE)
-    private String departmentName;
+    public String getDepartmentName();
 
     // create user field
-    @Getter(AccessLevel.NONE)
-    private byte[] createUserId;
+    public String getCreateUserId();
 
-    @Getter(AccessLevel.NONE)
-    private String createUserEmail;
+    public String getCreateUserEmail();
 
     // file detail field
-    @Getter(AccessLevel.NONE)
-    private Integer fileDetailSize;
+    public Integer getFileDetailSize();
 
-    @Getter(AccessLevel.NONE)
-    private Boolean fileDetailIsUploaded;
+    public Boolean getFileDetailIsUploaded();
 
-    @Getter(AccessLevel.NONE)
-    private Boolean fileDetailIsVersion;
+    public Boolean getFileDetailIsUploading();
 
-    private LocalDateTime createAt;
+    public Boolean getFileDetailIsVersion();
 
-    private LocalDateTime updatedAt;
+    public LocalDateTime getCreateAt();
 
-    private LocalDateTime deletedAt;
+    public LocalDateTime getUpdatedAt();
 
-    @Data
-    @AllArgsConstructor
-    public class CreateUser {
-        private UUID userId;
-        private String email;
-    }
-
-    @Data
-    @AllArgsConstructor
-    public class Department {
-        private UUID departmentId;
-        private String name;
-    }
-
-    @Data
-    @AllArgsConstructor
-    public class FileDetail {
-        private Integer size;
-        private Boolean isUploaded;
-        private Boolean isVersion;
-    }
-
-    public UUID getFileId() {
-        return this.bytetoUuid(fileId);
-    }
-
-    public UUID getParentFileId() {
-        return isInDirectory ? this.bytetoUuid(parentFileId) : null;
-    }
-
-    public CreateUser getCreateUser() {
-        return new CreateUser(this.bytetoUuid(createUserId), createUserEmail);
-    }
-
-    public Department getDepartment() {
-        return new Department(this.bytetoUuid(departmentId), departmentName);
-    }
-
-    public FileDetail getFileDetail() {
-        return isDirectory ? null : new FileDetail(fileDetailSize, fileDetailIsUploaded, fileDetailIsVersion);
-    }
+    public LocalDateTime getDeletedAt();
 
 }

@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import vn.anpha.storage.Version.DTO.response.VersionDTO;
 import vn.anpha.storage.common.BaseDTO;
 
 @Data
@@ -26,7 +25,6 @@ public class FileMetaDataDTO extends BaseDTO {
     @NonNull
     Integer size;
 
-    @NonNull
     @JsonIgnore
     String link;
 
@@ -34,13 +32,13 @@ public class FileMetaDataDTO extends BaseDTO {
     Boolean isUploaded;
 
     @NonNull
-    Boolean isVersion;
+    Boolean isUploading;
 
     @NonNull
+    Boolean isVersion;
+
     @JsonIgnore
     String bucketName;
-
-    private VersionDTO version;
 
     public UUID getFileId() {
         return this.bytetoUuid(fileId);

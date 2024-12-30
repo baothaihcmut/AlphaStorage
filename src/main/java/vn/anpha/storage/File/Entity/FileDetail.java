@@ -1,7 +1,6 @@
 package vn.anpha.storage.File.Entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -34,6 +33,7 @@ import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
                     fd.size as size,
                     fd.link as link,
                     fd.is_uploaded as isUploaded,
+                    fd.is_uploading as isUploading,
                     fd.is_version as isVersion,
                     fd.bucket_name as bucketName
                 FROM file_details fd
@@ -46,14 +46,15 @@ import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
                 @ColumnResult(name = "size", type = Integer.class),
                 @ColumnResult(name = "link", type = String.class),
                 @ColumnResult(name = "isUploaded", type = Boolean.class),
+                @ColumnResult(name = "isUploading", type = Boolean.class),
                 @ColumnResult(name = "isVersion", type = Boolean.class),
                 @ColumnResult(name = "bucketName", type = String.class)
         }))
 })
 public class FileDetail {
     @Id
-    @Column(name = "file_id")
-    private UUID fileId;
+    @Column(name = "file_id", columnDefinition = "VARCHAR(36)")
+    private String fileId;
 
     // file detail
     @Column(nullable = false)
@@ -64,6 +65,9 @@ public class FileDetail {
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false)
     private Boolean isUploaded;
+
+    @Column(nullable = false)
+    private Boolean isUploading;
 
     // relation with file
     @OneToOne(optional = false)

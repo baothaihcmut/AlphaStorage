@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class FileDetailUploadLinkDTO {
     private FileDetailDTO fileDetail;
-    private String uploadLink;
+    private FileMetaDataLinkDTO uploadLinkInfo;
+
 }

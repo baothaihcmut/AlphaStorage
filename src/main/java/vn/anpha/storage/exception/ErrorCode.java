@@ -21,7 +21,7 @@ public enum ErrorCode {
     COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
     USER_NOT_OWNCOMPANY("User does not have permission", HttpStatus.BAD_REQUEST),
     COMPANY_EXEED_LIMIT_SIZE("Company doesn't have  enoungh space to save this file", HttpStatus.CONFLICT),
-    PERSONAL_EXEED_LIMIT_SIZE("You don't have enoungh space to save this file", HttpStatus.CONFLICT),
+    PERSONAL_EXCEED_LIMIT_SIZE("You don't have enoungh space to save this file", HttpStatus.CONFLICT),
     // FOR DEPARTMENT
     DEPARTMENT_EXISTED("Department already exists", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NOT_EXISTED("Department not exists", HttpStatus.BAD_REQUEST),

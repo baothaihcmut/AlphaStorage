@@ -4,8 +4,8 @@ jwt:
   refreshable-duration: 3600000 # in seconds
 minio:
   url: http://localhost:9000
-  access_key: pibxclsPJjhMTzfTblYg
-  secret_key: KelFAOe0ZVANmG7HFs7KX11E71QLMFUq6LyLErhM
+  access_key: gn2yqUPVBzolaPpoa7jP
+  secret_key: PcUjUbumsycnsrqKJ9fOsKSNLBcqnelk7DfMukIn
   urlDuration: 10
 
 version:

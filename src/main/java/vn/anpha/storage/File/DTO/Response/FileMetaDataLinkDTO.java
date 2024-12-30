@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FileMetaDataLinkDTO {
     private Action action;
-    private FileMetaDataDTO metaData;
+    private FileDetailDTO metaData;
     private String url;
     private Integer duration;
 }

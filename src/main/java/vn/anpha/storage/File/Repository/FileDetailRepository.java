@@ -18,8 +18,8 @@ public interface FileDetailRepository
 
         @Modifying
         @Query(value = """
-                        INSERT INTO file_details (file_id, size, link, is_uploaded, bucket_name, is_version, created_at, updated_at)
-                        VALUES (:#{#fileDetail.fileId}, :#{#fileDetail.size}, :#{#fileDetail.link}, :#{#fileDetail.isUploaded},
+                        INSERT INTO file_details (file_id, size, link, is_uploaded,is_uploading, bucket_name, is_version, created_at, updated_at)
+                        VALUES (:#{#fileDetail.fileId}, :#{#fileDetail.size}, :#{#fileDetail.link}, :#{#fileDetail.isUploaded}, :#{#fileDetail.isUploading},
                                 :#{#fileDetail.bucketName}, :#{#fileDetail.isVersion}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""", nativeQuery = true)
         void insertFileDetail(
                         @Param("fileDetail") FileDetailCreationDTO fileDetail);
@@ -28,10 +28,12 @@ public interface FileDetailRepository
         @Query(value = """
                         UPDATE file_details
                         SET
-                                is_uploaded = :isUploaded
+                                is_uploaded = :isUploaded,
+                                is_uploading = :isUploading
                         WHERE file_id = :detailId
                         """, nativeQuery = true)
-        void updateUploadStatus(@Param("detailId") UUID detailId, @Param("isUploaded") Boolean isUploaded);
+        void updateUploadStatus(@Param("detailId") UUID detailId, @Param("isUploaded") Boolean isUploaded,
+                        @Param("isUploading") Boolean isUploading);
 
         @Modifying
         @Query(value = """

@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AnnounceUploadDTO {
     private String description;
-    private Boolean isUpdated;
 }

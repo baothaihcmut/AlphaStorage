@@ -39,169 +39,181 @@ import vn.anpha.storage.exception.ErrorCode;
 @Service
 @RequiredArgsConstructor
 public class FileService implements IFileService {
-    private final FileRepository fileRepository;
-    private final CompanyService companyService;
-    private final StorageService storageService;
-    private final FileDetailRepository fileDetailRepository;
-    private final DepartmentRepository departmentRepository;
-    private final AuthoticationService authService;
-    private final VersionService versionService;
-    private final VersionRepository versionRepository;
+        private final FileRepository fileRepository;
+        private final CompanyService companyService;
+        private final StorageService storageService;
+        private final FileDetailRepository fileDetailRepository;
+        private final DepartmentRepository departmentRepository;
+        private final AuthoticationService authService;
+        private final VersionService versionService;
+        private final VersionRepository versionRepository;
 
-    @Value("${version.numOfVersion}")
-    private Integer numOfVersion;
+        @Value("${version.numOfVersion}")
+        private Integer numOfVersion;
 
-    @Value("${minio.urlDuration}")
-    private Integer urlDuration;
+        @Value("${minio.urlDuration}")
+        private Integer urlDuration;
 
-    private SimpleEntry<FileDetailDTO, String> getPresignUrlAndSave(FileCreationDTO file, String bucket,
-            Boolean isVersion)
-            throws Exception {
-        SimpleEntry<String, String> uploadRes = this.storageService.getPresignUrlForPut(bucket,
-                file.getName(), urlDuration);
-        // set file id
-        file.setFileId(UUID.randomUUID());
-        this.fileRepository.insertFile(file);
-        // insert file detail with file_id, bucket name is company id, isuploaded false,
-        // link is object name
-        if (!file.getIsDirectory()) {
-            FileDetailCreationDTO fileDetailCreationDTO = file.getFileDetail();
-            fileDetailCreationDTO.setFileId(file.getFileId());
-            fileDetailCreationDTO.setBucketName(bucket);
-            fileDetailCreationDTO.setIsUploaded(false);
-            fileDetailCreationDTO.setIsVersion(isVersion);
-            fileDetailCreationDTO.setLink(uploadRes.getKey());
-            this.fileDetailRepository.insertFileDetail(fileDetailCreationDTO);
+        private FileDetailUploadLinkDTO getPresignUrlAndSave(FileCreationDTO file, String bucket,
+                        Boolean isVersion)
+                        throws Exception {
+                // set file id
+                file.setFileId(UUID.randomUUID().toString());
+                this.fileRepository.insertFile(file);
+                // insert file detail with file_id, bucket name is company id, isuploaded false,
+                // link is object name
+                String uploadLink = null;
+                if (!file.getIsDirectory()) {
+                        SimpleEntry<String, String> uploadRes = this.storageService.getPresignUrlForPut(bucket,
+                                        file.getName(), urlDuration);
+                        FileDetailCreationDTO fileDetailCreationDTO = file.getFileDetail();
+                        fileDetailCreationDTO.setFileId(file.getFileId().toString());
+                        fileDetailCreationDTO.setBucketName(bucket);
+                        fileDetailCreationDTO.setIsUploaded(false);
+                        fileDetailCreationDTO.setIsVersion(isVersion);
+                        fileDetailCreationDTO.setLink(uploadRes.getKey());
+                        fileDetailCreationDTO.setIsUploading(true);
+                        this.fileDetailRepository.insertFileDetail(fileDetailCreationDTO);
+                        uploadLink = uploadRes.getValue();
+                }
+                FileDetailDTO fileDetailDTO = this.fileRepository.findFileDetailById(file.getFileId(), false)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
+                return new FileDetailUploadLinkDTO(fileDetailDTO, file.getIsDirectory() ? null
+                                : new FileMetaDataLinkDTO(Action.UPLOAD, null, uploadLink,
+                                                urlDuration));
         }
-        FileDetailDTO fileDetailDTO = this.fileRepository.findFileDetailById(file.getFileId(), false)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
-        return new SimpleEntry<>(fileDetailDTO, uploadRes.getValue());
-    }
 
-    private void checkFileNameInDirectory(UUID fileParentId, String name) {
-        List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
-        boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
-        if (fileNameExist) {
-            throw new AppException(ErrorCode.FILE_NAME_EXIST_NAME);
+        private void checkFileNameInDirectory(UUID fileParentId, String name) {
+                List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
+                boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
+                if (fileNameExist) {
+                        throw new AppException(ErrorCode.FILE_NAME_EXIST_NAME);
+                }
         }
-    }
 
-    private FileDTO checkFileExist(UUID fileId) {
-        FileDTO file = this.fileRepository.findFileById(fileId, false)
-                .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
-        return file;
-    }
-
-    @Transactional
-    public FileDetailUploadLinkDTO uploadFile(FileCreationDTO dto) throws Exception {
-        User user = this.authService.getUserByToken();
-        // set owner of file
-        dto.setCreateUserId(user.getUserId());
-        // check parent exist
-        if (dto.getIsInDirectory()) {
-            FileDTO parentfileExistProjection = this.checkFileExist(dto.getParentFileId());
-            System.out.println(parentfileExistProjection.getIsDirectory());
-            if (!parentfileExistProjection.getIsDirectory()) {
-                throw new AppException(ErrorCode.DIRECTORY_UNVALID);
-            }
-            // check file name exist in directory
-            this.checkFileNameInDirectory(parentfileExistProjection.getFileId(), dto.getName());
+        private FileDTO checkFileExist(UUID fileId) {
+                FileDTO file = this.fileRepository.findFileById(fileId, false)
+                                .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
+                return file;
         }
-        // check company size
-        Department department = this.departmentRepository.findById(dto.getDepartmentId())
-                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-        CompanySizeProjection companySizeProjection = this.companyService
-                .createNewFileCompanySize(department.getCompany().getCompanyId(), dto.getFileDetail().getSize());
-        // add to file tag table
 
-        // upload file
-        SimpleEntry<FileDetailDTO, String> res = this.getPresignUrlAndSave(dto,
-                department.getCompany().getCompanyId().toString(), companySizeProjection.getHasVersion());
-        return new FileDetailUploadLinkDTO(res.getKey(), res.getValue());
+        @Transactional
+        public FileDetailUploadLinkDTO uploadFile(FileCreationDTO dto) throws Exception {
+                User user = this.authService.getUserByToken();
+                // set owner of file
+                dto.setCreateUserId(user.getUserId());
+                // check parent exist
+                if (dto.getIsInDirectory()) {
+                        FileDTO parentfileExistProjection = this.checkFileExist(dto.getParentFileId());
+                        System.out.println(parentfileExistProjection.getIsDirectory());
+                        if (!parentfileExistProjection.getIsDirectory()) {
+                                throw new AppException(ErrorCode.DIRECTORY_UNVALID);
+                        }
+                        // check file name exist in directory
+                        this.checkFileNameInDirectory(parentfileExistProjection.getFileId(), dto.getName());
+                }
+                // check company size
+                Department department = this.departmentRepository.findById(dto.getDepartmentId())
+                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                CompanySizeProjection companySizeProjection = this.companyService
+                                .createNewFileCompanySize(department.getCompany().getCompanyId(),
+                                                dto.getFileDetail().getSize());
+                // add to file tag table
 
-    }
+                // upload file
+                return this.getPresignUrlAndSave(dto,
+                                department.getCompany().getCompanyId().toString(),
+                                companySizeProjection.getHasVersion());
 
-    @Transactional
-    public FileMetaDataDTO announceUploadFile(UUID fileId, AnnounceUploadDTO annouceUploadDTO) {
-        // get user
-        User user = this.authService.getUserByToken();
-        // Get file detail
-        FileMetaDataDTO fileDetailDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
-        // peresist to db
-        if (!annouceUploadDTO.getIsUpdated()) {
-            this.fileDetailRepository.updateUploadStatus(fileId, true);
         }
-        // if file has version create version
-        if (fileDetailDTO.getIsVersion()) {
-            fileDetailDTO.setVersion(
-                    this.versionService.createVersion(fileDetailDTO, annouceUploadDTO.getDescription(), user));
+
+        @Transactional
+        public FileMetaDataDTO announceUploadFile(UUID fileId, AnnounceUploadDTO annouceUploadDTO) {
+                // get user
+                User user = this.authService.getUserByToken();
+                // Get file detail
+                FileMetaDataDTO fileDetailDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
+                // peresist to db
+                this.fileDetailRepository.updateUploadStatus(fileId, true, false);
+                fileDetailDTO.setIsUploaded(true);
+                fileDetailDTO.setIsUploading(false);
+                // if file has version create version
+                if (fileDetailDTO.getIsVersion()) {
+                        this.versionService.createVersion(fileDetailDTO, annouceUploadDTO.getDescription(), user);
+                }
+                return fileDetailDTO;
         }
-        return fileDetailDTO;
-    }
 
-    public FileMetaDataLinkDTO downloadFile(UUID fileId) throws Exception {
-        FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
+        public FileMetaDataLinkDTO downloadFile(UUID fileId) throws Exception {
+                FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
 
-        if (!fileMetaDataDTO.getIsUploaded()) {
-            throw new AppException(ErrorCode.FILE_NOT_UPLOAD);
+                if (!fileMetaDataDTO.getIsUploaded()) {
+                        throw new AppException(ErrorCode.FILE_NOT_UPLOAD);
+                }
+                String link = this.storageService.getPresignUrlForGet(fileMetaDataDTO.getBucketName(),
+                                fileMetaDataDTO.getLink(),
+                                10);
+
+                return null;
         }
-        String link = this.storageService.getPresignUrlForGet(fileMetaDataDTO.getBucketName(),
-                fileMetaDataDTO.getLink(),
-                10);
 
-        return new FileMetaDataLinkDTO(Action.DOWNLOAD, fileMetaDataDTO, link, urlDuration);
-    }
+        @Transactional
+        public FileMetaDataLinkDTO updateFile(UUID fileId, UpdateFileDTO dto) throws Exception {
+                // get file info in db
+                FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
+                FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
+                // get department for company info
+                Department department = this.departmentRepository.findById(fileDTO.getDepartmentId())
+                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                // update file size in file_details table
+                this.fileDetailRepository.updateFileSize(fileId, dto.getNewFileSize());
+                if (fileMetaDataDTO.getIsVersion()) {
+                        // if file is versioning
+                        // get list of version of file
+                        List<VersionDTO> versions = this.versionRepository.findAllVersionOfFile(fileId);
+                        if (versions.size() == 0) {
+                                throw new AppException(ErrorCode.VERSION_NOT_EXIST);
+                        }
+                        if (versions.size() < numOfVersion) {
+                                // update in company without delete any version
+                                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(),
+                                                fileMetaDataDTO.getIsVersion(), 0);
+                        } else {
+                                // file earliest version for delete
+                                VersionDTO deletedVersions = versions.stream()
+                                                .min(Comparator.comparing(VersionDTO::getCreatedAt))
+                                                .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
+                                // update in company
+                                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
+                                                deletedVersions.getSize());
+                                // delete version in db
+                                this.versionRepository.deleteVersion(deletedVersions.getVersionId());
+                                // delete version in storage
+                                this.storageService.removeVersionOfFile(fileMetaDataDTO.getBucketName(),
+                                                fileMetaDataDTO.getLink(),
+                                                deletedVersions.getLink());
 
-    @Transactional
-    public FileMetaDataLinkDTO updateFile(UUID fileId, UpdateFileDTO dto) throws Exception {
-        // get file info in db
-        FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
-        FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
-                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
-        // get department for company info
-        Department department = this.departmentRepository.findById(fileDTO.getDepartmentId())
-                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-        // update file size in file_details table
-        this.fileDetailRepository.updateFileSize(fileId, dto.getNewFileSize());
-        if (fileMetaDataDTO.getIsVersion()) {
-            // if file is versioning
-            // get list of version of file
-            List<VersionDTO> versions = this.versionRepository.findAllVersionOfFile(fileId);
-            if (versions.size() == 0) {
-                throw new AppException(ErrorCode.VERSION_NOT_EXIST);
-            }
-            if (versions.size() < numOfVersion) {
-                // update in company without delete any version
-                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
-                        fileMetaDataDTO.getSize(), dto.getNewFileSize(), fileMetaDataDTO.getIsVersion(), 0);
-            } else {
-                // file erliest version for delete
-                VersionDTO deletedVersions = versions.stream().min(Comparator.comparing(VersionDTO::getCreatedAt))
-                        .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
-                System.out.println(deletedVersions);
-                // update in company
-                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
-                        fileMetaDataDTO.getSize(), dto.getNewFileSize(), true, deletedVersions.getSize());
-                // delete version in db
-                this.versionRepository.deleteVersion(deletedVersions.getVersionId());
-                // delete version in storage
-                this.storageService.removeVersionOfFile(fileMetaDataDTO.getBucketName(), fileMetaDataDTO.getLink(),
-                        deletedVersions.getLink());
-
-            }
-        } else {
-            // if file is not versioning
-            this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(), fileMetaDataDTO.getSize(),
-                    dto.getNewFileSize(), false, 0);
+                        }
+                } else {
+                        // if file is not versioning
+                        this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                                        fileMetaDataDTO.getSize(),
+                                        dto.getNewFileSize(), false, 0);
+                }
+                // setting isuploading to true and is uploaded to true
+                this.fileDetailRepository.updateUploadStatus(fileId, true, true);
+                // get presignlink for update
+                String uploadREs = this.storageService.getPresignUrlForUpdate(fileMetaDataDTO.getBucketName(),
+                                fileMetaDataDTO.getLink(), 10);
+                fileMetaDataDTO.setSize(dto.getNewFileSize());
+                fileMetaDataDTO.setIsUploading(true);
+                return null;
         }
-        // get presignlink for update
-        SimpleEntry<String, String> uploadREs = this.storageService.getPresignUrlForPut(fileMetaDataDTO.getBucketName(),
-                fileMetaDataDTO.getLink(), 10);
-        fileMetaDataDTO.setSize(dto.getNewFileSize());
-        return new FileMetaDataLinkDTO(Action.UPDATE, fileMetaDataDTO, uploadREs.getValue(), urlDuration);
-    }
 
 }

@@ -1,6 +1,5 @@
 package vn.anpha.storage.Company.Controller;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AccessLevel;
@@ -25,7 +25,6 @@ import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/company")
@@ -62,8 +61,8 @@ public class CompanyController {
 
         @GetMapping("/getOwn")
         ApiResponseDto<PaginateResponseDto> getCompanyProperties(
-                @RequestParam("current") Optional<String> currentOptional,
-                @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+                        @RequestParam("current") Optional<String> currentOptional,
+                        @RequestParam("pageSize") Optional<String> pageSizeOptional) {
                 int current = currentOptional.map(Integer::parseInt).orElse(1);
                 int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
                 Pageable pageable = PageRequest.of(current - 1, pageSize);

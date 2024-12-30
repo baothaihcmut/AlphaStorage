@@ -2,7 +2,6 @@ package vn.anpha.storage.File.Entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -74,6 +73,7 @@ import vn.anpha.storage.Version.Entity.Version;
                     f.parent_file_id AS parentFileId,
                     fd.size AS fileDetailSize,
                     fd.is_uploaded AS fileDetailIsUploaded,
+                    fd.is_uploading AS fileDetailIsUploading,
                     fd.is_version AS fileDetailIsVersion,
                     u.user_id AS createUserId,
                     u.email AS createUserEmail,
@@ -137,6 +137,7 @@ import vn.anpha.storage.Version.Entity.Version;
                 @ColumnResult(name = "createUserEmail", type = String.class),
                 @ColumnResult(name = "fileDetailSize", type = Integer.class),
                 @ColumnResult(name = "fileDetailIsUploaded", type = Boolean.class),
+                @ColumnResult(name = "fileDetailIsUploading", type = Boolean.class),
                 @ColumnResult(name = "fileDetailIsVersion", type = Boolean.class),
                 @ColumnResult(name = "createdAt", type = LocalDateTime.class),
                 @ColumnResult(name = "updatedAt", type = LocalDateTime.class),
@@ -146,8 +147,8 @@ import vn.anpha.storage.Version.Entity.Version;
 public class File {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    @Column(name = "file_id")
-    private UUID fileId;
+    @Column(name = "file_id", columnDefinition = "VARCHAR(36)")
+    private String fileId;
 
     // common detail
     @Column(nullable = false)

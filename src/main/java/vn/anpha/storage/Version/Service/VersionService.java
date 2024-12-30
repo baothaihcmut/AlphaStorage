@@ -10,10 +10,7 @@ import vn.anpha.storage.Storage.DTO.VersionLinkDTO;
 import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.Version.DTO.request.VersionCreationDTO;
-import vn.anpha.storage.Version.DTO.response.VersionDTO;
 import vn.anpha.storage.Version.Repository.VersionRepository;
-import vn.anpha.storage.exception.AppException;
-import vn.anpha.storage.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +18,7 @@ public class VersionService {
         private final StorageService storageService;
         private final VersionRepository versionRepository;
 
-        public VersionDTO createVersion(FileMetaDataDTO fileMetaDataDTO, String description, User user) {
+        public void createVersion(FileMetaDataDTO fileMetaDataDTO, String description, User user) {
                 // get version id, size, update time from storage
                 VersionLinkDTO versionLinkDTO = this.storageService.getLastVersion(fileMetaDataDTO.getBucketName(),
                                 fileMetaDataDTO.getLink());
@@ -32,8 +29,7 @@ public class VersionService {
                 // persistence to db
                 this.versionRepository.insertVersion(versionCreationDTO);
                 // response version
-                return this.versionRepository.findVersionById(versionCreationDTO.getVersionId())
-                                .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
+
         }
 
 }

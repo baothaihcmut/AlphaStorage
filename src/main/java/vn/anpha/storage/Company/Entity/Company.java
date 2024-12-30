@@ -33,10 +33,10 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 @Setter
 @Entity
 @Slf4j
-@Table(name = "companys")
+@Table(name = "companies")
 public class Company {
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+    @UuidGenerator(style = UuidGenerator.Style.AUTO)
     @Column(name = "company_id")
     private UUID companyId;
 

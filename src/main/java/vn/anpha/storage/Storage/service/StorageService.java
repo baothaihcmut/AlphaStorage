@@ -59,6 +59,18 @@ public class StorageService {
 
     }
 
+    public String getPresignUrlForUpdate(String bucketName, String objectName, int duration) throws Exception {
+        String url = this.minioClient.getPresignedObjectUrl(
+                GetPresignedObjectUrlArgs.builder()
+                        .method(Method.PUT)
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .expiry(duration, TimeUnit.HOURS)
+                        // .extraQueryParams(param)
+                        .build());
+        return url;
+    }
+
     public SimpleEntry<String, String> getPresignUrlForPut(String bucketName, String objectName, int expireration)
             throws Exception {
         LocalDateTime now = LocalDateTime.now();
