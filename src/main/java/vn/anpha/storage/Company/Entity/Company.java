@@ -32,7 +32,6 @@ import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @ToString
-@Getter
 @Setter
 @Entity
 @Slf4j

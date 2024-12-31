@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyCreationResponse {
 
-    private UUID companyId ;
+    private String companyId;
     private String name;
 
     String createBy;
