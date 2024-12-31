@@ -14,7 +14,7 @@ import vn.anpha.storage.Role.Entity.Role;
 @Builder
 public class UserResponseDto {
 
-    private UUID userId;
+    private String userId;
     private String email;
     private String fullName;
     private String address;

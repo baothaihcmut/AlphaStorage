@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class addUserToCompanyRequestDto {
 
     private String employeeEmail;
-    private UUID companyId;
+    private String companyId;
 
 }
