@@ -15,15 +15,15 @@ import vn.anpha.storage.Company.DTO.projections.CompanySizeProjection;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
+import vn.anpha.storage.File.DTO.Projection.FileDTO;
+import vn.anpha.storage.File.DTO.Projection.FileDetailDTO;
+import vn.anpha.storage.File.DTO.Projection.FileMetaDataDTO;
 import vn.anpha.storage.File.DTO.Request.AnnounceUploadDTO;
 import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
 import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
 import vn.anpha.storage.File.DTO.Request.UpdateFileDTO;
 import vn.anpha.storage.File.DTO.Response.Action;
-import vn.anpha.storage.File.DTO.Response.FileDTO;
-import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
-import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
 import vn.anpha.storage.File.DTO.Response.FileMetaDataLinkDTO;
 import vn.anpha.storage.File.Interface.IFileService;
 import vn.anpha.storage.File.Repository.FileDetailRepository;
@@ -83,7 +83,7 @@ public class FileService implements IFileService {
                                                 urlDuration));
         }
 
-        private void checkFileNameInDirectory(UUID fileParentId, String name) {
+        private void checkFileNameInDirectory(String fileParentId, String name) {
                 List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
                 boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
                 if (fileNameExist) {
@@ -91,7 +91,7 @@ public class FileService implements IFileService {
                 }
         }
 
-        private FileDTO checkFileExist(UUID fileId) {
+        private FileDTO checkFileExist(String fileId) {
                 FileDTO file = this.fileRepository.findFileById(fileId, false)
                                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
                 return file;
@@ -101,7 +101,7 @@ public class FileService implements IFileService {
         public FileDetailUploadLinkDTO uploadFile(FileCreationDTO dto) throws Exception {
                 User user = this.authService.getUserByToken();
                 // set owner of file
-                dto.setCreateUserId(user.getUserId());
+                dto.setCreateUserId(user.getUserId().toString());
                 // check parent exist
                 if (dto.getIsInDirectory()) {
                         FileDTO parentfileExistProjection = this.checkFileExist(dto.getParentFileId());
@@ -113,10 +113,10 @@ public class FileService implements IFileService {
                         this.checkFileNameInDirectory(parentfileExistProjection.getFileId(), dto.getName());
                 }
                 // check company size
-                Department department = this.departmentRepository.findById(dto.getDepartmentId())
+                Department department = this.departmentRepository.findById(UUID.fromString(dto.getDepartmentId()))
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
                 CompanySizeProjection companySizeProjection = this.companyService
-                                .createNewFileCompanySize(department.getCompany().getCompanyId(),
+                                .createNewFileCompanySize(UUID.fromString(department.getCompany().getCompanyId()),
                                                 dto.getFileDetail().getSize());
                 // add to file tag table
 
@@ -128,7 +128,7 @@ public class FileService implements IFileService {
         }
 
         @Transactional
-        public FileMetaDataDTO announceUploadFile(UUID fileId, AnnounceUploadDTO annouceUploadDTO) {
+        public FileMetaDataDTO announceUploadFile(String fileId, AnnounceUploadDTO annouceUploadDTO) {
                 // get user
                 User user = this.authService.getUserByToken();
                 // Get file detail
@@ -136,16 +136,16 @@ public class FileService implements IFileService {
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
                 // peresist to db
                 this.fileDetailRepository.updateUploadStatus(fileId, true, false);
-                fileDetailDTO.setIsUploaded(true);
-                fileDetailDTO.setIsUploading(false);
                 // if file has version create version
                 if (fileDetailDTO.getIsVersion()) {
                         this.versionService.createVersion(fileDetailDTO, annouceUploadDTO.getDescription(), user);
                 }
-                return fileDetailDTO;
+
+                return this.fileDetailRepository.findFileMetaDataById(fileId)
+                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
         }
 
-        public FileMetaDataLinkDTO downloadFile(UUID fileId) throws Exception {
+        public FileMetaDataLinkDTO downloadFile(String fileId) throws Exception {
                 FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
 
@@ -156,18 +156,18 @@ public class FileService implements IFileService {
                                 fileMetaDataDTO.getLink(),
                                 10);
 
-                return null;
+                return new FileMetaDataLinkDTO(Action.DOWNLOAD, fileMetaDataDTO, link, urlDuration);
         }
 
         @Transactional
-        public FileMetaDataLinkDTO updateFile(UUID fileId, UpdateFileDTO dto) throws Exception {
+        public FileMetaDataLinkDTO updateFile(String fileId, UpdateFileDTO dto) throws Exception {
                 // get file info in db
                 FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
                 FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
                 // get department for company info
-                Department department = this.departmentRepository.findById(fileDTO.getDepartmentId())
+                Department department = this.departmentRepository.findById(UUID.fromString(fileDTO.getDepartmentId()))
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
                 // update file size in file_details table
                 this.fileDetailRepository.updateFileSize(fileId, dto.getNewFileSize());
@@ -180,7 +180,8 @@ public class FileService implements IFileService {
                         }
                         if (versions.size() < numOfVersion) {
                                 // update in company without delete any version
-                                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                                this.companyService.updateFileCompanySize(
+                                                UUID.fromString(department.getCompany().getCompanyId()),
                                                 fileMetaDataDTO.getSize(), dto.getNewFileSize(),
                                                 fileMetaDataDTO.getIsVersion(), 0);
                         } else {
@@ -189,7 +190,8 @@ public class FileService implements IFileService {
                                                 .min(Comparator.comparing(VersionDTO::getCreatedAt))
                                                 .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
                                 // update in company
-                                this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                                this.companyService.updateFileCompanySize(
+                                                UUID.fromString(department.getCompany().getCompanyId()),
                                                 fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
                                                 deletedVersions.getSize());
                                 // delete version in db
@@ -202,7 +204,8 @@ public class FileService implements IFileService {
                         }
                 } else {
                         // if file is not versioning
-                        this.companyService.updateFileCompanySize(department.getCompany().getCompanyId(),
+                        this.companyService.updateFileCompanySize(
+                                        UUID.fromString(department.getCompany().getCompanyId()),
                                         fileMetaDataDTO.getSize(),
                                         dto.getNewFileSize(), false, 0);
                 }
@@ -211,9 +214,12 @@ public class FileService implements IFileService {
                 // get presignlink for update
                 String uploadREs = this.storageService.getPresignUrlForUpdate(fileMetaDataDTO.getBucketName(),
                                 fileMetaDataDTO.getLink(), 10);
-                fileMetaDataDTO.setSize(dto.getNewFileSize());
-                fileMetaDataDTO.setIsUploading(true);
-                return null;
+                return new FileMetaDataLinkDTO(
+                                Action.UPDATE,
+                                this.fileDetailRepository.findFileMetaDataById(fileId)
+                                                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST)),
+                                uploadREs,
+                                urlDuration);
         }
 
 }

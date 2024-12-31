@@ -1,17 +1,16 @@
 package vn.anpha.storage.File.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.anpha.storage.File.DTO.Projection.FileDTO;
+import vn.anpha.storage.File.DTO.Projection.FileDetailDTO;
 import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.MoveFileDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
-import vn.anpha.storage.File.DTO.Response.FileDTO;
-import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.Interface.IFileStructureService;
 import vn.anpha.storage.File.Repository.FileRepository;
 import vn.anpha.storage.exception.AppException;
@@ -22,7 +21,7 @@ import vn.anpha.storage.exception.ErrorCode;
 public class FileStructureService implements IFileStructureService {
     private final FileRepository fileRepository;
 
-    private void checkFileNameInDirectory(UUID fileParentId, String name) {
+    private void checkFileNameInDirectory(String fileParentId, String name) {
         List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
         boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
         if (fileNameExist) {
@@ -31,7 +30,7 @@ public class FileStructureService implements IFileStructureService {
     }
 
     @Transactional
-    public FileDetailDTO updateFileInfo(UUID fileId, FileUpdateInfoDTO fileUpdateInfoRequest) {
+    public FileDetailDTO updateFileInfo(String fileId, FileUpdateInfoDTO fileUpdateInfoRequest) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
@@ -47,7 +46,7 @@ public class FileStructureService implements IFileStructureService {
     }
 
     @Transactional
-    public void deleteFileSoft(UUID fileId) {
+    public void deleteFileSoft(String fileId) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
@@ -61,7 +60,7 @@ public class FileStructureService implements IFileStructureService {
     }
 
     @Transactional
-    public void moveFile(UUID fileId, MoveFileDTO moveFileRequest) {
+    public void moveFile(String fileId, MoveFileDTO moveFileRequest) {
         FileDTO file = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
 
@@ -84,7 +83,7 @@ public class FileStructureService implements IFileStructureService {
     }
 
     @Transactional
-    public FileDetailDTO recoverFile(UUID fileId, RecoverFileDTO recoverFileRequest) {
+    public FileDetailDTO recoverFile(String fileId, RecoverFileDTO recoverFileRequest) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
@@ -110,7 +109,7 @@ public class FileStructureService implements IFileStructureService {
 
     }
 
-    private FileDTO checkFileExist(UUID fileId) {
+    private FileDTO checkFileExist(String fileId) {
         FileDTO file = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
         return file;

@@ -1,7 +1,5 @@
 package vn.anpha.storage.File.DTO.Request;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class MoveFileDTO {
 
     @NotNull(message = "New Directory Id is required")
-    private UUID newDirectoryId;
+    private String newDirectoryId;
 }

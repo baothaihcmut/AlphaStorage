@@ -1,7 +1,5 @@
 package vn.anpha.storage.File.DTO.Request;
 
-import java.util.UUID;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,12 +28,12 @@ public class FileCreationDTO {
 
     private Boolean hasPassword;
 
-    private UUID parentFileId;
+    private String parentFileId;
 
     @NotNull(message = "Department ID is required.")
-    private UUID departmentId;
+    private String departmentId;
 
-    private UUID createUserId;
+    private String createUserId;
 
     @Size(max = 255, message = "Password must not exceed 255 characters.")
     private String password;
@@ -47,7 +45,7 @@ public class FileCreationDTO {
     private Boolean isDirectory;
 
     @Size(max = 10, min = 0, message = "You can associate up to 10 tags only.")
-    private UUID[] tagIds;
+    private String[] tagIds;
 
     @Valid
     private FileDetailCreationDTO fileDetail;

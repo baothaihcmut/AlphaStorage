@@ -9,8 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
+import vn.anpha.storage.File.DTO.Projection.FileMetaDataDTO;
 import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
-import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
 import vn.anpha.storage.File.Entity.FileDetail;
 
 public interface FileDetailRepository
@@ -32,7 +32,7 @@ public interface FileDetailRepository
                                 is_uploading = :isUploading
                         WHERE file_id = :detailId
                         """, nativeQuery = true)
-        void updateUploadStatus(@Param("detailId") UUID detailId, @Param("isUploaded") Boolean isUploaded,
+        void updateUploadStatus(@Param("detailId") String detailId, @Param("isUploaded") Boolean isUploaded,
                         @Param("isUploading") Boolean isUploading);
 
         @Modifying
@@ -42,9 +42,20 @@ public interface FileDetailRepository
                                 size = :fileSize
                         WHERE file_id = :detailId
                         """, nativeQuery = true)
-        void updateFileSize(@Param("detailId") UUID detailId, @Param("fileSize") Integer fileSize);
+        void updateFileSize(@Param("detailId") String detailId, @Param("fileSize") Integer fileSize);
 
-        @Query(name = "FileDetail.FindFileMetaDataById", nativeQuery = true)
-        Optional<FileMetaDataDTO> findFileMetaDataById(@Param("fileId") UUID fileID);
+        @Query(value = """
+                                SELECT
+                            fd.file_id as fileId,
+                            fd.size as size,
+                            fd.link as link,
+                            fd.is_uploaded as isUploaded,
+                            fd.is_uploading as isUploading,
+                            fd.is_version as isVersion,
+                            fd.bucket_name as bucketName
+                        FROM file_details fd
+                        WHERE fd.file_id=:fileId
+                                """, nativeQuery = true)
+        Optional<FileMetaDataDTO> findFileMetaDataById(@Param("fileId") String fileID);
 
 }

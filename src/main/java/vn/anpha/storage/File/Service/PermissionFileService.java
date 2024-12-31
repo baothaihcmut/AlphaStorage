@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.File.DTO.Response.FileDTO;
+import vn.anpha.storage.File.DTO.Projection.FileDTO;
 import vn.anpha.storage.File.Repository.FileRepository;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_Department.Repository.UserOfDepartmentRepository;
@@ -20,34 +20,37 @@ public class PermissionFileService {
         private final FileRepository fileRepository;
         private final UserOfDepartmentRepository userOfDepartmentRepository;
 
-        private FileDTO checkFileExist(UUID fileId) {
+        private FileDTO checkFileExist(String fileId) {
                 return this.fileRepository.findFileById(fileId, false)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
         }
 
-        public boolean hasCreatePermission(UUID departmentId) {
+        public boolean hasCreatePermission(String departmentId) {
                 User user = this.authService.getUserByToken();
-                this.userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
-                                departmentId)
+                this.userOfDepartmentRepository.findUserOfDepartment(
+                                UUID.fromString(user.getUserId()),
+                                UUID.fromString(departmentId))
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS));
                 return true;
         }
 
-        public boolean hasRecoverPermission(UUID fileId) {
+        public boolean hasRecoverPermission(String fileId) {
                 User user = this.authService.getUserByToken();
                 FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
-                this.userOfDepartmentRepository.findManagerOfDepartment(fileDTO.getDepartmentId()).stream()
+                this.userOfDepartmentRepository.findManagerOfDepartment(
+                                UUID.fromString(fileDTO.getDepartmentId())).stream()
                                 .anyMatch((userDepartment) -> userDepartment.getUser().getUserId()
                                                 .equals(user.getUserId()));
                 return true;
         }
 
-        public boolean hasPermission(UUID fileId) {
+        public boolean hasPermission(String fileId) {
                 User user = this.authService.getUserByToken();
                 FileDTO fileExistProjection = this.checkFileExist(fileId);
-                this.userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
-                                fileExistProjection.getDepartmentId())
+                this.userOfDepartmentRepository.findUserOfDepartment(
+                                UUID.fromString(user.getUserId()),
+                                UUID.fromString(fileExistProjection.getDepartmentId()))
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS));
                 return true;
         }

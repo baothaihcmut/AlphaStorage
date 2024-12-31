@@ -1,7 +1,6 @@
 package vn.anpha.storage.Department.Entity;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
@@ -29,13 +28,16 @@ public class Department {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "department_id")
-    private UUID departmentId;
+    private String departmentId;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = true)
     private String description = "";
+
+    @Column(columnDefinition = "INTEGER DEFAULT 0")
+    private Integer totalSize;
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "company_id")

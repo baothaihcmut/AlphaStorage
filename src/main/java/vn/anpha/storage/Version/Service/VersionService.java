@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.anpha.storage.File.DTO.Response.FileMetaDataDTO;
+import vn.anpha.storage.File.DTO.Projection.FileMetaDataDTO;
 import vn.anpha.storage.Storage.DTO.VersionLinkDTO;
 import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Entity.User;
@@ -24,7 +24,8 @@ public class VersionService {
                                 fileMetaDataDTO.getLink());
                 // create new version create dto
                 VersionCreationDTO versionCreationDTO = new VersionCreationDTO(
-                                UUID.randomUUID(), versionLinkDTO.getLink(), description, versionLinkDTO.getSize(),
+                                UUID.randomUUID().toString(), versionLinkDTO.getLink(), description,
+                                versionLinkDTO.getSize(),
                                 fileMetaDataDTO.getFileId(), user.getUserId(), versionLinkDTO.getCreateAt());
                 // persistence to db
                 this.versionRepository.insertVersion(versionCreationDTO);

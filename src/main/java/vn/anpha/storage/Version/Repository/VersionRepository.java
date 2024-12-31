@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import vn.anpha.storage.Version.DTO.request.VersionCreationDTO;
 import vn.anpha.storage.Version.DTO.response.VersionDTO;
+import vn.anpha.storage.Version.DTO.response.VersionDetailDTO;
 import vn.anpha.storage.Version.Entity.Version;
 
 public interface VersionRepository extends JpaRepository<Version, UUID> {
@@ -30,14 +31,53 @@ public interface VersionRepository extends JpaRepository<Version, UUID> {
     @Query(value = """
             DELETE FROM versions WHERE version_id=:versionId
             """, nativeQuery = true)
-    void deleteVersion(@Param("versionId") UUID versionId);
+    void deleteVersion(@Param("versionId") String versionId);
 
-    @Query(name = "Version.FindVersionById", nativeQuery = true)
+    @Query(value = """
+            SELECT
+                    v.version_id AS versionId,
+                    v.link AS link,
+                    v.description AS description,
+                    v.size AS size,
+                    v.file_id AS fileId,
+                    v.update_user_id AS updateUserId,
+                    v.created_at AS createdAt
+                FROM versions v
+                WHERE v.version_id=:versionId
+                LIMIT 1
+            """, nativeQuery = true)
     Optional<VersionDTO> findVersionById(@Param("versionId") UUID versionId);
 
-    @Query(name = "Version.FindVersionDetailById", nativeQuery = true)
-    Optional<VersionDTO> findVersionDetailById(@Param("versionId") UUID versionId);
+    @Query(value = """
+            SELECT
+                    v.version_id AS versionId,
+                    v.link as link,
+                    v.description AS description,
+                    v.size AS size,
+                    v.created_at createdAt,
+                    f.file_id AS fileId,
+                    f.name AS fileName,
+                    u.user_id AS updateUserId,
+                    u.email AS updateUserEmail
+                FROM versions v
+                LEFT JOIN files f ON v.file_id = f.file_id
+                LEFT JOIN users u ON v.update_user_id = u.user_id
+                WHERE v.version_id=:versionId
+                LIMIT 1
+            """, nativeQuery = true)
+    Optional<VersionDetailDTO> findVersionDetailById(@Param("versionId") UUID versionId);
 
-    @Query(name = "Version.FindAllVersionOfFile", nativeQuery = true)
-    List<VersionDTO> findAllVersionOfFile(@Param("fileId") UUID fileId);
+    @Query(value = """
+            SELECT
+                    v.version_id AS versionId,
+                    v.link AS link,
+                    v.description AS description,
+                    v.size AS size,
+                    v.file_id AS fileId,
+                    v.update_user_id AS updateUserId,
+                    v.created_at AS createdAt
+                FROM versions v
+                WHERE v.file_id=:fileId
+            """, nativeQuery = true)
+    List<VersionDTO> findAllVersionOfFile(@Param("fileId") String fileId);
 }
