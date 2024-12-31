@@ -15,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDepartmentCreate {
-    private UUID userId;
-    private UUID departmentId;
+    private String userId;
+    private String departmentId;
 }

@@ -83,7 +83,7 @@ public class FileService implements IFileService {
                                                 urlDuration));
         }
 
-        private void checkFileNameInDirectory(UUID fileParentId, String name) {
+        private void checkFileNameInDirectory(String fileParentId, String name) {
                 List<FileDTO> subFiles = this.fileRepository.findAllFileInDirectory(false, fileParentId);
                 boolean fileNameExist = subFiles.stream().anyMatch((file) -> file.getName().equals(name));
                 if (fileNameExist) {
@@ -91,7 +91,7 @@ public class FileService implements IFileService {
                 }
         }
 
-        private FileDTO checkFileExist(UUID fileId) {
+        private FileDTO checkFileExist(String fileId) {
                 FileDTO file = this.fileRepository.findFileById(fileId, false)
                                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
                 return file;

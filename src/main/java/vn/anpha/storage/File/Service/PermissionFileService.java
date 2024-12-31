@@ -20,12 +20,12 @@ public class PermissionFileService {
         private final FileRepository fileRepository;
         private final UserOfDepartmentRepository userOfDepartmentRepository;
 
-        private FileDTO checkFileExist(UUID fileId) {
+        private FileDTO checkFileExist(String fileId) {
                 return this.fileRepository.findFileById(fileId, false)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
         }
 
-        public boolean hasCreatePermission(UUID departmentId) {
+        public boolean hasCreatePermission(String departmentId) {
                 User user = this.authService.getUserByToken();
                 this.userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
                                 departmentId)
@@ -33,7 +33,7 @@ public class PermissionFileService {
                 return true;
         }
 
-        public boolean hasRecoverPermission(UUID fileId) {
+        public boolean hasRecoverPermission(String fileId) {
                 User user = this.authService.getUserByToken();
                 FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
@@ -43,7 +43,7 @@ public class PermissionFileService {
                 return true;
         }
 
-        public boolean hasPermission(UUID fileId) {
+        public boolean hasPermission(String fileId) {
                 User user = this.authService.getUserByToken();
                 FileDTO fileExistProjection = this.checkFileExist(fileId);
                 this.userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),

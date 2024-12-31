@@ -143,7 +143,7 @@ public class CompanyService {
 
     }
 
-    public Company checkOwnCompany(User user, UUID companyId) {
+    public Company checkOwnCompany(User user, String companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         if (user.getEmail().equals(company.getCreateBy())) {

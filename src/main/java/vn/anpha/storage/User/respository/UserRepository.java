@@ -12,14 +12,14 @@ import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(value= "SELECT * FROM users WHERE email=:email ",nativeQuery = true)
     List<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
 
-    User removeByUserId(UUID id);
+    User removeByUserId(String id);
 
     List<User> findByRefreshToken(String refreshToken);
 
@@ -28,4 +28,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value= "SELECT * FROM users WHERE id=:id ",nativeQuery = true)
     User FindUserByID(String id);
+
 }

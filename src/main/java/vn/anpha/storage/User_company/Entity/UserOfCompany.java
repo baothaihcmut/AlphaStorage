@@ -57,13 +57,13 @@ public class UserOfCompany {
     @ToString
     @EqualsAndHashCode
     public static class UserOfCompanyId implements Serializable {
-        private UUID employee; // ID của nhân viên
-        private UUID company; // ID của công ty
+        private String employee; // ID của nhân viên
+        private String company; // ID của công ty
 
         public UserOfCompanyId() {
         }
 
-        public UserOfCompanyId(UUID employee, UUID company) {
+        public UserOfCompanyId(String employee,String company) {
             this.employee = employee;
             this.company = company;
         }

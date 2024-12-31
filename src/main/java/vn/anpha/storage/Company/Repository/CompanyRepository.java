@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 import vn.anpha.storage.Company.DTO.projections.CompanySizeProjection;
 import vn.anpha.storage.Company.Entity.Company;
 
-public interface CompanyRepository extends JpaRepository<Company, UUID> {
+public interface CompanyRepository extends JpaRepository<Company, String> {
         @Query(value = "SELECT company_id, name, description, total_size, limit_size, create_by, created_at, updated_at "
                         +
                         "FROM companies WHERE name = :name LIMIT 1", nativeQuery = true)

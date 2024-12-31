@@ -21,7 +21,7 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyResponse {
-    private UUID companyId;
+    private String companyId;
 
     private String name;
 

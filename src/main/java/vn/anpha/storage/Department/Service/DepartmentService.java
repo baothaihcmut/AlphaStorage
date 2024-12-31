@@ -50,7 +50,7 @@ public class DepartmentService {
                 Department department = departmentMapper.toDepartment(departmentCreateRequest);
                 department.setCompany(company);
                 department = departmentRepository.save(department);
-                userOfDepartmentService.createManger(user, department);
+                userOfDepartmentService.createManager(user, department);
                 DepartmenResponse response = departmentMapper.toDepartmentResponse(department);
                 return response;
 
@@ -111,7 +111,7 @@ public class DepartmentService {
 
         }
 
-        public PaginateResponseDto<DepartmenResponse> GetAllDepartment(Pageable pageable, UUID companyId) {
+        public PaginateResponseDto<DepartmenResponse> GetAllDepartment(Pageable pageable, String companyId) {
                 Page<DepartmenResponseProjection> pageDepartment = departmentRepository.FindDepartmentOfCompany(
                                 companyId,
                                 pageable);

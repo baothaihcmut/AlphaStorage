@@ -18,7 +18,7 @@ import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmenResponse {
-    private UUID departmentId;
+    private String departmentId;
 
     private String name;
 

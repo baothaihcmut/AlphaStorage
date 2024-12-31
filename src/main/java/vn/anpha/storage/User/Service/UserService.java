@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import vn.anpha.storage.Detail.Service.DetailService;
 import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
@@ -33,17 +32,15 @@ import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 public class UserService {
     private final RoleService roleService;
-    private final DetailService detailService;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final UserResponseMapper userResponseMapper;
 
-    public UserService(RoleService roleService, DetailService detailService, UserRepository userRepository,
+    public UserService(RoleService roleService,  UserRepository userRepository,
             PasswordEncoder passwordEncoder, UserMapper userMapper, UserResponseMapper userResponseMapper) {
         this.roleService = roleService;
-        this.detailService = detailService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
@@ -63,7 +60,6 @@ public class UserService {
 
             user = this.userRepository.save(user);
 
-            this.detailService.createDetail(user);
 
             UserResponseDto userResponseDto = userResponseMapper.User_To_UserResponseDto(user);
 

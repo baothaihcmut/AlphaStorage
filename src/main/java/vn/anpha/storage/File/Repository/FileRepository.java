@@ -20,7 +20,7 @@ import vn.anpha.storage.File.DTO.Response.FileDetailDTO;
 import vn.anpha.storage.File.Entity.File;
 
 @Repository
-public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSortingRepository<File, UUID> {
+public interface FileRepository extends CrudRepository<File, String>, PagingAndSortingRepository<File, String> {
 
     @Modifying
     @Query(value = """
@@ -44,7 +44,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
                     updated_at = CURRENT_TIMESTAMP
                 WHERE file_id = :fileId
             """, nativeQuery = true)
-    void updateFile(@Param("fileId") UUID fileId, @Param("fileUpdateInfo") FileUpdateInfoDTO fileUpdateInfo);
+    void updateFile(@Param("fileId") String fileId, @Param("fileUpdateInfo") FileUpdateInfoDTO fileUpdateInfo);
 
     @Modifying
     @Query(value = """
@@ -54,7 +54,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
                 updated_at = CURRENT_TIMESTAMP
             WHERE file_id = :fileId
             """, nativeQuery = true)
-    void moveFile(@Param("fileId") UUID fileID, @Param("moveFileDTO") MoveFileDTO moveFileDTO);
+    void moveFile(@Param("fileId") String fileID, @Param("moveFileDTO") MoveFileDTO moveFileDTO);
 
     @Modifying
     @Query(value = """
@@ -64,7 +64,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
                 deleted_at = CURRENT_TIMESTAMP
             WHERE file_id=:fileId
             """, nativeQuery = true)
-    void softDeleteFile(@Param("fileId") UUID fileId);
+    void softDeleteFile(@Param("fileId") String fileId);
 
     @Modifying
     @Query(value = """
@@ -85,7 +85,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
             WHERE file_id IN
                 (SELECT file_id from file_system)
             """, nativeQuery = true)
-    void softDeleteChild(@Param("fileId") UUID fileId);
+    void softDeleteChild(@Param("fileId") String fileId);
 
     @Modifying
     @Query(value = """
@@ -97,7 +97,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
                 deleted_at = NULL
             WHERE file_id=:fileId
             """, nativeQuery = true)
-    void recoverFile(@Param("fileId") UUID fileId, @Param("recoverFileDTO") RecoverFileDTO recoverFileDTO);
+    void recoverFile(@Param("fileId") String fileId, @Param("recoverFileDTO") RecoverFileDTO recoverFileDTO);
 
     @Modifying
     @Query(value = """
@@ -118,19 +118,19 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
             WHERE file_id IN
                 (SELECT file_id from file_system)
             """, nativeQuery = true)
-    void recoverChild(@Param("fileId") UUID fileId);
+    void recoverChild(@Param("fileId") String fileId);
 
     @Query(name = "File.findAllFileInDirectory", nativeQuery = true)
     public List<FileDTO> findAllFileInDirectory(
             @Param("isDeleted") boolean isDeleted,
-            @Param("parentFileId") UUID parentId);
+            @Param("parentFileId") String parentId);
 
     @Query(name = "File.findFileDetailById", nativeQuery = true)
     public Optional<FileDetailDTO> findFileDetailById(@Param("fileId") String fileId,
             @Param("isDeleted") boolean isDeleted);
 
     @Query(name = "File.findFileById", nativeQuery = true)
-    public Optional<FileDTO> findFileById(@Param("fileId") UUID fileId,
+    public Optional<FileDTO> findFileById(@Param("fileId") String fileId,
             @Param("isDeleted") boolean isDeleted);
 
 }

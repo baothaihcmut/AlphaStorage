@@ -21,7 +21,7 @@ import vn.anpha.storage.common.BaseDTO;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FileDTO extends BaseDTO {
     @Getter(AccessLevel.NONE)
-    private byte[] fileId;
+    private String fileId;
 
     private String name;
 
@@ -36,13 +36,13 @@ public class FileDTO extends BaseDTO {
     private Boolean isDeleted;
 
     @Getter(AccessLevel.NONE)
-    private byte[] departmentId;
+    private String departmentId;
 
     @Getter(AccessLevel.NONE)
-    private byte[] createUserId;
+    private String createUserId;
 
     @Getter(AccessLevel.NONE)
-    private byte[] parentFileId;
+    private String parentFileId;
 
     private LocalDateTime createAt;
 
@@ -50,20 +50,20 @@ public class FileDTO extends BaseDTO {
 
     private LocalDateTime deletedAt;
 
-    public UUID getFileId() {
-        return this.bytetoUuid(fileId);
+    public String getFileId() {
+        return fileId;
     }
 
-    public UUID getParentFileId() {
-        return this.bytetoUuid(parentFileId);
+    public String getParentFileId() {
+        return parentFileId;
     }
 
-    public UUID getCreateUserId() {
-        return this.bytetoUuid(createUserId);
+    public String getCreateUserId() {
+        return createUserId ;
     }
 
-    public UUID getDepartmentId() {
-        return this.bytetoUuid(departmentId);
+    public String getDepartmentId() {
+        return departmentId;
     }
 
 }

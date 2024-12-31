@@ -30,7 +30,7 @@ public class Department {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "department_id")
-    private UUID departmentId;
+    private String departmentId;
 
     @Column(nullable = false)
     private String name;
