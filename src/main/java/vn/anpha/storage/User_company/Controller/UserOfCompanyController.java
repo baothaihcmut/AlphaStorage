@@ -39,7 +39,7 @@ public class UserOfCompanyController {
     }
 
     @GetMapping("/get/{id}/employees")
-    public ApiResponseDto<List<User>> getAllEmployee(@PathVariable() UUID id) {
+    public ApiResponseDto<List<User>> getAllEmployee(@PathVariable() String id) {
         ApiResponseDto<List<User>> response = new ApiResponseDto<>();
         response.setResult(this.userOfCompanyService.getAllUserBelongCompany(id));
         return response;

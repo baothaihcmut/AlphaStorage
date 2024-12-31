@@ -166,11 +166,18 @@ public class AuthoticationService {
         return this.userService.GetUserByEmail(name);
     }
 
-    public static String GetEmailByToken() {
+    public String GetEmailByToken() {
 
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         return name;
     }
 
+    public String GetUserIdByToken() {
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        return this.userService.GetUserIdByEmail(name);
+
+    }
 }

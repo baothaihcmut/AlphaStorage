@@ -52,7 +52,7 @@ public class UserController {
 
     // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/get/{id}")
-    public ApiResponseDto<UserResponseDto> getUserById(@PathVariable() UUID id) {
+    public ApiResponseDto<UserResponseDto> getUserById(@PathVariable() String id) {
         ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
         response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
         return response;

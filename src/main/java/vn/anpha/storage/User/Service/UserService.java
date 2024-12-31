@@ -91,8 +91,11 @@ public class UserService {
 
     }
 
-    public User getUsersById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public User getUsersById(String id) {
+        User user = userRepository.FindUserByID(id);
+        if (user == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
         return user;
     }
 
@@ -111,6 +114,15 @@ public class UserService {
         } else {
             return users.get(0);
         }
+    }
+
+    public String GetUserIdByEmail(String email) {
+
+        String userId = this.userRepository.findUserIdByEmail(email);
+        if (userId == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        return userId;
     }
 
     public UserResponseDto UpdateUser(UpdateUserDto update) {
