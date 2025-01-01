@@ -1,7 +1,5 @@
 package vn.anpha.storage.User_Department.DTO.Request;
 
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

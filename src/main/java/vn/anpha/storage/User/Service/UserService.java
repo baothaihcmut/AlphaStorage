@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
@@ -38,7 +39,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserResponseMapper userResponseMapper;
 
-    public UserService(RoleService roleService,  UserRepository userRepository,
+    public UserService(RoleService roleService, UserRepository userRepository,
             PasswordEncoder passwordEncoder, UserMapper userMapper, UserResponseMapper userResponseMapper) {
         this.roleService = roleService;
         this.userRepository = userRepository;
@@ -51,19 +52,16 @@ public class UserService {
         return this.passwordEncoder.encode(password);
     }
 
+    @Transactional
     public UserResponseDto CreateUser(CreateUserDto userDto) {
         userDto.setPassword(hashPassword(userDto.getPassword()));
-        User user = userMapper.createToUser(userDto);
-        // user.setRole();
-        user.setRole(this.roleService.FindByName("USER"));
+        String userId = UUID.randomUUID().toString();
+
         try {
 
-            user = this.userRepository.save(user);
+            this.userRepository.createUser(userId, userDto, this.roleService.FindByName("USER").getRoleId());
+            return userResponseMapper.User_To_UserResponseDto(this.userRepository.FindUserByID(userId));
 
-
-            UserResponseDto userResponseDto = userResponseMapper.User_To_UserResponseDto(user);
-
-            return userResponseDto;
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }

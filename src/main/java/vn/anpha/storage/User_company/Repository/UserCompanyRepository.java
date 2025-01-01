@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
+import vn.anpha.storage.User_company.Entity.UserOfCompany.UserOfCompanyId;
 
 @Repository
-public interface UserCompanyRepository extends JpaRepository<UserOfCompany, String> {
+public interface UserCompanyRepository extends JpaRepository<UserOfCompany, UserOfCompanyId> {
 
     @Query(value = "SELECT * FROM users_of_company WHERE company_id=:id ", nativeQuery = true)
     List<UserOfCompany> findByCompany(String id);

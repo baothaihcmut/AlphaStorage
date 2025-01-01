@@ -39,13 +39,13 @@ public class DepartmentUser {
     @JsonBackReference
     private User user;
 
-    private boolean isManager;
-
     @Id
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "department_id")
     @JsonBackReference
     private Department department;
+
+    private boolean isManager;
 
     @Column(updatable = false)
     @CreationTimestamp
