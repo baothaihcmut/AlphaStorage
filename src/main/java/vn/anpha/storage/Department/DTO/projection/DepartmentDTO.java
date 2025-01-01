@@ -8,4 +8,6 @@ public interface DepartmentDTO {
     String getDescription();
 
     Integer getTotalSize();
+
+    String getCompanyId();
 }

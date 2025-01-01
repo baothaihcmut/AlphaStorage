@@ -1,7 +1,6 @@
 package vn.anpha.storage.Department.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,7 @@ import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
 import vn.anpha.storage.Department.Entity.Department;
 
-public interface DepartmentRepository extends JpaRepository<Department, UUID> {
+public interface DepartmentRepository extends JpaRepository<Department, String> {
 
         @Modifying
         @Query(value = """
@@ -67,7 +66,8 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
                                 d.department_id as departmentId,
                                 d.name as name,
                                 d.description as description,
-                                d.total_size as totalSize
+                                d.total_size as totalSize,
+                                d.company_id as companyId
                         FROM departments d
                         JOIN companies c ON d.company_id = c.company_id
                         JOIN users u ON c.owner_id = u.user_id
@@ -80,6 +80,7 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
         @Query(value = "SELECT d.department_id, d.name, d.description " +
                         "FROM departments d WHERE d.company_id = :companyId", countQuery = "SELECT COUNT(d.department_id) FROM departments d WHERE d.company_id = :companyId", nativeQuery = true)
         Page<DepartmentDTO> FindDepartmentOfCompany(@Param("companyId") String companyId,
+
                         Pageable pageable);
 
 }

@@ -14,12 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
-import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Mapper.DepartmentMapper;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
@@ -41,8 +39,8 @@ public class DepartmentService {
         CompanyService companyService;
 
         public DepartmentDTO createDepartment(DepartmentCreationDTO departmentCreateRequest) {
-                Company company = companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                UUID.fromString(departmentCreateRequest.getCompanyId()));
+                boolean company = companyService.checkOwnCompany(authoticationService.getUserByToken(),
+                                departmentCreateRequest.getCompanyId());
                 User user = authoticationService.getUserByToken();
                 departmentCreateRequest.setDepartmentId(UUID.randomUUID().toString());
                 this.departmentRepository.insertDepartment(departmentCreateRequest);
@@ -78,13 +76,13 @@ public class DepartmentService {
         }
 
         public Boolean deleteDepartmentById(UUID id) {
-                Department department = departmentRepository.findById(id)
+                DepartmentDTO department = this.departmentRepository.findDepartmentById(id.toString())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
                 companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                UUID.fromString(department.getCompany().getCompanyId()));
+                                department.getCompanyId());
 
-                departmentRepository.delete(department);
+                // departmentRepository.delete(department);
                 return true;
 
         }
@@ -98,6 +96,7 @@ public class DepartmentService {
 
         public PaginateResponseDto<DepartmentDTO> GetAllDepartment(Pageable pageable, String companyId) {
                 Page<DepartmentDTO> pageDepartment = departmentRepository.FindDepartmentOfCompany(
+
                                 companyId,
                                 pageable);
                 var departments = pageDepartment.getContent();

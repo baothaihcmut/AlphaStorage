@@ -1,14 +1,12 @@
 package vn.anpha.storage.User.respository;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
 
 @Repository
@@ -19,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsByEmail(String email);
 
-    User removeByUserId(UUID id);
+    User removeByUserId(String id);
 
     List<User> findByRefreshToken(String refreshToken);
 

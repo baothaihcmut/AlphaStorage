@@ -1,11 +1,8 @@
 package vn.anpha.storage.Company.Service;
 
 import java.math.BigInteger;
-import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -14,21 +11,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.Company.DTO.projections.CompanySizeProjection;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
-import vn.anpha.storage.Company.DTO.response.CompanyResponse;
-import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Storage.service.StorageService;
-import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
-import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Slf4j
 @Service
@@ -125,6 +117,7 @@ public class CompanyService {
             if (company == null) {
                 throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
             }
+
             return company;
         } catch (Exception e) {
             // TODO: handle exception

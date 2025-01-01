@@ -66,7 +66,7 @@ public class DepartmentController {
         public ApiResponseDto<PaginateResponseDto> getAllDepartment(
                         @RequestParam("current") Optional<String> currentOptional,
                         @RequestParam("pageSize") Optional<String> pageSizeOptional,
-                        @PathVariable UUID companyId) {
+                        @PathVariable String companyId) {
 
                 int current = currentOptional.map(Integer::parseInt).orElse(1);
                 int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);

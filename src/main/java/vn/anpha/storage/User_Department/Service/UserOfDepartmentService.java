@@ -1,8 +1,5 @@
 package vn.anpha.storage.User_Department.Service;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
@@ -35,21 +33,6 @@ public class UserOfDepartmentService {
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
 
-    public UUID byteArrayToUUID(byte[] byteArray) {
-        // Kiểm tra nếu mảng byte không hợp lệ hoặc không có độ dài 16 byte
-        if (byteArray == null || byteArray.length != 16) {
-            throw new IllegalArgumentException("Mảng byte phải có độ dài 16 byte.");
-        }
-
-        // Sử dụng ByteBuffer để chuyển đổi byte[] thành UUID
-        ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-        long mostSigBits = buffer.getLong(); // 8 byte đầu tiên của UUID
-        long leastSigBits = buffer.getLong(); // 8 byte cuối cùng của UUID
-
-        // Tạo và trả về UUID từ các phần mostSignificantBits và leastSignificantBits
-        return new UUID(mostSigBits, leastSigBits);
-    }
-
     private void checkManagerOfDepartment(Department department) {
         User userToken = authoticationService.getUserByToken();
         DepartmentUser own = userOfDepartmentRepository.findUserOfDepartment(userToken.getUserId(),
@@ -61,13 +44,13 @@ public class UserOfDepartmentService {
         }
     }
 
-    private void checkUserExistInDepartment(UUID userId, Department department) {
+    private void checkUserExistInDepartment(String userId, Department department) {
         userOfDepartmentRepository.findUserOfDepartment(userId,
                 department.getDepartmentId()).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
 
     }
 
-    public DepartmentUser createManger(User user, Department department) {
+    public DepartmentUser createManager(User user, Department department) {
         DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
                 department.getDepartmentId()).orElse(null);
         if (userOfDepartment == null) {
@@ -86,10 +69,10 @@ public class UserOfDepartmentService {
 
     public DepartmentUser updateUserOfDepartment(
             UserDepartmentUpdate updateDTO) {
-        Department department = departmentRepository.findDepartmentById(updateDTO.getDepartmentId())
+        DepartmentDTO department = this.departmentRepository.findDepartmentById(updateDTO.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                department.getCompany().getCompanyId());
+                department.getCompanyId());
         DepartmentUser userOfDepartment = this.userOfDepartmentRepository.findUserOfDepartment(
                 updateDTO.getUserId(),
                 updateDTO.getDepartmentId())
@@ -106,12 +89,12 @@ public class UserOfDepartmentService {
         this.checkUserExistInDepartment(user.getUserId(), department);
         //
         System.err.println(department.getName());
-        DepartmentUser newUserOfDepartment = new DepartmentUser(user, false, department);
-        userOfDepartmentRepository.save(newUserOfDepartment);
-        return newUserOfDepartment;
+
+        return userOfDepartmentRepository.insertUserToDepartment(department.getDepartmentId(), user.getUserId(), false);
+
     }
 
-    public void deleteUserOfDepartmentBy(UUID userId, UUID departmentId) {
+    public void deleteUserOfDepartmentBy(String userId, String departmentId) {
         DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
@@ -119,11 +102,11 @@ public class UserOfDepartmentService {
 
     }
 
-    public DepartmentUser findUserAndDepartment(UUID user_id, UUID department_id) {
+    public DepartmentUser findUserAndDepartment(String user_id, String department_id) {
         return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id).orElse(null);
     }
 
-    public PaginateResponseDto<UserDepartmentResponseProjection> GetAllUser(Pageable pageable, UUID DepartmentId) {
+    public PaginateResponseDto<UserDepartmentResponseProjection> GetAllUser(Pageable pageable, String DepartmentId) {
         Page<UserDepartmentResponseProjection> pageUser = userOfDepartmentRepository
                 .findAllUserOfDepartment(DepartmentId, pageable); // tư
         // set

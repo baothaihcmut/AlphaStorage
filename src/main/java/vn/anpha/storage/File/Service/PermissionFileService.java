@@ -1,7 +1,5 @@
 package vn.anpha.storage.File.Service;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -28,8 +26,8 @@ public class PermissionFileService {
         public boolean hasCreatePermission(String departmentId) {
                 User user = this.authService.getUserByToken();
                 this.userOfDepartmentRepository.findUserOfDepartment(
-                                UUID.fromString(user.getUserId()),
-                                UUID.fromString(departmentId))
+                                user.getUserId(),
+                                departmentId)
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS));
                 return true;
         }
@@ -39,7 +37,7 @@ public class PermissionFileService {
                 FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
                 this.userOfDepartmentRepository.findManagerOfDepartment(
-                                UUID.fromString(fileDTO.getDepartmentId())).stream()
+                                fileDTO.getDepartmentId()).stream()
                                 .anyMatch((userDepartment) -> userDepartment.getUser().getUserId()
                                                 .equals(user.getUserId()));
                 return true;
@@ -49,8 +47,8 @@ public class PermissionFileService {
                 User user = this.authService.getUserByToken();
                 FileDTO fileExistProjection = this.checkFileExist(fileId);
                 this.userOfDepartmentRepository.findUserOfDepartment(
-                                UUID.fromString(user.getUserId()),
-                                UUID.fromString(fileExistProjection.getDepartmentId()))
+                                user.getUserId(),
+                                fileExistProjection.getDepartmentId())
                                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS));
                 return true;
         }

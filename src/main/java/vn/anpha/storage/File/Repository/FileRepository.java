@@ -2,7 +2,6 @@ package vn.anpha.storage.File.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +19,7 @@ import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
 import vn.anpha.storage.File.Entity.File;
 
 @Repository
-public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSortingRepository<File, UUID> {
+public interface FileRepository extends CrudRepository<File, String>, PagingAndSortingRepository<File, String> {
 
     @Modifying
     @Query(value = """
@@ -194,6 +193,7 @@ public interface FileRepository extends CrudRepository<File, UUID>, PagingAndSor
                 WHERE file_id=:fileId
                 AND is_deleted=:isDeleted
                 LIMIT 1""", nativeQuery = true)
+
     public Optional<FileDTO> findFileById(@Param("fileId") String fileId,
             @Param("isDeleted") boolean isDeleted);
 

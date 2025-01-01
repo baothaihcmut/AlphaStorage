@@ -1,7 +1,5 @@
 package vn.anpha.storage.Department.DTO.response;
 
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmenResponse {
-    private UUID departmentId;
+    private String departmentId;
 
     private String name;
 

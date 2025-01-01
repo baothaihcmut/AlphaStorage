@@ -43,32 +43,31 @@ public class UserOfCompanyService {
         }
     }
 
-    public Company getCompany(UUID uuid) {
+    public Company getCompany(String uuid) {
         return companyRepository.findById(uuid).orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
     }
 
     public UserOfCompany addUserToCompany(@NotNull addUserToCompanyRequestDto data) {
-        User user = authoticationService.getUserByToken();
+        authoticationService.getUserByToken();
 
         User employee = this.GetUserByEmail(data.getEmployeeEmail());
-        Company company = this.getCompany(data.getCompanyId());
-
-        UserOfCompany userCompany = new UserOfCompany();
-        userCompany.setCompany(company);
-        userCompany.setEmployee(employee);
-
-        try {
-            this.userCompanyRepository.save(userCompany);
-            return userCompany;
+        if(employee == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
-
+        Company company = this.getCompany(data.getCompanyId());
+        if(company == null) {
+            throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
+        }
+        try {
+            return this.userCompanyRepository.insertUserToCompany(data.getCompanyId(), employee.getUserId());
+        }
         catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
     }
 
     public List<User> getAllUserBelongCompany(String Id) {
-        User user = authoticationService.getUserByToken();
+        authoticationService.getUserByToken();
 
         List<UserOfCompany> userCompany = this.userCompanyRepository.findByCompany(Id);
         List<User> users = userCompany.stream()

@@ -11,9 +11,8 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
-import vn.anpha.storage.Company.DTO.projections.CompanySizeProjection;
 import vn.anpha.storage.Company.Service.CompanyService;
-import vn.anpha.storage.Department.Entity.Department;
+import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.File.DTO.Projection.FileDTO;
 import vn.anpha.storage.File.DTO.Projection.FileDetailDTO;
@@ -113,17 +112,18 @@ public class FileService implements IFileService {
                         this.checkFileNameInDirectory(parentfileExistProjection.getFileId(), dto.getName());
                 }
                 // check company size
-                Department department = this.departmentRepository.findById(UUID.fromString(dto.getDepartmentId()))
+                DepartmentDTO department = this.departmentRepository
+                                .findDepartmentById(dto.getDepartmentId())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-                CompanySizeProjection companySizeProjection = this.companyService
-                                .createNewFileCompanySize(UUID.fromString(department.getCompany().getCompanyId()),
-                                                dto.getFileDetail().getSize());
+                // CompanySizeProjection companySizeProjection = this.companyService
+                // .createNewFileCompanySize(UUID.fromString(department.getCompanyId()),
+                // dto.getFileDetail().getSize());
                 // add to file tag table
 
                 // upload file
                 return this.getPresignUrlAndSave(dto,
-                                department.getCompany().getCompanyId().toString(),
-                                companySizeProjection.getHasVersion());
+                                department.getCompanyId(),
+                                true);
 
         }
 
@@ -167,7 +167,8 @@ public class FileService implements IFileService {
                 FileMetaDataDTO fileMetaDataDTO = this.fileDetailRepository.findFileMetaDataById(fileId)
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST_OR_NOT_FILE));
                 // get department for company info
-                Department department = this.departmentRepository.findById(UUID.fromString(fileDTO.getDepartmentId()))
+                DepartmentDTO department = this.departmentRepository
+                                .findDepartmentById(fileDTO.getDepartmentId())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
                 // update file size in file_details table
                 this.fileDetailRepository.updateFileSize(fileId, dto.getNewFileSize());
@@ -180,20 +181,20 @@ public class FileService implements IFileService {
                         }
                         if (versions.size() < numOfVersion) {
                                 // update in company without delete any version
-                                this.companyService.updateFileCompanySize(
-                                                UUID.fromString(department.getCompany().getCompanyId()),
-                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(),
-                                                fileMetaDataDTO.getIsVersion(), 0);
+                                // this.companyService.updateFileCompanySize(
+                                // department.getCompanyId(),
+                                // fileMetaDataDTO.getSize(), dto.getNewFileSize(),
+                                // fileMetaDataDTO.getIsVersion(), 0);
                         } else {
                                 // file earliest version for delete
                                 VersionDTO deletedVersions = versions.stream()
                                                 .min(Comparator.comparing(VersionDTO::getCreatedAt))
                                                 .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
                                 // update in company
-                                this.companyService.updateFileCompanySize(
-                                                UUID.fromString(department.getCompany().getCompanyId()),
-                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
-                                                deletedVersions.getSize());
+                                // this.companyService.updateFileCompanySize(
+                                // UUID.fromString(department.getCompany().getCompanyId()),
+                                // fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
+                                // deletedVersions.getSize());
                                 // delete version in db
                                 this.versionRepository.deleteVersion(deletedVersions.getVersionId());
                                 // delete version in storage
@@ -204,10 +205,10 @@ public class FileService implements IFileService {
                         }
                 } else {
                         // if file is not versioning
-                        this.companyService.updateFileCompanySize(
-                                        UUID.fromString(department.getCompany().getCompanyId()),
-                                        fileMetaDataDTO.getSize(),
-                                        dto.getNewFileSize(), false, 0);
+                        // this.companyService.updateFileCompanySize(
+                        // UUID.fromString(department.getCompany().getCompanyId()),
+                        // fileMetaDataDTO.getSize(),
+                        // dto.getNewFileSize(), false, 0);
                 }
                 // setting isuploading to true and is uploaded to true
                 this.fileDetailRepository.updateUploadStatus(fileId, true, true);
