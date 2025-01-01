@@ -14,10 +14,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
+import vn.anpha.storage.User_Department.Entity.DepartmentUser.DepartmentUserId;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @Repository
-public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser, String> {
+public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser, DepartmentUserId> {
         @Query(value = "SELECT * FROM department_of_user"
                         + " where user_id = :user_id And department_id=:department_id ", nativeQuery = true)
         Optional<DepartmentUser> findUserOfDepartment(@Param("user_id") String user_id,
@@ -41,6 +42,7 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
         @Query(value = """
                         INSERT INTO department_of_user  (department_id, user_id, create_at, update_at, is_manager)
                         VALUES (:departmentId, :userId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :isManager)""", nativeQuery = true)
-        DepartmentUser insertUserToDepartment(@Param("departmentId") String departmentId, @Param("userId")String userId, @Param("isManager")Boolean isManager);
+        DepartmentUser insertUserToDepartment(@Param("departmentId") String departmentId,
+                        @Param("userId") String userId, @Param("isManager") Boolean isManager);
 
 }

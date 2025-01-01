@@ -36,20 +36,18 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 @IdClass(DepartmentUser.DepartmentUserId.class)
 public class DepartmentUser {
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
     private User user;
 
-    private boolean isManager;
-
+    @Id
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "department_id")
     @JsonBackReference
     private Department department;
+
+    private boolean isManager;
 
     @Column(updatable = false)
     @CreationTimestamp

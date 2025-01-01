@@ -32,20 +32,20 @@ import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 public class DepartmentController {
         DepartmentService departmentService;
 
-        @PostMapping("/create")
-        ApiResponseDto<DepartmenResponse> createDepartment(
-                        @RequestBody DepartmentCreationDTO request) {
-                return ApiResponseDto.<DepartmenResponse>builder()
-                                .result(departmentService.createDepartment(request))
-                                .build();
-        }
+        // @PostMapping("/create")
+        // ApiResponseDto<DepartmenResponse> createDepartment(
+        // @RequestBody DepartmentCreationDTO request) {
+        // return ApiResponseDto.<DepartmenResponse>builder()
+        // .result(departmentService.createDepartment(request))
+        // .build();
+        // }
 
-        @GetMapping("/get/{id}")
-        ApiResponseDto<DepartmenResponse> getDepartmentById(@PathVariable UUID id) {
-                return ApiResponseDto.<DepartmenResponse>builder()
-                                .result(departmentService.getDepartmentById(id))
-                                .build();
-        }
+        // @GetMapping("/get/{id}")
+        // ApiResponseDto<DepartmenResponse> getDepartmentById(@PathVariable UUID id) {
+        // return ApiResponseDto.<DepartmenResponse>builder()
+        // .result(departmentService.getDepartmentById(id))
+        // .build();
+        // }
 
         @DeleteMapping("/delete/{id}")
         ApiResponseDto<Boolean> deleteDepartmentById(@PathVariable UUID id) {
@@ -54,13 +54,13 @@ public class DepartmentController {
                                 .build();
         }
 
-        @PostMapping("/update/{id}")
-        ApiResponseDto<DepartmenResponse> updateDepartmentName(@PathVariable UUID id,
-                        @RequestBody DepartmentUpdateDTO request) {
-                return ApiResponseDto.<DepartmenResponse>builder()
-                                .result(departmentService.updateDepartmentName(request))
-                                .build();
-        }
+        // @PostMapping("/update/{id}")
+        // ApiResponseDto<DepartmenResponse> updateDepartmentName(@PathVariable UUID id,
+        // @RequestBody DepartmentUpdateDTO request) {
+        // return ApiResponseDto.<DepartmenResponse>builder()
+        // .result(departmentService.updateDepartmentName(request))
+        // .build();
+        // }
 
         @GetMapping("/getAllDepartment/{companyId}")
         public ApiResponseDto<PaginateResponseDto> getAllDepartment(
