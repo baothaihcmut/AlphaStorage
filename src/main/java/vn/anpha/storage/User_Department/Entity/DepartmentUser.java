@@ -2,11 +2,9 @@ package vn.anpha.storage.User_Department.Entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,7 +23,6 @@ import lombok.Setter;
 import lombok.ToString;
 import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @ToString
 @Getter
@@ -35,10 +32,8 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 @Table(name = "department_of_user")
 @IdClass(DepartmentUser.DepartmentUserId.class)
 public class DepartmentUser {
-    @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-    private UUID id;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     @JsonBackReference
@@ -46,6 +41,7 @@ public class DepartmentUser {
 
     private boolean isManager;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "department_id")
     @JsonBackReference

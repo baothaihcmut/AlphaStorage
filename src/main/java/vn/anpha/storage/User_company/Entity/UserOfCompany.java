@@ -2,7 +2,6 @@ package vn.anpha.storage.User_company.Entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -63,7 +62,7 @@ public class UserOfCompany {
         public UserOfCompanyId() {
         }
 
-        public UserOfCompanyId(String employee,String company) {
+        public UserOfCompanyId(String employee, String company) {
             this.employee = employee;
             this.company = company;
         }

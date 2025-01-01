@@ -43,7 +43,7 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
             FROM companies
             WHERE company_id = :companyId
             """, nativeQuery = true)
-    CompanyInterface findCompanyById(@Param("companyId") String companyId);
+    Optional<CompanyInterface> findCompanyById(@Param("companyId") String companyId);
 
     @Query(value = """
             SELECT limit_size
@@ -57,8 +57,7 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
             SET total_size = :newSize
             WHERE company_id = :companyId and owner_id=:owner_id
             """, nativeQuery = true)
-    void updateCompanySize(@Param("companyId") String companyId, @Param("newSize") BigInteger newSize,
-            @Param("owner_id") String owner_id);
+    void updateCompanySize(@Param("companyId") String companyId, @Param("newSize") BigInteger newSize);
 
     // update thông tin công ty
     @Modifying

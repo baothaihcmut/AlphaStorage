@@ -14,7 +14,6 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
-import vn.anpha.storage.Company.Mapper.CompanyMapper;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Storage.service.StorageService;
@@ -28,7 +27,6 @@ import vn.anpha.storage.exception.ErrorCode;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CompanyService {
     CompanyRepository companyRepository;
-    CompanyMapper companyMapper;
     AuthoticationService authoticationService;
     StorageService storageService;
 
@@ -42,7 +40,8 @@ public class CompanyService {
 
             // create company bucket
             this.storageService.createBucket(companyId, companyCreationRequest.getHasVersion());
-            return this.companyRepository.findCompanyById(companyId);
+            return this.companyRepository.findCompanyById(companyId)
+                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         } catch (Exception e) {
             System.out.println(e);
             throw new AppException(ErrorCode.SERVER_ERROR);
@@ -54,14 +53,13 @@ public class CompanyService {
 
         String OwnerId = authoticationService.GetUserIdByToken();
         this.companyRepository.updateCompanyInfo(companyId, OwnerId, request.getName(), request.getDescription());
-        return this.companyRepository.findCompanyById(companyId);
+        return this.companyRepository.findCompanyById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
 
     }
 
     public CompanyInterface updateGradeCompany(String companyId, UpGradeCompanyRequest request) {
         BigInteger oldSize = this.companyRepository.findCompanyLimitSizeById(companyId);
-
-        String OwnerId = authoticationService.GetUserIdByToken();
 
         switch (request.getOption()) {
             case "option1":
@@ -80,8 +78,9 @@ public class CompanyService {
                 throw new AppException(ErrorCode.THIS_TYPE_DOES_NOT_EXIST);
         }
         try {
-            this.companyRepository.updateCompanySize(companyId, oldSize, OwnerId);
-            return this.companyRepository.findCompanyById(companyId);
+            this.companyRepository.updateCompanySize(companyId, oldSize);
+            return this.companyRepository.findCompanyById(companyId)
+                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -113,14 +112,14 @@ public class CompanyService {
     public CompanyInterface getCompany(String uuid) {
 
         try {
-            CompanyInterface company = companyRepository.findCompanyById(uuid);
+            CompanyInterface company = companyRepository.findCompanyById(uuid)
+                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
             if (company == null) {
                 throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
             }
 
             return company;
         } catch (Exception e) {
-            // TODO: handle exception
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
 
@@ -139,53 +138,43 @@ public class CompanyService {
         return companyRepository.CheckOwnCompany(companyId, user.getUserId());
     }
 
-    // @Transactional
-    // public CompanySizeProjection createNewFileCompanySize(UUID companyId, Integer
-    // iaddtionSize) {
-    // CompanySizeProjection companySize =
-    // this.companyRepository.findCompanyNameAndSize(companyId)
-    // .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-    // BigInteger addtionSize = BigInteger.valueOf(iaddtionSize.longValue());
-    // if
-    // (companySize.getTotalSize().add(addtionSize).compareTo(companySize.getLimitSize())
-    // == 1) {
-    // throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
-    // }
-    // BigInteger newSize = companySize.getTotalSize().add(addtionSize);
-    // this.companyRepository.updateCompanySize(companyId, newSize);
-    // return companySize;
-    // }
+    @Transactional
+    public CompanyInterface createNewFileCompanySize(String companyId, Integer iaddtionSize) {
+        CompanyInterface companySize = this.companyRepository.findCompanyById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        BigInteger addtionSize = BigInteger.valueOf(iaddtionSize.longValue());
+        if (companySize.getTotalSize().add(addtionSize).compareTo(companySize.getLimitSize()) == 1) {
+            throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
+        }
+        BigInteger newSize = companySize.getTotalSize().add(addtionSize);
+        this.companyRepository.updateCompanySize(companyId, newSize);
+        return companySize;
+    }
 
-    // @Transactional
-    // public void updateFileCompanySize(UUID companyId, Integer oldSize, Integer
-    // newSize, boolean isVersion,
-    // Integer deletedVersionSize) {
-    // CompanySizeProjection company =
-    // this.companyRepository.findCompanyNameAndSize(companyId)
-    // .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-    // BigInteger newSizeOfCompany;
-    // if (isVersion) {
-    // newSizeOfCompany =
-    // company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
-    // .subtract(BigInteger.valueOf(deletedVersionSize.longValue()));
-    // } else {
-    // newSizeOfCompany =
-    // company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
-    // .subtract(BigInteger.valueOf(oldSize.longValue()));
-    // }
-    // if (newSizeOfCompany.compareTo(company.getLimitSize()) == 1) {
-    // throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
-    // }
-    // this.companyRepository.updateCompanySize(companyId, newSizeOfCompany);
-    // }
+    @Transactional
+    public void updateFileCompanySize(String companyId, Integer oldSize, Integer newSize, boolean isVersion,
+            Integer deletedVersionSize) {
+        CompanyInterface company = this.companyRepository.findCompanyById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        BigInteger newSizeOfCompany;
+        if (isVersion) {
+            newSizeOfCompany = company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
+                    .subtract(BigInteger.valueOf(deletedVersionSize.longValue()));
+        } else {
+            newSizeOfCompany = company.getTotalSize().add(BigInteger.valueOf(newSize.longValue()))
+                    .subtract(BigInteger.valueOf(oldSize.longValue()));
+        }
+        if (newSizeOfCompany.compareTo(company.getLimitSize()) == 1) {
+            throw new AppException(ErrorCode.COMPANY_EXEED_LIMIT_SIZE);
+        }
+        this.companyRepository.updateCompanySize(companyId, newSizeOfCompany);
+    }
 
-    // @Transactional
-    // public void removeFileCompany(UUID companyId, Integer size) {
-    // CompanySizeProjection company =
-    // this.companyRepository.findCompanyNameAndSize(companyId)
-    // .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-    // BigInteger newSize =
-    // company.getTotalSize().subtract(BigInteger.valueOf(size.longValue()));
-    // this.companyRepository.updateCompanySize(companyId, newSize);
-    // }
+    @Transactional
+    public void removeFileCompany(String companyId, Integer size) {
+        CompanyInterface company = this.companyRepository.findCompanyById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        BigInteger newSize = company.getTotalSize().subtract(BigInteger.valueOf(size.longValue()));
+        this.companyRepository.updateCompanySize(companyId, newSize);
+    }
 }

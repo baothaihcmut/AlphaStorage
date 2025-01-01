@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.File.DTO.Projection.FileDTO;
@@ -115,15 +116,15 @@ public class FileService implements IFileService {
                 DepartmentDTO department = this.departmentRepository
                                 .findDepartmentById(dto.getDepartmentId())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-                // CompanySizeProjection companySizeProjection = this.companyService
-                // .createNewFileCompanySize(UUID.fromString(department.getCompanyId()),
-                // dto.getFileDetail().getSize());
+                CompanyInterface companySizeProjection = this.companyService
+                                .createNewFileCompanySize(department.getCompanyId(),
+                                                dto.getFileDetail().getSize());
                 // add to file tag table
 
                 // upload file
                 return this.getPresignUrlAndSave(dto,
                                 department.getCompanyId(),
-                                true);
+                                companySizeProjection.getHasVersion());
 
         }
 
@@ -181,20 +182,20 @@ public class FileService implements IFileService {
                         }
                         if (versions.size() < numOfVersion) {
                                 // update in company without delete any version
-                                // this.companyService.updateFileCompanySize(
-                                // department.getCompanyId(),
-                                // fileMetaDataDTO.getSize(), dto.getNewFileSize(),
-                                // fileMetaDataDTO.getIsVersion(), 0);
+                                this.companyService.updateFileCompanySize(
+                                                department.getCompanyId(),
+                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(),
+                                                fileMetaDataDTO.getIsVersion(), 0);
                         } else {
                                 // file earliest version for delete
                                 VersionDTO deletedVersions = versions.stream()
                                                 .min(Comparator.comparing(VersionDTO::getCreatedAt))
                                                 .orElseThrow(() -> new AppException(ErrorCode.VERSION_NOT_EXIST));
                                 // update in company
-                                // this.companyService.updateFileCompanySize(
-                                // UUID.fromString(department.getCompany().getCompanyId()),
-                                // fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
-                                // deletedVersions.getSize());
+                                this.companyService.updateFileCompanySize(
+                                                department.getCompanyId(),
+                                                fileMetaDataDTO.getSize(), dto.getNewFileSize(), true,
+                                                deletedVersions.getSize());
                                 // delete version in db
                                 this.versionRepository.deleteVersion(deletedVersions.getVersionId());
                                 // delete version in storage
@@ -205,10 +206,10 @@ public class FileService implements IFileService {
                         }
                 } else {
                         // if file is not versioning
-                        // this.companyService.updateFileCompanySize(
-                        // UUID.fromString(department.getCompany().getCompanyId()),
-                        // fileMetaDataDTO.getSize(),
-                        // dto.getNewFileSize(), false, 0);
+                        this.companyService.updateFileCompanySize(
+                                        department.getCompanyId(),
+                                        fileMetaDataDTO.getSize(),
+                                        dto.getNewFileSize(), false, 0);
                 }
                 // setting isuploading to true and is uploaded to true
                 this.fileDetailRepository.updateUploadStatus(fileId, true, true);

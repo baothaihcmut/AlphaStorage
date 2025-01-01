@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
-import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
 import vn.anpha.storage.Department.Service.DepartmentService;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -33,16 +33,16 @@ public class DepartmentController {
         DepartmentService departmentService;
 
         @PostMapping("/create")
-        ApiResponseDto<DepartmenResponse> createDepartment(
+        ApiResponseDto<DepartmentDTO> createDepartment(
                         @RequestBody DepartmentCreationDTO request) {
-                return ApiResponseDto.<DepartmenResponse>builder()
+                return ApiResponseDto.<DepartmentDTO>builder()
                                 .result(departmentService.createDepartment(request))
                                 .build();
         }
 
         @GetMapping("/get/{id}")
-        ApiResponseDto<DepartmenResponse> getDepartmentById(@PathVariable UUID id) {
-                return ApiResponseDto.<DepartmenResponse>builder()
+        ApiResponseDto<DepartmentDTO> getDepartmentById(@PathVariable String id) {
+                return ApiResponseDto.<DepartmentDTO>builder()
                                 .result(departmentService.getDepartmentById(id))
                                 .build();
         }
@@ -55,10 +55,10 @@ public class DepartmentController {
         }
 
         @PostMapping("/update/{id}")
-        ApiResponseDto<DepartmenResponse> updateDepartmentName(@PathVariable UUID id,
+        ApiResponseDto<DepartmentDTO> updateDepartmentName(@PathVariable String id,
                         @RequestBody DepartmentUpdateDTO request) {
-                return ApiResponseDto.<DepartmenResponse>builder()
-                                .result(departmentService.updateDepartmentName(request))
+                return ApiResponseDto.<DepartmentDTO>builder()
+                                .result(departmentService.updateDepartment(id, request))
                                 .build();
         }
 

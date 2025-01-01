@@ -1,7 +1,6 @@
 package vn.anpha.storage.File.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +13,7 @@ import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
 import vn.anpha.storage.File.Entity.FileDetail;
 
 public interface FileDetailRepository
-                extends CrudRepository<FileDetail, UUID>, PagingAndSortingRepository<FileDetail, UUID> {
+                extends CrudRepository<FileDetail, String>, PagingAndSortingRepository<FileDetail, String> {
 
         @Modifying
         @Query(value = """

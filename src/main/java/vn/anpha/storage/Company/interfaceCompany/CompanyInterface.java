@@ -3,9 +3,6 @@ package vn.anpha.storage.Company.interfaceCompany;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-import vn.anpha.storage.Department.Entity.Department;
-import vn.anpha.storage.User_company.Entity.UserOfCompany;
-
 public interface CompanyInterface {
 
      String getCompanyId();
