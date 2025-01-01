@@ -1,10 +1,13 @@
 package vn.anpha.storage.config;
 
+import java.util.UUID;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.Role.Repository.RoleRepository;
@@ -16,11 +19,13 @@ import vn.anpha.storage.User.respository.UserRepository;
 public class ApplicationInitConfig {
 
     @Bean
+    @Transactional
     ApplicationRunner applicationRunner(RoleRepository roleRepository, UserRepository userRepository) {
         return args -> {
             // Add some initial data to your database here.
             Role roleAdmin = new Role();
             if (roleRepository.findByName("ADMIN").isEmpty()) {
+                String companyId = UUID.randomUUID().toString();
                 roleAdmin.setName("ADMIN");
                 roleAdmin.setDescription("Admin role");
                 roleRepository.save(roleAdmin);
@@ -40,12 +45,11 @@ public class ApplicationInitConfig {
                 roleRepository.save(roleUser);
             }
             if (userRepository.findByEmail("Admin@gmail.com").isEmpty()) {
-                User user = new User();
-                user.setEmail("admin@gmail.com");
-                user.setPassword(new BCryptPasswordEncoder().encode("admin123"));
-                user.setFullName("Admin");
-                user.setRole(roleAdmin);
-                userRepository.save(user);
+                String userId = UUID.randomUUID().toString();
+
+                userRepository.createInitUser(userId, "admin@gmail.com", "Admin",
+                        new BCryptPasswordEncoder().encode("admin123"),
+                        roleAdmin.getRoleId());
             }
         };
     }

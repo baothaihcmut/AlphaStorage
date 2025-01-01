@@ -14,7 +14,7 @@ import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
 import vn.anpha.storage.File.Entity.FileDetail;
 
 public interface FileDetailRepository
-                extends CrudRepository<FileDetail, UUID>, PagingAndSortingRepository<FileDetail, UUID> {
+                extends CrudRepository<FileDetail, String>, PagingAndSortingRepository<FileDetail, String> {
 
         @Modifying
         @Query(value = """

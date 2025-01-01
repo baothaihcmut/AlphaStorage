@@ -2,16 +2,14 @@ package vn.anpha.storage.User.respository;
 
 import java.util.List;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
+import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -35,19 +33,22 @@ public interface UserRepository extends JpaRepository<User, String> {
     String findUserIdByEmail(String id);
 
     @Modifying
+
     @Query(value = """
-                        INSERT INTO users (email, fullname, password, phone, update_at,role_id, created_at, address)
-                        VALUES (:#{#user.email}, :#{#user.fullName},:#{#user.password},:#{#user.phone} , CURRENT_TIMESTAMP,:#{#user.role}, CURRENT_TIMESTAMP,:#{#user.address})""", nativeQuery = true)
-    User createUser(@Param("User")User user);
+            INSERT INTO users (user_id, email, fullname, password, phone, update_at,role_id, created_at, address)
+            VALUES (:user_id, :#{#user.email}, :#{#user.fullName},:#{#user.password},:#{#user.phone} , CURRENT_TIMESTAMP,:role, CURRENT_TIMESTAMP,:#{#user.address})""", nativeQuery = true)
+    User createUser(@Param("user_id") String user_id, @Param("user") CreateUserDto userdto, long role);
 
     @Modifying
+
     @Query(value = """
-                UPDATE users 
-                SET fullname = :#{#user.fullName}, 
-                    phone = :#{#user.phone}, 
-                    updated_at = CURRENT_TIMESTAMP, 
-                    address = :#{#user.address}
-                WHERE email = :email
-                """, nativeQuery = true)
-    User updateUser(@Param("user")UpdateUserDto user, String email);
+            INSERT INTO users (user_id, email, fullname, password, phone, update_at, role_id, created_at, address)
+            VALUES (:user_id, :email, :fullName, :password, :phone, CURRENT_TIMESTAMP, :role, CURRENT_TIMESTAMP, :address)
+            """, nativeQuery = true)
+    void createInitUser(@Param("user_id") String user_id,
+            @Param("email") String email,
+            @Param("fullName") String fullName,
+            @Param("password") String password,
+            @Param("role") long role);
+
 }

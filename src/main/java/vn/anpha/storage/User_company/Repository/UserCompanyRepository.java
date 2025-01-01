@@ -10,21 +10,21 @@ import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
 import vn.anpha.storage.User_company.DTO.request.addUserToCompanyRequestDto;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
-
+import vn.anpha.storage.User_company.Entity.UserOfCompany.UserOfCompanyId;
 
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface UserCompanyRepository extends JpaRepository<UserOfCompany, String> {
+public interface UserCompanyRepository extends JpaRepository<UserOfCompany, UserOfCompanyId> {
 
-    @Query(value= "SELECT * FROM users_of_company WHERE company_id=:id ",nativeQuery = true)
+    @Query(value = "SELECT * FROM users_of_company WHERE company_id=:id ", nativeQuery = true)
     List<UserOfCompany> findByCompany(String id);
 
     @Modifying
     @Query(value = """
-                        INSERT INTO users_of_company (company_id, employee_id, create_at, update_at)
-                        VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""", nativeQuery = true)
-    UserOfCompany insertUserToCompany(@Param("companyId")String companyId, @Param("userId")String userId);
+            INSERT INTO users_of_company (company_id, employee_id, create_at, update_at)
+            VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""", nativeQuery = true)
+    UserOfCompany insertUserToCompany(@Param("companyId") String companyId, @Param("userId") String userId);
 
 }

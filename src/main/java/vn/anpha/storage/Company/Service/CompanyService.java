@@ -50,6 +50,7 @@ public class CompanyService {
 
     }
 
+    @Transactional
     public CompanyInterface updateCompanyInfo(String companyId, CompanyUpdateRequest request) {
 
         String OwnerId = authoticationService.GetUserIdByToken();
@@ -58,6 +59,7 @@ public class CompanyService {
 
     }
 
+    @Transactional
     public CompanyInterface updateGradeCompany(String companyId, UpGradeCompanyRequest request) {
         BigInteger oldSize = this.companyRepository.findCompanyLimitSizeById(companyId);
 
