@@ -12,6 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class getEmployeeRequestDto {
-    private UUID company_id;
-    private UUID employee_id;
+    private String company_id;
+    private String employee_id;
 }

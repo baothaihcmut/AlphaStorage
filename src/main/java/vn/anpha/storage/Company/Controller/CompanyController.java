@@ -20,9 +20,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 //import vn.anpha.storage.Company.DTO.request.AuthenticationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
+import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
 import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
@@ -35,54 +37,54 @@ public class CompanyController {
         CompanyService companyService;
 
         @PostMapping("/create")
-        ApiResponseDto<CompanyResponse> createCompany(
+        ApiResponseDto<CompanyInterface> createCompany(
                         @RequestBody CompanyCreationRequest request) {
-                return ApiResponseDto.<CompanyResponse>builder()
+                return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.createCompany(request))
                                 .build();
         }
 
         @PatchMapping("/update/{id}")
-        ApiResponseDto<CompanyResponse> updateInfoCompany(@PathVariable UUID id,
-                        @RequestBody UpGradeCompanyRequest request) {
-                return ApiResponseDto.<CompanyResponse>builder()
-                                .result(companyService.updateGradeCompany(id, request))
+        ApiResponseDto<CompanyInterface> updateInfoCompany(@PathVariable String id,
+                        @RequestBody CompanyUpdateRequest request) {
+                return ApiResponseDto.<CompanyInterface>builder()
+                                .result(companyService.updateCompanyInfo(id, request))
                                 .build();
         }
 
         @PatchMapping("/upgrade/{id}")
-        ApiResponseDto<CompanyResponse> updateGradeCompany(
-                        @RequestBody UpGradeCompanyRequest request, @PathVariable UUID id) {
+        ApiResponseDto<CompanyInterface> updateGradeCompany(
+                        @RequestBody UpGradeCompanyRequest request, @PathVariable String id) {
 
-                return ApiResponseDto.<CompanyResponse>builder()
+                return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.updateGradeCompany(id, request))
                                 .build();
         }
 
-        @GetMapping("/getOwn")
-        ApiResponseDto<PaginateResponseDto> getCompanyProperties(
-                        @RequestParam("current") Optional<String> currentOptional,
-                        @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-                int current = currentOptional.map(Integer::parseInt).orElse(1);
-                int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
-                Pageable pageable = PageRequest.of(current - 1, pageSize);
-                return ApiResponseDto.<PaginateResponseDto>builder()
-                                .result(companyService.getCompanies(pageable))
-                                .build();
-        }
+        // @GetMapping("/getOwn")
+        // ApiResponseDto<PaginateResponseDto> getCompanyProperties(
+        // @RequestParam("current") Optional<String> currentOptional,
+        // @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        // int current = currentOptional.map(Integer::parseInt).orElse(1);
+        // int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
+        // Pageable pageable = PageRequest.of(current - 1, pageSize);
+        // return ApiResponseDto.<PaginateResponseDto>builder()
+        // .result(companyService.getCompanies(pageable))
+        // .build();
+        // }
 
         @GetMapping("/get/{id}")
-        ApiResponseDto<CompanyResponse> getACompanyProperties(
-                        @PathVariable UUID id) {
-                return ApiResponseDto.<CompanyResponse>builder()
+        ApiResponseDto<CompanyInterface> getACompanyProperties(
+                        @PathVariable String id) {
+                return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.getCompany(id))
                                 .build();
         }
 
-        @DeleteMapping("/delete/{id}")
-        ApiResponseDto<Boolean> deleteCompany(@PathVariable UUID id) {
-                return ApiResponseDto.<Boolean>builder()
-                                .result(companyService.deleteCompanyById(id))
-                                .build();
-        }
+        // @DeleteMapping("/delete/{id}")
+        // ApiResponseDto<Boolean> deleteCompany(@PathVariable UUID id) {
+        // return ApiResponseDto.<Boolean>builder()
+        // .result(companyService.deleteCompanyById(id))
+        // .build();
+        // }
 }

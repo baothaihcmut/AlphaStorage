@@ -67,11 +67,10 @@ public class UserOfCompanyService {
         }
     }
 
-    public List<User> getAllUserBelongCompany(UUID uuid) {
+    public List<User> getAllUserBelongCompany(String Id) {
         User user = authoticationService.getUserByToken();
-        Company company = this.getCompany(uuid);
 
-        List<UserOfCompany> userCompany = this.userCompanyRepository.findByCompany(company);
+        List<UserOfCompany> userCompany = this.userCompanyRepository.findByCompany(Id);
         List<User> users = userCompany.stream()
                 .map(UserOfCompany::getEmployee) // Lấy user từ từng đối tượng UserOfCompany
                 .collect(Collectors.toList()); // Chuyển thành danh sách

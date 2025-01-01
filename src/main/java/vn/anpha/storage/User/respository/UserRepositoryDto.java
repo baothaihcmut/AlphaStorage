@@ -7,7 +7,7 @@ import vn.anpha.storage.Detail.Entity.DetailUser;
 import vn.anpha.storage.Role.Entity.Role;
 
 public interface UserRepositoryDto {
-    byte[] getUserId();
+    String getUserId();
 
     String getEmail();
 

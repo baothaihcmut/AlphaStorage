@@ -23,7 +23,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import vn.anpha.storage.Detail.Entity.DetailUser;
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.File.Entity.File;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
@@ -64,10 +64,6 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user")
-    @JsonManagedReference // Đánh dấu là thực thể cha
-    private DetailUser detail;
-
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "role_id")
     @JsonManagedReference
@@ -76,6 +72,10 @@ public class User {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private Set<UserOfCompany> userOfCompanys;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference // Đánh dấu là thực thể cha
+    private Set<Company> companiesOwn;
 
     @OneToMany(mappedBy = "createBy", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha

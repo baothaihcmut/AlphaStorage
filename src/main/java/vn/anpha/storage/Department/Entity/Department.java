@@ -1,5 +1,6 @@
 package vn.anpha.storage.Department.Entity;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -52,6 +53,7 @@ public class Department {
     @JsonManagedReference
     private List<File> files;
 
+    private BigInteger total_size;
     // parent department
     @ManyToOne
     @JoinColumn(name = "parent_department_id", nullable = true)
