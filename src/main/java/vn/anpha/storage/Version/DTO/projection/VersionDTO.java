@@ -1,4 +1,4 @@
-package vn.anpha.storage.Version.DTO.response;
+package vn.anpha.storage.Version.DTO.projection;
 
 import java.time.LocalDateTime;
 

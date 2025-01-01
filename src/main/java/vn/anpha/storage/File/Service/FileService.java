@@ -30,7 +30,7 @@ import vn.anpha.storage.File.Repository.FileDetailRepository;
 import vn.anpha.storage.File.Repository.FileRepository;
 import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.Version.DTO.response.VersionDTO;
+import vn.anpha.storage.Version.DTO.projection.VersionDTO;
 import vn.anpha.storage.Version.Repository.VersionRepository;
 import vn.anpha.storage.Version.Service.VersionService;
 import vn.anpha.storage.exception.AppException;

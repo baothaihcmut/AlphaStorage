@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import vn.anpha.storage.Version.DTO.projection.VersionDTO;
+import vn.anpha.storage.Version.DTO.projection.VersionDetailDTO;
 import vn.anpha.storage.Version.DTO.request.VersionCreationDTO;
-import vn.anpha.storage.Version.DTO.response.VersionDTO;
-import vn.anpha.storage.Version.DTO.response.VersionDetailDTO;
 import vn.anpha.storage.Version.Entity.Version;
 
 public interface VersionRepository extends JpaRepository<Version, UUID> {
