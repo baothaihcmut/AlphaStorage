@@ -75,7 +75,7 @@ public class DepartmentService {
                 return departmenResponseProjection;
         }
 
-        public Boolean deleteDepartmentById(UUID id) {
+        public Boolean deleteDepartmentById(String id) {
                 DepartmentDTO department = this.departmentRepository.findDepartmentById(id.toString())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 

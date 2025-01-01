@@ -16,12 +16,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyCreationResponse {
-
-<<<<<<< HEAD
     private String companyId;
-=======
-    private String companyId ;
->>>>>>> 4b3c6d73d619b3459266c8447950306d59ffdd2c
     private String name;
 
     String createBy;
