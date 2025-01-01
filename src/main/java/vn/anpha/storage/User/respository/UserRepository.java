@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import jakarta.transaction.Transactional;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Entity.User;
 
@@ -40,9 +41,10 @@ public interface UserRepository extends JpaRepository<User, String> {
     User createUser(@Param("user_id") String user_id, @Param("user") CreateUserDto userdto, long role);
 
     @Modifying
+    @Transactional
     @Query(value = """
-            INSERT INTO users (user_id, email, full_name, password, phone, updated_at, role_id, created_at)
-            VALUES (:user_id, :email, :fullName, :password, :phone, CURRENT_TIMESTAMP, :role, CURRENT_TIMESTAMP, :address)
+            INSERT INTO users (user_id, email, full_name, password, updated_at, role_id, created_at)
+            VALUES (:user_id, :email, :fullName, :password, CURRENT_TIMESTAMP, :role, CURRENT_TIMESTAMP)
             """, nativeQuery = true)
     void createInitUser(@Param("user_id") String user_id,
             @Param("email") String email,

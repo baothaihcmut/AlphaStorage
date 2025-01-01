@@ -1,4 +1,4 @@
-package vn.anpha.storage.UpgradeHistory.DTO;
+package vn.anpha.storage.UpgradeHistory.DTO.Request;
 
 import jakarta.validation.constraints.NotNull;
 
