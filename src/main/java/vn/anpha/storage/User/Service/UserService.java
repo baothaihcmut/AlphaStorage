@@ -1,6 +1,7 @@
 package vn.anpha.storage.User.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -8,12 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import vn.anpha.storage.Auth.Dto.RequestDto.AuthoticationDto;
 import vn.anpha.storage.Role.Service.RoleService;
+import vn.anpha.storage.User.Dto.Projection.UserDto;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
@@ -23,7 +27,6 @@ import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.mapper.UserMapper;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
-import vn.anpha.storage.User.respository.UserRepositoryDto;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
@@ -53,17 +56,21 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto CreateUser(CreateUserDto userDto) {
+    public UserDto CreateUser(CreateUserDto userDto) {
         userDto.setPassword(hashPassword(userDto.getPassword()));
         String userId = UUID.randomUUID().toString();
 
-        try {
-
-            this.userRepository.createUser(userId, userDto, this.roleService.FindByName("USER").getRoleId());
-            return userResponseMapper.User_To_UserResponseDto(this.userRepository.FindUserByID(userId));
-
-        } catch (DataIntegrityViolationException exception) {
+        if (this.userRepository.existsByEmail(userDto.getEmail())) {
             throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        try {
+            long roleId = this.roleService.FindByName("USER").getRoleId();
+            this.userRepository.createUser(userId, userDto, roleId);
+
+            return userRepository.FindUserById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.SERVER_ERROR);
         }
 
     }
@@ -85,19 +92,17 @@ public class UserService {
 
     }
 
-    public User getUsersById(String id) {
-        User user = userRepository.FindUserByID(id);
-        if (user == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-        return user;
+    public UserDto getUsersById(String id) {
+        Optional<UserDto> user = userRepository.FindUserById(id);
+        return user.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
-    public User GetInfo() {
+    public UserDto GetInfo() {
         SecurityContext context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String email = context.getAuthentication().getName();
 
-        return this.GetUserByEmail(name);
+        Optional<UserDto> user = userRepository.FindUserInfoByEmail(email);
+        return user.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 
     public User GetUserByEmail(String email) {
@@ -119,21 +124,29 @@ public class UserService {
         return userId;
     }
 
-    public UserResponseDto UpdateUser(UpdateUserDto update) {
+    @Transactional
+    public UserDto UpdateUser(UpdateUserDto updateUserDto) {
         SecurityContext context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-        User user = this.GetUserByEmail(name);
-        userMapper.userUpdate(user, update);
-        this.userRepository.save(user);
-        return userResponseMapper.User_To_UserResponseDto(user);
+        String email = context.getAuthentication().getName();
+
+        this.userRepository.updateUserByEmail(email, updateUserDto);
+        Optional<UserDto> user = userRepository.FindUserInfoByEmail(email);
+        return user.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    public boolean checkPassword(User user, String password) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        boolean isExactly = passwordEncoder.matches(password, user.getPassword());
+        return isExactly;
     }
 
     public void ChangePassword(ChangePasswordDto changePasswordDto) {
         SecurityContext context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         User user = this.GetUserByEmail(name);
-        String hassPassWord = this.hashPassword(changePasswordDto.getOldPassword());
-        if (this.passwordEncoder.matches(user.getPassword(), hassPassWord)) {
+
+        if (checkPassword(user, changePasswordDto.getOldPassword())) {
             user.setPassword(this.hashPassword(changePasswordDto.getNewPassword()));
             this.userRepository.save(user);
 
@@ -143,13 +156,4 @@ public class UserService {
 
     }
 
-    public UserRepositoryDto test1(String email) {
-        // Implement your logic here
-        UserRepositoryDto result = this.userRepository.findTest(email);
-        return result;
-    }
-
-    public User test2() {
-        return GetUserByEmail("test1@email.com");
-    }
 }

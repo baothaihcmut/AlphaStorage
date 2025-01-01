@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import vn.anpha.storage.User.Dto.Projection.UserDto;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
@@ -24,7 +25,6 @@ import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.Service.UserService;
 import vn.anpha.storage.User.mapper.UserResponseMapper;
 import vn.anpha.storage.User.respository.UserRepository;
-import vn.anpha.storage.User.respository.UserRepositoryDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
@@ -43,17 +43,19 @@ public class UserController {
     }
 
     @GetMapping("user/myInfo")
-    public ApiResponseDto<User> getMyInfo() {
-        ApiResponseDto<User> response = new ApiResponseDto<>();
+    public ApiResponseDto<UserDto> getMyInfo() {
+        ApiResponseDto<UserDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.GetInfo());
+        response.setMessage("Get MyInfo User");
         return response;
     }
 
     // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/get/{id}")
-    public ApiResponseDto<UserResponseDto> getUserById(@PathVariable() String id) {
-        ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
-        response.setResult(userResponseMapper.User_To_UserResponseDto(this.userService.getUsersById(id)));
+    public ApiResponseDto<UserDto> getUserById(@PathVariable() String id) {
+        ApiResponseDto<UserDto> response = new ApiResponseDto<>();
+        response.setResult(this.userService.getUsersById(id));
+        response.setMessage("Get MyInfo User By Id");
         return response;
     }
 
@@ -67,22 +69,24 @@ public class UserController {
 
         ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
         response.setResult(userService.GetAllUser(pageable));
+        response.setMessage("Get Info All Users");
         return response;
     }
 
-    // @PostMapping("/user/signUp")
-    // public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid
-    // CreateUserDto userDto) {
-    // ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
-    // response.setResult(this.userService.CreateUser(userDto));
+    @PostMapping("/user/signUp")
+    public ApiResponseDto<UserDto> createUser(@RequestBody @Valid CreateUserDto userDto) {
+        ApiResponseDto<UserDto> response = new ApiResponseDto<>();
+        response.setResult(this.userService.CreateUser(userDto));
 
-    // return response;
-    // }
+        return response;
+    }
 
     @PatchMapping("/user/update")
-    public ApiResponseDto<UserResponseDto> updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
-        ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+    public ApiResponseDto<UserDto> updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
+        ApiResponseDto<UserDto> response = new ApiResponseDto<>();
         response.setResult(this.userService.UpdateUser(updateUserDto));
+        response.setMessage("Update Information User");
+
         return response;
     }
 
@@ -90,12 +94,9 @@ public class UserController {
     public ApiResponseDto ChangePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
         ApiResponseDto response = new ApiResponseDto<>();
         this.userService.ChangePassword(changePasswordDto);
-        return response;
-    }
+        response.setMessage("User Change Password ");
 
-    @GetMapping("test1/{email}")
-    public UserRepositoryDto test1(@PathVariable() String email) {
-        return this.userService.test1(email);
+        return response;
     }
 
 }

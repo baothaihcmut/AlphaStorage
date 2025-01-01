@@ -41,6 +41,8 @@ public class CompanyController {
                         @RequestBody CompanyCreationRequest request) {
                 return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.createCompany(request))
+                                .message("Create Company")
+                                .success(true)
                                 .build();
         }
 
@@ -49,6 +51,8 @@ public class CompanyController {
                         @RequestBody CompanyUpdateRequest request) {
                 return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.updateCompanyInfo(id, request))
+                                .message("update Company")
+                                .success(true)
                                 .build();
         }
 
@@ -58,33 +62,41 @@ public class CompanyController {
 
                 return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.updateGradeCompany(id, request))
+                                .message("upgrade Company")
+                                .success(true)
                                 .build();
         }
 
-        // @GetMapping("/getOwn")
-        // ApiResponseDto<PaginateResponseDto> getCompanyProperties(
-        // @RequestParam("current") Optional<String> currentOptional,
-        // @RequestParam("pageSize") Optional<String> pageSizeOptional) {
-        // int current = currentOptional.map(Integer::parseInt).orElse(1);
-        // int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
-        // Pageable pageable = PageRequest.of(current - 1, pageSize);
-        // return ApiResponseDto.<PaginateResponseDto>builder()
-        // .result(companyService.getCompanies(pageable))
-        // .build();
-        // }
+        @GetMapping("/getOwn")
+        ApiResponseDto<PaginateResponseDto> getCompanyProperties(
+                        @RequestParam("current") Optional<String> currentOptional,
+                        @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+                int current = currentOptional.map(Integer::parseInt).orElse(1);
+                int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
+                Pageable pageable = PageRequest.of(current - 1, pageSize);
+                return ApiResponseDto.<PaginateResponseDto>builder()
+                                .result(companyService.getCompaniesOwn(pageable))
+                                .message("Get All OwnCompanies")
+                                .success(true)
+                                .build();
+        }
 
         @GetMapping("/get/{id}")
         ApiResponseDto<CompanyInterface> getACompanyProperties(
                         @PathVariable String id) {
                 return ApiResponseDto.<CompanyInterface>builder()
                                 .result(companyService.getCompany(id))
+                                .message("Get Info Company by ID")
+                                .success(true)
                                 .build();
         }
 
-        // @DeleteMapping("/delete/{id}")
-        // ApiResponseDto<Boolean> deleteCompany(@PathVariable UUID id) {
-        // return ApiResponseDto.<Boolean>builder()
-        // .result(companyService.deleteCompanyById(id))
-        // .build();
-        // }
+        @DeleteMapping("/delete/{id}")
+        ApiResponseDto<Boolean> deleteCompany(@PathVariable String id) {
+                return ApiResponseDto.<Boolean>builder()
+                                .result(companyService.deleteCompanyById(id))
+                                .message("Delete Company by ID")
+                                .success(true)
+                                .build();
+        }
 }
