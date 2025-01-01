@@ -19,7 +19,6 @@ import vn.anpha.storage.User.respository.UserRepository;
 public class ApplicationInitConfig {
 
     @Bean
-    @Transactional
     ApplicationRunner applicationRunner(RoleRepository roleRepository, UserRepository userRepository) {
         return args -> {
             // Add some initial data to your database here.
