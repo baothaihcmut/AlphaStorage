@@ -153,9 +153,11 @@ public class CompanyService {
 
     }
 
-    public boolean checkOwnCompany(User user, String companyId) {
+    public void checkOwnCompany(User user, String companyId) {
         Long count = companyRepository.CheckOwnCompany(companyId, authoticationService.GetUserIdByToken());
-        return count > 0; // Nếu số lượng > 0, trả về true, nếu không thì false
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
+        }
     }
 
     // @Transactional

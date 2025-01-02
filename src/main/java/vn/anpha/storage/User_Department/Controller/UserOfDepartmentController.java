@@ -46,27 +46,18 @@ public class UserOfDepartmentController {
 
     @PostMapping("/add")
     public ApiResponseDto<DepartmentUser> addUserDepartment(@RequestBody UserDepartmentCreate payload) {
-        boolean userExist = userRepository.existsById(payload.getUserId());
-        if (!userExist) {
-            throw new EntityNotFoundException("User not found");
-        }
-        boolean departmentExist = departmentRepository.existsById(payload.getDepartmentId());
-        if (!departmentExist) {
-            throw new EntityNotFoundException("Department not found");
-        }
 
-        User user = entityManager.getReference(User.class, payload.getUserId());
-        Department department = entityManager.getReference(Department.class, payload.getDepartmentId());
         ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
-
-        response.setResult(this.userOfDepartmentService.createUserOfDepartment(user, department));
 
         return response;
     }
 
     @PostMapping("getByUserIdAndDepartmentId")
-    public DepartmentUser getAll(@RequestBody UserDepartmentCreate payload) {
-        return this.userOfDepartmentService.findUserAndDepartment(payload.getUserId(), payload.getDepartmentId());
+    public ApiResponseDto<DepartmentUser> getAll(@RequestBody UserDepartmentCreate payload) {
+        ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
+        response.setResult(
+                this.userOfDepartmentService.findUserAndDepartment(payload.getUserId(), payload.getDepartmentId()));
+        return response;
     }
 
     @PatchMapping("update/{id}")

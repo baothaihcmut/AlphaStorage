@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,59 +39,63 @@ public class DepartmentService {
         UserOfDepartmentService userOfDepartmentService;
         CompanyService companyService;
 
+        @Transactional
         public DepartmentDTO createDepartment(DepartmentCreationDTO departmentCreateRequest) {
-                boolean company = companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                departmentCreateRequest.getCompanyId());
-                User user = authoticationService.getUserByToken();
-                departmentCreateRequest.setDepartmentId(UUID.randomUUID().toString());
-                this.departmentRepository.insertDepartment(departmentCreateRequest);
-                // userOfDepartmentService.createManger(user, department);
-                return this.departmentRepository.findDepartmentById(departmentCreateRequest.getDepartmentId())
-                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                String user_id = authoticationService.GetUserIdByToken();
+                if (departmentCreateRequest.getParentDepartmentId() == null) {
+                        companyService.checkOwnCompany(authoticationService.getUserByToken(),
+                                        departmentCreateRequest.getCompanyId());
 
-        }
-
-        public UUID byteArrayToUUID(byte[] byteArray) {
-                // Kiểm tra nếu mảng byte không hợp lệ hoặc không có độ dài 16 byte
-                if (byteArray == null || byteArray.length != 16) {
-                        throw new IllegalArgumentException("Mảng byte phải có độ dài 16 byte.");
+                } else {
+                        this.userOfDepartmentService.checkManagerOfDepartment(
+                                        departmentCreateRequest.getParentDepartmentId(), user_id);
                 }
 
-                // Sử dụng ByteBuffer để chuyển đổi byte[] thành UUID
-                ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-                long mostSigBits = buffer.getLong(); // 8 byte đầu tiên của UUID
-                long leastSigBits = buffer.getLong(); // 8 byte cuối cùng của UUID
+                try {
+                        String departmentId = UUID.randomUUID().toString();
+                        departmentRepository.insertDepartment(departmentCreateRequest, departmentId);
+                        userOfDepartmentService.createManager(user_id, departmentId);
+                        return departmentRepository.findDepartmentById(departmentId)
+                                        .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        throw new AppException(ErrorCode.SERVER_ERROR);
+                }
 
-                // Tạo và trả về UUID từ các phần mostSignificantBits và leastSignificantBits
-                return new UUID(mostSigBits, leastSigBits);
         }
 
-        public DepartmentDTO getDepartmentById(String id) {
+        public DepartmentDTO getDepartmentById(String departmentId) {
 
-                SecurityContext context = SecurityContextHolder.getContext();
-                String emailLogin = context.getAuthentication().getName();
-                DepartmentDTO departmenResponseProjection = departmentRepository
-                                .findDepartmentByIdAndCheckOwn(id, emailLogin).orElseThrow(
-                                                () -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-                return departmenResponseProjection;
+                userOfDepartmentService.checkUserExistInDepartment(departmentId,
+                                authoticationService.GetUserIdByToken());
+                return departmentRepository.findDepartmentById(departmentId)
+                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         }
 
-        public Boolean deleteDepartmentById(UUID id) {
+        public Boolean deleteDepartmentById(String id) {
                 DepartmentDTO department = this.departmentRepository.findDepartmentById(id.toString())
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
                 companyService.checkOwnCompany(authoticationService.getUserByToken(),
                                 department.getCompanyId());
 
-                // departmentRepository.delete(department);
+                departmentRepository.deleteById(id);
                 return true;
 
         }
 
+        @Transactional
         public DepartmentDTO updateDepartment(String departmentId, DepartmentUpdateDTO departmentUpdateRequest) {
-                this.departmentRepository.updateDepartment(departmentId, departmentUpdateRequest);
-                return this.departmentRepository.findDepartmentById(departmentId)
-                                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                userOfDepartmentService.checkManagerOfDepartment(
+                                departmentId, authoticationService.GetUserIdByToken());
+                try {
+                        departmentRepository.updateDepartment(departmentId, departmentUpdateRequest);
+                        return this.departmentRepository.findDepartmentById(departmentId)
+                                        .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        throw new AppException(ErrorCode.SERVER_ERROR);
+                }
 
         }
 

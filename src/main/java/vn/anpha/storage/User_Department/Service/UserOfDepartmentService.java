@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.User_Department.DTO.request.UserDepartmentCreate;
 import vn.anpha.storage.User_Department.DTO.request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
@@ -33,38 +35,25 @@ public class UserOfDepartmentService {
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
 
-    private void checkManagerOfDepartment(Department department) {
-        User userToken = authoticationService.getUserByToken();
-        DepartmentUser own = userOfDepartmentRepository.findUserOfDepartment(userToken.getUserId(),
-                department.getDepartmentId()).orElse(null);
+    public void checkManagerOfDepartment(String departmentId, String user_id) {
 
-        boolean isOwner = own != null && own.isManager();
-        if (!isOwner) {
-            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS);
+        long count = userOfDepartmentRepository.checkManagerDepartment(departmentId, user_id);
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_OWNDEPARTMENT);
         }
     }
 
-    private void checkUserExistInDepartment(String userId, Department department) {
+    public void checkUserExistInDepartment(String departmentId, String userId) {
         userOfDepartmentRepository.findUserOfDepartment(userId,
-                department.getDepartmentId()).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
+                departmentId).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
 
     }
 
-    public DepartmentUser createManager(User user, Department department) {
-        DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
-                department.getDepartmentId()).orElse(null);
-        if (userOfDepartment == null) {
-            userOfDepartment = new DepartmentUser(user, true, department);
-
-            userOfDepartmentRepository.save(userOfDepartment);
-            return userOfDepartment;
-        } else {
-            if (userOfDepartment.isManager() == false) {
-                userOfDepartment.setManager(true);
-                userOfDepartmentRepository.save(userOfDepartment);
-            }
-            return userOfDepartment;
-        }
+    @Transactional
+    public DepartmentUser createManager(String user, String departmentId) {
+        userOfDepartmentRepository.insertUserToDepartment(departmentId, user, true);
+        return userOfDepartmentRepository.findUserOfDepartment(user, departmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
     }
 
     public DepartmentUser updateUserOfDepartment(
@@ -83,16 +72,16 @@ public class UserOfDepartmentService {
 
     }
 
-    public DepartmentUser createUserOfDepartment(User user, Department department) {
-        // check if user exist in deparment
-        this.checkManagerOfDepartment(department);
-        this.checkUserExistInDepartment(user.getUserId(), department);
-        //
-        System.err.println(department.getName());
+    // public DepartmentUser createUserOfDepartment(UserDepartmentCreate
+    // userOfDepartmentCreate) {
+    // // check if user exist in deparment
+    // userOfDepartmentRepository.insertUserToDepartment(userOfDepartmentCreate.getDepartmentId(),
+    // userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.isManager());
+    // return userOfDepartmentRepository.findUserOfDepartment(user, departmentId)
+    // .orElseThrow(() -> new
+    // AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
-        return userOfDepartmentRepository.insertUserToDepartment(department.getDepartmentId(), user.getUserId(), false);
-
-    }
+    // }
 
     public void deleteUserOfDepartmentBy(String userId, String departmentId) {
         DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)

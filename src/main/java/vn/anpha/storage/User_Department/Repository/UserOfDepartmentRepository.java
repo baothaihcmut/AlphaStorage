@@ -19,8 +19,11 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @Repository
 public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser, DepartmentUserId> {
-        @Query(value = "SELECT * FROM department_of_user"
-                        + " where user_id = :user_id And department_id=:department_id ", nativeQuery = true)
+        @Query(value = """
+                        SELECT *
+                        FROM department_of_user
+                        where user_id = :user_id And department_id=:department_id
+                                                         """, nativeQuery = true)
         Optional<DepartmentUser> findUserOfDepartment(@Param("user_id") String user_id,
                         @Param("department_id") String department_id);
 
@@ -30,6 +33,12 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
         List<DepartmentUser> findManagerOfDepartment(
                         @Param("department_id") String department_id);
 
+        @Query(value = "SELECT count(department_id) "
+                        + "FROM department_of_user "
+                        + "where is_manager=true And department_id=:department_id and user_id=:user_id", nativeQuery = true)
+        Long checkManagerDepartment(
+                        @Param("department_id") String department_id, String user_id);
+
         @Query(value = "SELECT DU.id, DU.department_id,DU.user_id,U.email,U.full_name " +
                         "FROM department_of_user as DU ,users as U "
                         + " where DU.department_id=:department_id And U.user_id=DU.user_id", nativeQuery = true)
@@ -38,11 +47,10 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
                         Pageable pageable);
 
         @Modifying
-        @Transactional
         @Query(value = """
-                        INSERT INTO department_of_user  (department_id, user_id, create_at, update_at, is_manager)
+                        INSERT INTO department_of_user  (department_id, user_id, created_at, updated_at, is_manager)
                         VALUES (:departmentId, :userId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :isManager)""", nativeQuery = true)
-        DepartmentUser insertUserToDepartment(@Param("departmentId") String departmentId,
+        void insertUserToDepartment(@Param("departmentId") String departmentId,
                         @Param("userId") String userId, @Param("isManager") Boolean isManager);
 
 }
