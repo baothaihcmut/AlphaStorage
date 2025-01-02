@@ -48,7 +48,9 @@ public class UserOfDepartmentController {
     public ApiResponseDto<DepartmentUser> addUserDepartment(@RequestBody UserDepartmentCreate payload) {
 
         ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
-
+        response.setResult(this.userOfDepartmentService.createUserOfDepartment(payload));
+        response.setMessage("Created user of department");
+        response.setSuccess(true);
         return response;
     }
 

@@ -51,17 +51,16 @@ public class UserOfCompanyService {
         authoticationService.getUserByToken();
 
         User employee = this.GetUserByEmail(data.getEmployeeEmail());
-        if(employee == null) {
+        if (employee == null) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         Company company = this.getCompany(data.getCompanyId());
-        if(company == null) {
+        if (company == null) {
             throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
         }
         try {
             return this.userCompanyRepository.insertUserToCompany(data.getCompanyId(), employee.getUserId());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
     }
@@ -75,4 +74,5 @@ public class UserOfCompanyService {
                 .collect(Collectors.toList()); // Chuyển thành danh sách
         return users;
     }
+
 }

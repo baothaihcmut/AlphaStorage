@@ -1,5 +1,6 @@
 package vn.anpha.storage.Department.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
+import vn.anpha.storage.Department.DTO.projection.TreeDepartment;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
 import vn.anpha.storage.Department.DTO.response.DepartmenResponse;
@@ -87,5 +89,15 @@ public class DepartmentController {
                 response.setSuccess(true);
                 response.setMessage("Get all department of the company");
                 return response;
+        }
+
+        @GetMapping("/employee/{employeeId}/company/{companyId}")
+        ApiResponseDto<List<TreeDepartment>> getDepartmentOfEmployee(@PathVariable String employeeId,
+                        @PathVariable String companyId) {
+                return ApiResponseDto.<List<TreeDepartment>>builder()
+                                .result(departmentService.getDepartmentOfEmployee(employeeId, companyId))
+                                .message("Get department by Id")
+                                .success(true)
+                                .build();
         }
 }

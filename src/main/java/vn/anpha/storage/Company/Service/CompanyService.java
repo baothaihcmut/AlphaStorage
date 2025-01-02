@@ -26,6 +26,7 @@ import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
+import vn.anpha.storage.User_company.Service.UserOfCompanyService;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
@@ -160,6 +161,12 @@ public class CompanyService {
         }
     }
 
+    public void checkUserInCompany(String userId, String companyId) {
+        Long count = this.companyRepository.checkUserInCompany(userId, companyId);
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_IN_COMPANY);
+        }
+    }
     // @Transactional
     // public CompanySizeProjection createNewFileCompanySize(UUID companyId, Integer
     // iaddtionSize) {

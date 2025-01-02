@@ -1,6 +1,10 @@
 package vn.anpha.storage.Department.Service;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -17,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
+import vn.anpha.storage.Department.DTO.projection.TreeDepartment;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
 import vn.anpha.storage.Department.Mapper.DepartmentMapper;
@@ -70,6 +75,41 @@ public class DepartmentService {
                                 authoticationService.GetUserIdByToken());
                 return departmentRepository.findDepartmentById(departmentId)
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+        }
+
+        public List<TreeDepartment> getDepartmentOfEmployee(String employeeId, String companyId) {
+
+                List<DepartmentDTO> departmentOfUser = this.departmentRepository.findDepartmentOfUser(employeeId,
+                                companyId);
+                return buildDepartmentTree(departmentOfUser);
+        }
+
+        public List<TreeDepartment> buildDepartmentTree(List<DepartmentDTO> departments) {
+                Map<String, TreeDepartment> departmentMap = new HashMap<>();
+                List<TreeDepartment> rootDepartments = new ArrayList<>();
+
+                // Tạo một TreeDepartment cho mỗi phòng ban và lưu vào map
+                for (DepartmentDTO department : departments) {
+                        TreeDepartment treeDepartment = new TreeDepartment(department);
+                        departmentMap.put(department.getDepartmentId(), treeDepartment);
+                }
+
+                // Xây dựng cây phân cấp
+                for (DepartmentDTO department : departments) {
+                        TreeDepartment treeDepartment = departmentMap.get(department.getDepartmentId());
+                        if (department.getParentDepartmentId() != null) {
+                                // Tìm phòng ban cha và thêm phòng ban con vào đó
+                                TreeDepartment parent = departmentMap.get(department.getParentDepartmentId());
+                                if (parent != null) {
+                                        parent.addSubDepartment(treeDepartment);
+                                }
+                        } else {
+                                // Phòng ban gốc (không có parentDepartmentId)
+                                rootDepartments.add(treeDepartment);
+                        }
+                }
+
+                return rootDepartments;
         }
 
         public Boolean deleteDepartmentById(String id) {

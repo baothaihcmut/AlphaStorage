@@ -62,6 +62,12 @@ public class UserOfDepartmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         companyService.checkOwnCompany(authoticationService.getUserByToken(),
                 department.getCompanyId());
+        if (department.getParentDepartmentId() != null) {
+            this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                    authoticationService.GetUserIdByToken());
+        } else {
+            companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+        }
         DepartmentUser userOfDepartment = this.userOfDepartmentRepository.findUserOfDepartment(
                 updateDTO.getUserId(),
                 updateDTO.getDepartmentId())
@@ -72,21 +78,56 @@ public class UserOfDepartmentService {
 
     }
 
-    // public DepartmentUser createUserOfDepartment(UserDepartmentCreate
-    // userOfDepartmentCreate) {
-    // // check if user exist in deparment
-    // userOfDepartmentRepository.insertUserToDepartment(userOfDepartmentCreate.getDepartmentId(),
-    // userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.isManager());
-    // return userOfDepartmentRepository.findUserOfDepartment(user, departmentId)
-    // .orElseThrow(() -> new
-    // AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
+    @Transactional
+    public DepartmentUser createUserOfDepartment(UserDepartmentCreate userOfDepartmentCreate) {
+        DepartmentDTO department = this.departmentRepository
+                .findDepartmentById(userOfDepartmentCreate.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
-    // }
+        // Kiểm cha có thuộc công ty không
+        companyService.checkUserInCompany(userOfDepartmentCreate.getUserId(), department.getCompanyId());
+
+        // Kiểm Người Thao tác có quyền thêm user vào phòng ban không
+        this.checkManagerOfDepartment(userOfDepartmentCreate.getDepartmentId(),
+                authoticationService.GetUserIdByToken());
+
+        // Kiểm tra khi thêm quản lý vào department =>Người thực hiện phải có quyền quản
+        // lý ở lớp cao hơn
+        if (userOfDepartmentCreate.isManager()) {
+            if (department.getParentDepartmentId() != null) {
+                this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                        authoticationService.GetUserIdByToken());
+            } else {
+                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+            }
+        }
+
+        userOfDepartmentRepository.insertUserToDepartment(userOfDepartmentCreate.getDepartmentId(),
+                userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.isManager());
+
+        return userOfDepartmentRepository
+                .findUserOfDepartment(userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
+
+    }
 
     public void deleteUserOfDepartmentBy(String userId, String departmentId) {
+        this.checkManagerOfDepartment(departmentId, authoticationService.GetUserIdByToken());
         DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
+        DepartmentDTO department = this.departmentRepository
+                .findDepartmentById(departmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+
+        if (departmentUser.isManager()) {
+            if (department.getParentDepartmentId() != null) {
+                this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                        authoticationService.GetUserIdByToken());
+            } else {
+                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+            }
+        }
         userOfDepartmentRepository.delete(departmentUser);
 
     }
