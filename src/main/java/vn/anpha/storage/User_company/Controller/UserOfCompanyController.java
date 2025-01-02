@@ -32,10 +32,9 @@ public class UserOfCompanyController {
     }
 
     @PostMapping("/add")
-    public ApiResponseDto<UserOfCompany> addUserToCompany(@RequestBody addUserToCompanyRequestDto payload) {
-        ApiResponseDto<UserOfCompany> response = new ApiResponseDto<>();
-        response.setResult(this.userOfCompanyService.addUserToCompany(payload));
-        return response;
+    public ApiResponseDto<String> addUserToCompany(@RequestBody addUserToCompanyRequestDto payload) {
+        log.info("start here");
+        return this.userOfCompanyService.addUserToCompany(payload);
     }
 
     @GetMapping("/get/{id}/employees")

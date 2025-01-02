@@ -1,5 +1,6 @@
 package vn.anpha.storage.User_company.Repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,12 +23,14 @@ public interface UserCompanyRepository extends JpaRepository<UserOfCompany, User
     List<UserOfCompany> findByCompany(String id);
 
     @Modifying
+    @Transactional
     @Query(value = """
-            INSERT INTO users_of_company (company_id, employee_id, create_at, update_at, status)
+            INSERT INTO users_of_company (company_id, employee_id, created_at, updated_at, status)
             VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false)""", nativeQuery = true)
-    UserOfCompany insertUserToCompany(@Param("companyId") String companyId, @Param("userId") String userId);
+    void insertUserToCompany(@Param("companyId") String companyId, @Param("userId") String userId);
 
     @Modifying
+    @Transactional
     @Query(
             value = """
             UPDATE users_of_company
@@ -35,5 +38,9 @@ public interface UserCompanyRepository extends JpaRepository<UserOfCompany, User
             WHERE company_id = :companyId AND employee_id = :employeeId           
             """, nativeQuery = true
     )
-    boolean acceptInviteFromCompany(String companyId, String employeeId);
+    void acceptInviteFromCompany(String companyId, String employeeId);
+
+    @Query(value = "SELECT COUNT(*) FROM users_of_company WHERE company_id = :companyId AND employee_id = :employeeId", nativeQuery = true)
+    int existsByCompanyIdAndEmployeeId(@Param("companyId") String companyId, @Param("employeeId") String employeeId);
+
 }
