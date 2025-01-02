@@ -45,4 +45,12 @@ public class UserOfCompanyController {
         return response;
     }
 
+    @PostMapping("accept/{company_id}/{employee_id}")
+    public ApiResponseDto<String> acceptInvite(@PathVariable() String company_id, @PathVariable() String employee_id) {
+        return ApiResponseDto.<String>builder()
+                .result(this.userOfCompanyService.acceptInvite(company_id,employee_id))
+                .message("Success")
+                .build();
+    }
+
 }

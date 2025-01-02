@@ -27,18 +27,17 @@ public interface UserRepository extends JpaRepository<User, String> {
         @Query(value = "SELECT * FROM users WHERE email=:email LIMIT 1", nativeQuery = true)
         UserRepositoryDto findTest(@Param("email") String email);
 
-        @Query(value = "SELECT * FROM users WHERE id=:id ", nativeQuery = true)
+        @Query(value = "SELECT * FROM users WHERE user_id=:id ", nativeQuery = true)
         User FindUserByID(String id);
 
-        @Query(value = "SELECT user_id FROM users WHERE id=:id ", nativeQuery = true)
-        String findUserIdByEmail(String id);
+        @Query(value = "SELECT user_id FROM users WHERE email=:email", nativeQuery = true)
+        String findUserIdByEmail(String email);
 
         @Modifying
-
         @Query(value = """
                         INSERT INTO users (user_id, email, full_name, password, phone, updated_at,role_id, created_at, address)
                         VALUES (:user_id, :#{#user.email}, :#{#user.fullName},:#{#user.password},:#{#user.phone} , CURRENT_TIMESTAMP,:role, CURRENT_TIMESTAMP,:#{#user.address})""", nativeQuery = true)
-        User createUser(@Param("user_id") String user_id, @Param("user") CreateUserDto userdto, long role);
+        void createUser(@Param("user_id") String user_id, @Param("user") CreateUserDto userdto, long role);
 
         @Modifying
         @Transactional

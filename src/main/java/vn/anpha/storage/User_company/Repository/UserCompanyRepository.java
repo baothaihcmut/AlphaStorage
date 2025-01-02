@@ -23,8 +23,17 @@ public interface UserCompanyRepository extends JpaRepository<UserOfCompany, User
 
     @Modifying
     @Query(value = """
-            INSERT INTO users_of_company (company_id, employee_id, create_at, update_at)
-            VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""", nativeQuery = true)
+            INSERT INTO users_of_company (company_id, employee_id, create_at, update_at, status)
+            VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false)""", nativeQuery = true)
     UserOfCompany insertUserToCompany(@Param("companyId") String companyId, @Param("userId") String userId);
 
+    @Modifying
+    @Query(
+            value = """
+            UPDATE users_of_company
+            SET status = true
+            WHERE company_id = :companyId AND employee_id = :employeeId           
+            """, nativeQuery = true
+    )
+    boolean acceptInviteFromCompany(String companyId, String employeeId);
 }

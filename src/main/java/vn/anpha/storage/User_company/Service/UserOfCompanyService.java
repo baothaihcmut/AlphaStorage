@@ -75,4 +75,21 @@ public class UserOfCompanyService {
                 .collect(Collectors.toList()); // Chuyển thành danh sách
         return users;
     }
+
+    public String acceptInvite(String companyId, String employeeId) {
+        User myInfo= authoticationService.getUserByToken();
+        User employee = this.GetUserByEmail(employeeId);
+        if(employee == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        if (!myInfo.getUserId().equals(employee.getUserId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        var result= this.userCompanyRepository.acceptInviteFromCompany(companyId,employeeId);
+        if(!result) {
+            throw new AppException(ErrorCode.SERVER_ERROR);
+        }
+        return "Accept invite successfully";
+
+    }
 }

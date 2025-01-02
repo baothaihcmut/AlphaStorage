@@ -48,7 +48,7 @@ public class DepartmentController {
         // }
 
         @DeleteMapping("/delete/{id}")
-        ApiResponseDto<Boolean> deleteDepartmentById(@PathVariable UUID id) {
+        ApiResponseDto<Boolean> deleteDepartmentById(@PathVariable String id) {
                 return ApiResponseDto.<Boolean>builder()
                                 .result(departmentService.deleteDepartmentById(id))
                                 .build();

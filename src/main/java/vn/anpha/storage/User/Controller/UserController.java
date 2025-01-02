@@ -70,14 +70,14 @@ public class UserController {
         return response;
     }
 
-    // @PostMapping("/user/signUp")
-    // public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid
-    // CreateUserDto userDto) {
-    // ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
-    // response.setResult(this.userService.CreateUser(userDto));
+     @PostMapping("/user/signUp")
+     public ApiResponseDto<UserResponseDto> createUser(@RequestBody @Valid
+     CreateUserDto userDto) {
+     ApiResponseDto<UserResponseDto> response = new ApiResponseDto<>();
+     response.setResult(this.userService.CreateUser(userDto));
 
-    // return response;
-    // }
+     return response;
+     }
 
     @PatchMapping("/user/update")
     public ApiResponseDto<UserResponseDto> updateUser(@RequestBody @Valid UpdateUserDto updateUserDto) {
