@@ -32,10 +32,9 @@ public class UserOfCompanyController {
     }
 
     @PostMapping("/add")
-    public ApiResponseDto<UserOfCompany> addUserToCompany(@RequestBody addUserToCompanyRequestDto payload) {
-        ApiResponseDto<UserOfCompany> response = new ApiResponseDto<>();
-        response.setResult(this.userOfCompanyService.addUserToCompany(payload));
-        return response;
+    public ApiResponseDto<String> addUserToCompany(@RequestBody addUserToCompanyRequestDto payload) {
+        log.info("start here");
+        return this.userOfCompanyService.addUserToCompany(payload);
     }
 
     @GetMapping("/get/{id}/employees")
@@ -43,6 +42,14 @@ public class UserOfCompanyController {
         ApiResponseDto<List<User>> response = new ApiResponseDto<>();
         response.setResult(this.userOfCompanyService.getAllUserBelongCompany(id));
         return response;
+    }
+
+    @PostMapping("accept/{company_id}/{employee_id}")
+    public ApiResponseDto<String> acceptInvite(@PathVariable() String company_id, @PathVariable() String employee_id) {
+        return ApiResponseDto.<String>builder()
+                .result(this.userOfCompanyService.acceptInvite(company_id,employee_id))
+                .message("Success")
+                .build();
     }
 
 }

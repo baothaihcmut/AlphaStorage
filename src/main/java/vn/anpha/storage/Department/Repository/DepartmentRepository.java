@@ -82,8 +82,6 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
         @Query(value = "SELECT d.department_id, d.name, d.description,d.parent_department_id,d.total_size,d.company_id "
                         +
                         "FROM departments d WHERE d.company_id = :companyId", countQuery = "SELECT COUNT(d.department_id) FROM departments d WHERE d.company_id = :companyId", nativeQuery = true)
-        Page<DepartmentDTO> FindDepartmentOfCompany(@Param("companyId") String companyId,
-
-                        Pageable pageable);
+        Page<DepartmentDTO> FindDepartmentOfCompany(@Param("companyId") String companyId, Pageable pageable);
 
 }

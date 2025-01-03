@@ -80,7 +80,11 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
     // thêm công ty mới
     @Modifying
     @Query(value = """
+<<<<<<< HEAD
             INSERT INTO companies (company_id, owner_id, name, total_size, description, limit_size, has_version, created_at, updated_at)
+=======
+            INSERT INTO company (company_id, owner_id, name, total_size, description, limit_size, has_version, created_at, updated_at)
+>>>>>>> 649d6dad4f9f681d78c5c6a69729f19c5427efb6
             VALUES (:companyId, :ownerId, :#{#company.name}, 0, :#{#company.description}, :#{#company.limit_size}, :#{#company.hasVersion}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """, nativeQuery = true)
     void insertCompany(@Param("company") CompanyCreationRequest company, @Param("companyId") String companyId,

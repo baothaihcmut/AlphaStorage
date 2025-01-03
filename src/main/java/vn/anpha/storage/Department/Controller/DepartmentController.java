@@ -39,6 +39,7 @@ public class DepartmentController {
                         @RequestBody DepartmentCreationDTO request) {
                 return ApiResponseDto.<DepartmentDTO>builder()
                                 .result(departmentService.createDepartment(request))
+                                .message("Create department")
                                 .build();
         }
 

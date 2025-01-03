@@ -64,7 +64,7 @@ public enum ErrorCode {
     METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
     API_NOT_EXIST("API not Exist", HttpStatus.NOT_FOUND),
     // ELSE
-    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR);
+    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR), USER_ALREADY_IN_COMPANY("user already in company",HttpStatus.BAD_REQUEST );
 
     // FOR FOL
 

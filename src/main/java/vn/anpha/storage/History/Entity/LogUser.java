@@ -32,6 +32,7 @@ public class LogUser {
     @Column(nullable = true, unique = true, updatable = false)
     private String email;
 
+
     @Enumerated(EnumType.STRING)
     @Column(updatable = false, nullable = false)
     private ActionEnum action;
@@ -50,3 +51,4 @@ public class LogUser {
     private File file;
 
 }
+

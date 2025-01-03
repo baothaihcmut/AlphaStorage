@@ -1,6 +1,5 @@
 package vn.anpha.storage.Department.Service;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -27,7 +24,6 @@ import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
 import vn.anpha.storage.Department.Mapper.DepartmentMapper;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
-import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;

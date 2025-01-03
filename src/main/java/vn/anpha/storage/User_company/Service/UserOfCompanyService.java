@@ -21,6 +21,7 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 import vn.anpha.storage.User_company.Repository.UserCompanyRepository;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
+import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
 @Service
@@ -46,9 +47,9 @@ public class UserOfCompanyService {
         return companyRepository.findById(uuid).orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
     }
 
-    public UserOfCompany addUserToCompany(@NotNull addUserToCompanyRequestDto data) {
+    public ApiResponseDto<String> addUserToCompany(@NotNull addUserToCompanyRequestDto data) throws AppException {
         authoticationService.getUserByToken();
-
+        log.info("after auth");
         User employee = this.GetUserByEmail(data.getEmployeeEmail());
         if (employee == null) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -58,8 +59,22 @@ public class UserOfCompanyService {
             throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
         }
         try {
-            return this.userCompanyRepository.insertUserToCompany(data.getCompanyId(), employee.getUserId());
+            log.info("before add");
+            boolean exists = userCompanyRepository.existsByCompanyIdAndEmployeeId(data.getCompanyId(),
+                    employee.getUserId()) > 0;
+            if (exists) {
+                throw new AppException(ErrorCode.USER_ALREADY_IN_COMPANY);
+            }
+
+            this.userCompanyRepository.insertUserToCompany(data.getCompanyId(), employee.getUserId());
+            log.info("after add");
+            return ApiResponseDto.<String>builder()
+                    .message("success invite")
+                    .build();
+        } catch (AppException e) {
+            throw e;
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
     }
@@ -74,4 +89,23 @@ public class UserOfCompanyService {
         return users;
     }
 
+    public String acceptInvite(String companyId, String employeeId) {
+        User myInfo = authoticationService.getUserByToken();
+        User employee = this.GetUserByEmail(employeeId);
+        if (employee == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        if (!myInfo.getUserId().equals(employee.getUserId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        try {
+            this.userCompanyRepository.acceptInviteFromCompany(companyId, employeeId);
+            return "Accept invite successfully";
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return "Accept invite failed";
+
+    }
 }
