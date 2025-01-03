@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import vn.anpha.storage.File_Tag.DTO.Request.FileTagCreationRequest;
 import vn.anpha.storage.File_Tag.Entity.FileTag;
+import vn.anpha.storage.File_Tag.Entity.FileTagId;
 
 @Repository
-public interface FileTagRepository extends JpaRepository<FileTag, String> {
+public interface FileTagRepository extends JpaRepository<FileTag, FileTagId> {
     @Modifying
     @Query(value = """
             INSERT INTO file_tags (file_id, tag_id, created_at, updated_at)
