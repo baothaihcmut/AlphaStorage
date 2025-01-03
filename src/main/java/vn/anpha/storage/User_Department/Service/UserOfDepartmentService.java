@@ -48,12 +48,7 @@ public class UserOfDepartmentService {
         }
     }
 
-    public void checkUserExistInDepartment(String departmentId, String userId) {
-        userOfDepartmentRepository.findUserOfDepartment(userId,
-                departmentId).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
-
-    }
-
+    @Transactional
     public void insertMultipleUsersToDepartment(List<DepartmentUserDtoImpl> listUserDtoImpls) {
         if (listUserDtoImpls == null || listUserDtoImpls.isEmpty()) {
             return; // Không có người dùng để chèn
@@ -123,7 +118,8 @@ public class UserOfDepartmentService {
 
     // Phương thức lấy danh sách các quản lý của phòng ban cha
 
-    public DepartmentUser updateUserOfDepartment(
+    @Transactional
+    public DepartmentUserDto updateUserOfDepartment(
             UserDepartmentUpdate updateDTO) {
         DepartmentDTO department = this.departmentRepository.findDepartmentById(updateDTO.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
@@ -135,18 +131,30 @@ public class UserOfDepartmentService {
         } else {
             companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
         }
-        DepartmentUser userOfDepartment = this.userOfDepartmentRepository.findUserOfDepartment(
-                updateDTO.getUserId(),
-                updateDTO.getDepartmentId())
+
+        log.info("updateDTO: {}", updateDTO);
+        userOfDepartmentRepository.updateUserOfCompany(updateDTO.getDepartmentId(), updateDTO.getUserId(),
+                updateDTO.getIsManager());
+        return userOfDepartmentRepository.findUserOfDepartment(updateDTO.getUserId(), updateDTO.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
-        userOfDepartment.setManager(updateDTO.isManager());
-        userOfDepartmentRepository.save(userOfDepartment);
-        return userOfDepartment;
 
     }
 
+    public void checkUserExistInDepartment(String userId, String departmentId) {
+        long count = userOfDepartmentRepository.checkExistUserDepartment(departmentId, userId);
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED);
+        }
+    }
+
     @Transactional
-    public DepartmentUser createUserOfDepartment(UserDepartmentCreate userOfDepartmentCreate) {
+    public DepartmentUserDto createUserOfDepartment(UserDepartmentCreate userOfDepartmentCreate) {
+
+        long count = userOfDepartmentRepository.checkExistUserDepartment(userOfDepartmentCreate.getDepartmentId(),
+                userOfDepartmentCreate.getUserId());
+        if (count > 0) {
+            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED);
+        }
         DepartmentDTO department = this.departmentRepository
                 .findDepartmentById(userOfDepartmentCreate.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
@@ -160,7 +168,7 @@ public class UserOfDepartmentService {
 
         // Kiểm tra khi thêm quản lý vào department =>Người thực hiện phải có quyền quản
         // lý ở lớp cao hơn
-        if (userOfDepartmentCreate.isManager()) {
+        if (userOfDepartmentCreate.getIsManager()) {
             if (department.getParentDepartmentId() != null) {
                 this.checkManagerOfDepartment(department.getParentDepartmentId(),
                         authoticationService.GetUserIdByToken());
@@ -170,7 +178,7 @@ public class UserOfDepartmentService {
         }
 
         userOfDepartmentRepository.insertUserToDepartment(userOfDepartmentCreate.getDepartmentId(),
-                userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.isManager());
+                userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.getIsManager());
 
         return userOfDepartmentRepository
                 .findUserOfDepartment(userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.getDepartmentId())
@@ -180,7 +188,7 @@ public class UserOfDepartmentService {
 
     public void deleteUserOfDepartmentBy(String userId, String departmentId) {
         this.checkManagerOfDepartment(departmentId, authoticationService.GetUserIdByToken());
-        DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)
+        DepartmentUser departmentUser = userOfDepartmentRepository.getEntityDepartmentUser(userId, departmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
         DepartmentDTO department = this.departmentRepository
@@ -199,7 +207,7 @@ public class UserOfDepartmentService {
 
     }
 
-    public DepartmentUser findUserAndDepartment(String user_id, String department_id) {
+    public DepartmentUserDto findUserAndDepartment(String user_id, String department_id) {
         return userOfDepartmentRepository.findUserOfDepartment(user_id, department_id).orElse(null);
     }
 

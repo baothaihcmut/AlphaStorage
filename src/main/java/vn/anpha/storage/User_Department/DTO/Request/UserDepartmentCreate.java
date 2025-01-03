@@ -1,6 +1,9 @@
 package vn.anpha.storage.User_Department.DTO.Request;
 
+import org.checkerframework.common.value.qual.BoolVal;
+
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +21,7 @@ public class UserDepartmentCreate {
     private String userId;
     @NotEmpty(message = "departmentId is required.")
     private String departmentId;
-    @NotEmpty(message = "isManager is required.")
-    private boolean isManager;
+    @NotNull(message = "isManager is required.")
+
+    private Boolean isManager;
 }

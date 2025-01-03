@@ -26,7 +26,15 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
                         FROM department_of_user
                         where user_id = :user_id And department_id=:department_id
                                                          """, nativeQuery = true)
-        Optional<DepartmentUser> findUserOfDepartment(@Param("user_id") String user_id,
+        Optional<DepartmentUserDto> findUserOfDepartment(@Param("user_id") String user_id,
+                        @Param("department_id") String department_id);
+
+        @Query(value = """
+                        SELECT *
+                        FROM department_of_user
+                        where user_id = :user_id And department_id=:department_id
+                                                         """, nativeQuery = true)
+        Optional<DepartmentUser> getEntityDepartmentUser(@Param("user_id") String user_id,
                         @Param("department_id") String department_id);
 
         @Query(value = "SELECT * "
@@ -39,6 +47,12 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
                         + "FROM department_of_user "
                         + "where is_manager=true And department_id=:department_id and user_id=:user_id", nativeQuery = true)
         Long checkManagerDepartment(
+                        @Param("department_id") String department_id, String user_id);
+
+        @Query(value = "SELECT count(department_id) "
+                        + "FROM department_of_user "
+                        + "where department_id=:department_id and user_id=:user_id", nativeQuery = true)
+        Long checkExistUserDepartment(
                         @Param("department_id") String department_id, String user_id);
 
         @Query(value = "SELECT  DU.department_id,DU.user_id,DU.is_manager,U.email,U.full_name " +
@@ -54,5 +68,14 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
                         VALUES (:departmentId, :userId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :isManager)""", nativeQuery = true)
         void insertUserToDepartment(@Param("departmentId") String departmentId,
                         @Param("userId") String userId, @Param("isManager") Boolean isManager);
+
+        @Modifying
+
+        @Query(value = """
+                        UPDATE department_of_user
+                        SET is_manager = :isManager
+                        WHERE department_id=:department_id and user_id=:user_id
+                        """, nativeQuery = true)
+        void updateUserOfCompany(@Param("department_id") String department_id, String user_id, boolean isManager);
 
 }

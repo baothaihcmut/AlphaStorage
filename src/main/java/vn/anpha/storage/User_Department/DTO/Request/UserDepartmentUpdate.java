@@ -15,5 +15,5 @@ import lombok.experimental.FieldDefaults;
 public class UserDepartmentUpdate {
     private String userId;
     private String departmentId;
-    private boolean isManager;
+    private Boolean isManager;
 }

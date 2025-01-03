@@ -42,7 +42,7 @@ public class CompanyService {
             String companyId = UUID.randomUUID().toString();
             String OwnerId = authoticationService.GetUserIdByToken();
             companyRepository.insertCompany(companyCreationRequest, companyId, OwnerId);
-
+            companyRepository.insertUserToCompany(companyId, OwnerId);
             // create company bucket
 
             // this.storageService.createBucket(companyId,

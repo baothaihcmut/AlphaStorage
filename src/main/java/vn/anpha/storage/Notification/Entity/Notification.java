@@ -40,7 +40,7 @@ public class Notification {
     @Column(columnDefinition = "enum('UNREAD', 'READ') default 'UNREAD'")
     private NotificationStatus status;
 
-    @Column(columnDefinition = "enum('INVITE', 'ACCEPT', 'REJECT', 'DELETE', 'UPDATE') default 'INVITE'")
+    @Column(columnDefinition = "enum('INVITECOMPANY', 'ACCEPTINVITECOMPANY', 'REJECT', 'DELETE', 'UPDATE') default 'INVITECOMPANY'")
     private NotificationType type;
 
     @CreationTimestamp

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentCreate;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
+import vn.anpha.storage.User_Department.DTO.projection.DepartmentUserDto;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -43,9 +45,9 @@ public class UserOfDepartmentController {
     UserRepository userRepository;
 
     @PostMapping("/add")
-    public ApiResponseDto<DepartmentUser> addUserDepartment(@RequestBody UserDepartmentCreate payload) {
+    public ApiResponseDto<DepartmentUserDto> addUserDepartment(@Valid @RequestBody UserDepartmentCreate payload) {
 
-        ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
+        ApiResponseDto<DepartmentUserDto> response = new ApiResponseDto<>();
         response.setResult(this.userOfDepartmentService.createUserOfDepartment(payload));
         response.setMessage("Created user of department");
         response.setSuccess(true);
@@ -53,18 +55,19 @@ public class UserOfDepartmentController {
     }
 
     @PostMapping("getByUserIdAndDepartmentId")
-    public ApiResponseDto<DepartmentUser> getAll(@RequestBody UserDepartmentCreate payload) {
-        ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
+    public ApiResponseDto<DepartmentUserDto> getAll(@RequestBody @Valid UserDepartmentCreate payload) {
+        ApiResponseDto<DepartmentUserDto> response = new ApiResponseDto<>();
         response.setResult(
                 this.userOfDepartmentService.findUserAndDepartment(payload.getUserId(), payload.getDepartmentId()));
         return response;
     }
 
-    @PatchMapping("update/{id}")
-    public ApiResponseDto<DepartmentUser> updateUserOfDepartment(@RequestBody UserDepartmentUpdate payload) {
+    @PatchMapping("update")
+    public ApiResponseDto<DepartmentUserDto> updateUserOfDepartment(@RequestBody UserDepartmentUpdate payload) {
 
         // implement update logic here
-        ApiResponseDto<DepartmentUser> response = new ApiResponseDto<>();
+
+        ApiResponseDto<DepartmentUserDto> response = new ApiResponseDto<>();
 
         response.setResult(this.userOfDepartmentService.updateUserOfDepartment(payload));
 
