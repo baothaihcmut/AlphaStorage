@@ -74,7 +74,7 @@ public class AuthoticationService {
                 .issuer("hieu.com")
                 .issueTime(new Date())
                 .expirationTime(
-                        new Date(Instant.now().plus(15, ChronoUnit.MINUTES).toEpochMilli()))
+                        new Date(Instant.now().plus(15, ChronoUnit.HOURS).toEpochMilli()))
                 .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
