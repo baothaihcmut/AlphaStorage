@@ -4,6 +4,12 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,8 @@ import vn.anpha.storage.File.DTO.Response.FileMetaDataLinkDTO;
 import vn.anpha.storage.File.Interface.IFileService;
 import vn.anpha.storage.File.Repository.FileDetailRepository;
 import vn.anpha.storage.File.Repository.FileRepository;
+import vn.anpha.storage.File_Tag.DTO.Request.FileTagCreationRequest;
+import vn.anpha.storage.File_Tag.Service.FileTagService;
 import vn.anpha.storage.Storage.service.StorageService;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.Version.DTO.projection.VersionDTO;
@@ -47,6 +55,7 @@ public class FileService implements IFileService {
         private final AuthoticationService authService;
         private final VersionService versionService;
         private final VersionRepository versionRepository;
+        private final FileTagService fileTagService;
 
         @Value("${version.numOfVersion}")
         private Integer numOfVersion;
@@ -120,6 +129,37 @@ public class FileService implements IFileService {
                                 .createNewFileCompanySize(department.getCompanyId(),
                                                 dto.getFileDetail().getSize());
                 // add to file tag table
+                try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                        List<Callable<Void>> tasks = Stream.of(dto.getTagIds())
+                                        .map(tagId -> (Callable<Void>) () -> {
+                                                this.fileTagService.insertFileTag(FileTagCreationRequest.builder()
+                                                                .fileId(dto.getFileId())
+                                                                .tagId(tagId)
+                                                                .build());
+                                                return null;
+                                        })
+                                        .toList();
+
+                        // Submit all tasks and wait for completion
+                        List<Future<Void>> futures = executor.invokeAll(tasks);
+
+                        // Check for task-specific exceptions
+                        for (Future<Void> future : futures) {
+                                future.get();
+                        }
+
+                } catch (ExecutionException e) {
+                        e.printStackTrace();
+                        Throwable cause = e.getCause();
+                        if (cause instanceof AppException) {
+                                throw (AppException) cause;
+                        } else {
+                                throw new AppException(ErrorCode.SERVER_ERROR);
+                        }
+                } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // Restore the interrupted status
+                        throw new AppException(ErrorCode.SERVER_ERROR);
+                }
 
                 // upload file
                 return this.getPresignUrlAndSave(dto,

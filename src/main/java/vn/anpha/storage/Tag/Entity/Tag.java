@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import vn.anpha.storage.File_Tag.Entity.FileTag;
@@ -25,8 +26,13 @@ public class Tag {
     @Column(nullable = false)
     private String name;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isCompanyTag;
+
     @OneToMany(mappedBy = "tag", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<FileTag> fileOfTag;
 
+    @OneToOne(mappedBy = "tag", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private TagCompany tagCompany;
 }

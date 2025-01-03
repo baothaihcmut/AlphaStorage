@@ -53,6 +53,9 @@ public enum ErrorCode {
     // FOR Buy Data
     THIS_TYPE_DOES_NOT_EXIST("This type does not exist", HttpStatus.BAD_REQUEST),
 
+    // FOR TAG
+    TAG_NOT_EXIST("Tag not Exist", HttpStatus.NOT_FOUND),
+    TAG_COMPANY_MISMATCH("Tag company mismatch", HttpStatus.BAD_REQUEST),
     // FOR SERVER
     METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
     API_NOT_EXIST("API not Exist", HttpStatus.NOT_FOUND),
