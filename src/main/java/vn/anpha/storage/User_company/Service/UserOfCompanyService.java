@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.AccessLevel;
@@ -16,9 +20,12 @@ import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.User_company.DTO.request.addUserToCompanyRequestDto;
+import vn.anpha.storage.User_company.DTO.response.EmployeesResponseDto;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
 //import vn.anpha.storage.User_company.Mapper.UserOfCompanyMapper;
+import vn.anpha.storage.User_company.Mapper.UserOfCompanyMapper;
 import vn.anpha.storage.User_company.Repository.UserCompanyRepository;
+import vn.anpha.storage.User_company.Repository.UserCompanyResponseProjection;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -32,6 +39,7 @@ public class UserOfCompanyService {
     AuthoticationService authoticationService;
     UserRepository userRepository;
     CompanyRepository companyRepository;
+    UserOfCompanyMapper userOfCompanyMapper;
 
     public User GetUserByEmail(String email) {
 
@@ -89,17 +97,10 @@ public class UserOfCompanyService {
         return users;
     }
 
-    public String acceptInvite(String companyId, String employeeId) {
+    public String acceptInvite(String companyId) {
         User myInfo = authoticationService.getUserByToken();
-        User employee = this.GetUserByEmail(employeeId);
-        if (employee == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-        if (!myInfo.getUserId().equals(employee.getUserId())) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-        }
         try {
-            this.userCompanyRepository.acceptInviteFromCompany(companyId, employeeId);
+            this.userCompanyRepository.acceptInviteFromCompany(companyId, myInfo.getUserId());
             return "Accept invite successfully";
 
         } catch (Exception e) {
@@ -108,4 +109,35 @@ public class UserOfCompanyService {
         return "Accept invite failed";
 
     }
+
+    public Page<EmployeesResponseDto> getAllUserBelongCompany(String page, String limit, String companyId) {
+        authoticationService.getUserByToken();
+
+        int pageNumber = Integer.parseInt(page);
+        int pageSize = Integer.parseInt(limit);
+
+        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+
+
+        Page<UserOfCompany> userCompanyPage = userCompanyRepository.findUserOfCompaniesByCompany(companyId, pageable);
+        log.info(userCompanyPage.toString());
+
+        // Convert UserOfCompany entities to EmployeesResponseDto using the helper method
+        return changeFromUserToEmployeesResponseDto(userCompanyPage);
+    }
+    private Page<EmployeesResponseDto> changeFromUserToEmployeesResponseDto(Page<UserOfCompany> userOfCompanyPage) {
+        List<EmployeesResponseDto> employeeResponseDtos = userOfCompanyPage.stream()
+                .map(userOfCompany -> EmployeesResponseDto.builder()
+                        .userId(userOfCompany.getEmployee().getUserId())
+                        .email(userOfCompany.getEmployee().getEmail())
+                        .fullName(userOfCompany.getEmployee().getFullName())
+                        .address(userOfCompany.getEmployee().getAddress())
+                        .phone(userOfCompany.getEmployee().getPhone())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(employeeResponseDtos, userOfCompanyPage.getPageable(), userOfCompanyPage.getTotalElements());
+    }
+
+
 }

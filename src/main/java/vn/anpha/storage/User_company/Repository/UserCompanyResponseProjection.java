@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public interface UserCompanyResponseProjection {
     String getEmployee() ;
-
     String getCompany();
     boolean isStatus();
     LocalDateTime getCreatedAt();

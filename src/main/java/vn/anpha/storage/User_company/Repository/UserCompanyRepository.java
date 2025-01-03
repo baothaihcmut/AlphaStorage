@@ -2,6 +2,8 @@ package vn.anpha.storage.User_company.Repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +40,9 @@ public interface UserCompanyRepository extends JpaRepository<UserOfCompany, User
         int existsByCompanyIdAndEmployeeId(@Param("companyId") String companyId,
                         @Param("employeeId") String employeeId);
 
+
+        @Query(value = """
+    SELECT * FROM users_of_company WHERE company_id = :companyId AND status=true
+""",nativeQuery = true)
+        Page<UserOfCompany> findUserOfCompaniesByCompany(String companyId, Pageable pageable);
 }

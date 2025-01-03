@@ -3,12 +3,8 @@ package vn.anpha.storage.User_company.Controller;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -38,16 +34,20 @@ public class UserOfCompanyController {
     }
 
     @GetMapping("/get/{id}/employees")
-    public ApiResponseDto<List<User>> getAllEmployee(@PathVariable() String id) {
-        ApiResponseDto<List<User>> response = new ApiResponseDto<>();
-        response.setResult(this.userOfCompanyService.getAllUserBelongCompany(id));
+    public ApiResponseDto<Page> getAllEmployee(@PathVariable() String id,
+                                               @RequestParam(defaultValue = "1")String page,
+                                               @RequestParam(defaultValue = "10")String limit
+                                                     ) {
+
+        ApiResponseDto<Page> response = new ApiResponseDto<>();
+        response.setResult(this.userOfCompanyService.getAllUserBelongCompany(page,limit,id));
         return response;
     }
 
-    @PostMapping("accept/{company_id}/{employee_id}")
-    public ApiResponseDto<String> acceptInvite(@PathVariable() String company_id, @PathVariable() String employee_id) {
+    @PostMapping("accept/{company_id}")
+    public ApiResponseDto<String> acceptInvite(@PathVariable() String company_id) {
         return ApiResponseDto.<String>builder()
-                .result(this.userOfCompanyService.acceptInvite(company_id,employee_id))
+                .result(this.userOfCompanyService.acceptInvite(company_id))
                 .message("Success")
                 .build();
     }

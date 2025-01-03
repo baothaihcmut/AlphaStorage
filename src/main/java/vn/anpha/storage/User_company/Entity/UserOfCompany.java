@@ -35,8 +35,6 @@ public class UserOfCompany {
     @JsonBackReference
     private User employee;
 
-
-
     @Id
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false, referencedColumnName = "company_id")
