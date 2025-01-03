@@ -16,6 +16,4 @@ public class DepartmentUpdateDTO {
     private String name;
     private String description;
 
-    private String companyId;
-
 }

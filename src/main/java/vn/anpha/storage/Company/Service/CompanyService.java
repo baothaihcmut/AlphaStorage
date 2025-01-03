@@ -3,6 +3,8 @@ package vn.anpha.storage.Company.Service;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -14,12 +16,15 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Storage.service.StorageService;
+import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
+import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 
 @Slf4j
 @Service
@@ -39,7 +44,9 @@ public class CompanyService {
             companyRepository.insertCompany(companyCreationRequest, companyId, OwnerId);
 
             // create company bucket
-            this.storageService.createBucket(companyId, companyCreationRequest.getHasVersion());
+
+            this.storageService.createBucket(companyId,
+                    companyCreationRequest.getHasVersion());
             return this.companyRepository.findCompanyById(companyId)
                     .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         } catch (Exception e) {
@@ -61,55 +68,63 @@ public class CompanyService {
 
     @Transactional
     public CompanyInterface updateGradeCompany(String companyId, UpGradeCompanyRequest request) {
-        BigInteger oldSize = this.companyRepository.findCompanyLimitSizeById(companyId);
+        // BigInteger oldSize = this.companyRepository.f(companyId);
 
-        switch (request.getOption()) {
-            case "option1":
-                oldSize.add(BigInteger.valueOf(10000));
-                // NEED TO RESET VALUE
-                break;
-            case "option2":
-                oldSize.add(BigInteger.valueOf(20000));
-                // NEED TO RESET VALUE
-                break;
-            case "option3":
-                oldSize.add(BigInteger.valueOf(30000));
-                // NEED TO RESET VALUE
-                break;
-            default:
-                throw new AppException(ErrorCode.THIS_TYPE_DOES_NOT_EXIST);
-        }
-        try {
-            this.companyRepository.updateCompanySize(companyId, oldSize);
-            return this.companyRepository.findCompanyById(companyId)
-                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        // Optional<CompanyInterface> company =
+        // this.companyRepository.findCompanyById(companyId);
+        // if (!company.isPresent()) {
+        // throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
+        // }
 
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new AppException(ErrorCode.SERVER_ERROR);
-        }
+        // BigInteger newSize = company.get().getLimitSize();
+        // String OwnerId = authoticationService.GetUserIdByToken();
+
+        // // Cập nhật kích thước mới dựa trên lựa chọn
+        // switch (request.getOption()) {
+        // case "option1":
+        // newSize = newSize.add(BigInteger.valueOf(10000)); // Cộng thêm 10000
+        // break;
+        // case "option2":
+        // newSize = newSize.add(BigInteger.valueOf(20000)); // Cộng thêm 20000
+        // break;
+        // case "option3":
+        // newSize = newSize.add(BigInteger.valueOf(30000)); // Cộng thêm 30000
+        // break;
+        // default:
+        // throw new AppException(ErrorCode.THIS_TYPE_DOES_NOT_EXIST);
+        // }
+
+        // try {
+        // this.companyRepository.updateCompanySize(companyId, oldSize);
+
+        // return this.companyRepository.findCompanyById(companyId)
+        // .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+
+        // } catch (Exception e) {
+        // // Xử lý ngoại lệ
+        // throw new AppException(ErrorCode.SERVER_ERROR);
+        // }
+        return null;
 
     }
 
-    // public PaginateResponseDto<CompanyResponse> getCompanies(Pageable pageable) {
-    // User user = authoticationService.getUserByToken();
+    public PaginateResponseDto<CompanyInterface> getCompaniesOwn(Pageable pageable) {
+        String OwnerId = authoticationService.GetUserIdByToken();
+        Page<CompanyInterface> pageUser = companyRepository.findAllByCreateBy(OwnerId, pageable);
+        var userOfDepartment = pageUser.getContent();
+        MetaPaginate pageMeta = MetaPaginate.builder()
+                .CurrentPage(pageUser.getNumber())
+                .PageSize(pageUser.getSize())
+                .TotalItems(pageUser.getTotalElements())
+                .TotalPages(pageUser.getTotalPages())
+                .build();
+        PaginateResponseDto<CompanyInterface> responseDto = new PaginateResponseDto<CompanyInterface>();
+        responseDto.setData(userOfDepartment);
+        responseDto.setMetaPaginate(pageMeta);
 
-    // Page<Company> companyList =
-    // companyRepository.findAllByCreateBy(user.getEmail(), pageable);
-    // var companys = companyList.getContent();
-    // MetaPaginate pageMeta = MetaPaginate.builder()
-    // .CurrentPage(companyList.getNumber())
-    // .PageSize(companyList.getSize())
-    // .TotalItems(companyList.getTotalElements())
-    // .TotalPages(companyList.getTotalPages())
-    // .build();
-    // PaginateResponseDto<CompanyResponse> responseDto = new
-    // PaginateResponseDto<CompanyResponse>();
-    // responseDto.setData(companys.stream().map(companyMapper::toCompanyResponse).toList());
-    // responseDto.setMetaPaginate(pageMeta);
-    // return responseDto;
+        return responseDto;
 
-    // }
+    }
 
     public CompanyInterface getCompany(String uuid) {
 
@@ -120,24 +135,21 @@ public class CompanyService {
                 throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
             }
 
-            return company;
+            return companyRepository.findCompanyById(uuid)
+                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         } catch (Exception e) {
             throw new AppException(ErrorCode.SERVER_ERROR);
         }
 
     }
 
-    // public boolean deleteCompanyById(UUID id) {
-    // checkOwnCompany(authoticationService.getUserByToken(), id);
-    // Company company = companyRepository.findById(id)
-    // .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
-    // this.companyRepository.deleteById(id);
-    // return true;
+    public boolean deleteCompanyById(String id) {
+        checkOwnCompany(authoticationService.getUserByToken(), id);
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+        this.companyRepository.deleteById(id);
+        return true;
 
-    // }
-
-    public boolean checkOwnCompany(User user, String companyId) {
-        return companyRepository.CheckOwnCompany(companyId, user.getUserId());
     }
 
     @Transactional
@@ -151,6 +163,20 @@ public class CompanyService {
         BigInteger newSize = companySize.getTotalSize().add(addtionSize);
         this.companyRepository.updateCompanySize(companyId, newSize);
         return companySize;
+    }
+
+    public void checkOwnCompany(User user, String companyId) {
+        Long count = companyRepository.CheckOwnCompany(companyId, authoticationService.GetUserIdByToken());
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
+        }
+    }
+
+    public void checkUserInCompany(String userId, String companyId) {
+        Long count = this.companyRepository.checkUserInCompany(userId, companyId);
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_IN_COMPANY);
+        }
     }
 
     @Transactional

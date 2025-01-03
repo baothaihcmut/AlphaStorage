@@ -13,9 +13,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DepartmentCreationDTO {
-    private String departmentId;
+
     private String name;
     private String description;
     private String companyId;
-
+    private String parentDepartmentId;
 }

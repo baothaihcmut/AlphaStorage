@@ -20,17 +20,21 @@ public enum ErrorCode {
     COMPANY_EXISTED("Company already exists", HttpStatus.BAD_REQUEST),
     COMPANY_NOT_EXISTED("Company not exists", HttpStatus.BAD_REQUEST),
     USER_NOT_OWNCOMPANY("User does not have permission", HttpStatus.BAD_REQUEST),
+
     COMPANY_EXEED_LIMIT_SIZE("Company doesn't have  enoungh space to save this file", HttpStatus.CONFLICT),
     PERSONAL_EXCEED_LIMIT_SIZE("You don't have enoungh space to save this file", HttpStatus.CONFLICT),
     // FOR DEPARTMENT
     DEPARTMENT_EXISTED("Department already exists", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NOT_EXISTED("Department not exists", HttpStatus.BAD_REQUEST),
+    USER_NOT_OWNDEPARTMENT("User does not manager department", HttpStatus.BAD_REQUEST),
     // FOR User_of_Department
     USER_OF_DEPARTMENT_EXISTED("User of department already exists", HttpStatus.BAD_REQUEST),
     USER_OF_DEPARTMENT_NOT_EXISTED("User of department not exists", HttpStatus.BAD_REQUEST),
 
     USER_OF_DEPARTMENT_NOT_YOURS("User of department not yours", HttpStatus.BAD_REQUEST),
 
+    // FOR User_of_Department
+    USER_NOT_IN_COMPANY("User does not in company", HttpStatus.BAD_REQUEST),
     // FOR FOLDER
     PARENT_FOLDER_NOT_EXIST("Folder not exist", HttpStatus.NOT_FOUND),
     FOLDER_NOT_EXIST("Folder not Exist", HttpStatus.NOT_FOUND),

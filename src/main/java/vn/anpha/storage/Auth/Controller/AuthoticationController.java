@@ -38,14 +38,16 @@ public class AuthoticationController {
         LoginResponseDto loginResponseDto = authenticationService.Login(authoticationDto);
 
         response.setResult(loginResponseDto);
-
+        response.setMessage("User Login ");
         return response;
     }
 
-    @GetMapping("/auth/logout")
+    @PostMapping("/auth/logout")
     public ApiResponseDto Logout() {
         ApiResponseDto response = new ApiResponseDto<>();
         authenticationService.Logout();
+        response.setSuccess(true);
+        response.setMessage("User logOut");
         return response;
     }
 
@@ -56,7 +58,8 @@ public class AuthoticationController {
         try {
             token = this.authenticationService.instropectRefreshToken(refreshToken.getRefreshToken());
             response.setResult(token);
-
+            response.setSuccess(true);
+            response.setMessage("refresh token");
             return response;
         } catch (JOSEException e) {
             // TODO Auto-generated catch block

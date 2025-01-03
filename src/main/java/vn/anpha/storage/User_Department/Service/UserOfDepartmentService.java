@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,10 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Service.CompanyService;
 import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
-import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
-import vn.anpha.storage.User.Entity.User;
+import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentCreate;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
@@ -33,38 +33,25 @@ public class UserOfDepartmentService {
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
 
-    private void checkManagerOfDepartment(Department department) {
-        User userToken = authoticationService.getUserByToken();
-        DepartmentUser own = userOfDepartmentRepository.findUserOfDepartment(userToken.getUserId(),
-                department.getDepartmentId()).orElse(null);
+    public void checkManagerOfDepartment(String departmentId, String user_id) {
 
-        boolean isOwner = own != null && own.isManager();
-        if (!isOwner) {
-            throw new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_YOURS);
+        long count = userOfDepartmentRepository.checkManagerDepartment(departmentId, user_id);
+        if (count == 0) {
+            throw new AppException(ErrorCode.USER_NOT_OWNDEPARTMENT);
         }
     }
 
-    private void checkUserExistInDepartment(String userId, Department department) {
+    public void checkUserExistInDepartment(String departmentId, String userId) {
         userOfDepartmentRepository.findUserOfDepartment(userId,
-                department.getDepartmentId()).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
+                departmentId).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
 
     }
 
-    public DepartmentUser createManager(User user, Department department) {
-        DepartmentUser userOfDepartment = userOfDepartmentRepository.findUserOfDepartment(user.getUserId(),
-                department.getDepartmentId()).orElse(null);
-        if (userOfDepartment == null) {
-            userOfDepartment = new DepartmentUser(user, true, department);
-
-            userOfDepartmentRepository.save(userOfDepartment);
-            return userOfDepartment;
-        } else {
-            if (userOfDepartment.isManager() == false) {
-                userOfDepartment.setManager(true);
-                userOfDepartmentRepository.save(userOfDepartment);
-            }
-            return userOfDepartment;
-        }
+    @Transactional
+    public DepartmentUser createManager(String user, String departmentId) {
+        userOfDepartmentRepository.insertUserToDepartment(departmentId, user, true);
+        return userOfDepartmentRepository.findUserOfDepartment(user, departmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
     }
 
     public DepartmentUser updateUserOfDepartment(
@@ -73,6 +60,12 @@ public class UserOfDepartmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         companyService.checkOwnCompany(authoticationService.getUserByToken(),
                 department.getCompanyId());
+        if (department.getParentDepartmentId() != null) {
+            this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                    authoticationService.GetUserIdByToken());
+        } else {
+            companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+        }
         DepartmentUser userOfDepartment = this.userOfDepartmentRepository.findUserOfDepartment(
                 updateDTO.getUserId(),
                 updateDTO.getDepartmentId())
@@ -83,21 +76,56 @@ public class UserOfDepartmentService {
 
     }
 
-    public DepartmentUser createUserOfDepartment(User user, Department department) {
-        // check if user exist in deparment
-        this.checkManagerOfDepartment(department);
-        this.checkUserExistInDepartment(user.getUserId(), department);
-        //
-        System.err.println(department.getName());
+    @Transactional
+    public DepartmentUser createUserOfDepartment(UserDepartmentCreate userOfDepartmentCreate) {
+        DepartmentDTO department = this.departmentRepository
+                .findDepartmentById(userOfDepartmentCreate.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
-        return userOfDepartmentRepository.insertUserToDepartment(department.getDepartmentId(), user.getUserId(), false);
+        // Kiểm cha có thuộc công ty không
+        companyService.checkUserInCompany(userOfDepartmentCreate.getUserId(), department.getCompanyId());
+
+        // Kiểm Người Thao tác có quyền thêm user vào phòng ban không
+        this.checkManagerOfDepartment(userOfDepartmentCreate.getDepartmentId(),
+                authoticationService.GetUserIdByToken());
+
+        // Kiểm tra khi thêm quản lý vào department =>Người thực hiện phải có quyền quản
+        // lý ở lớp cao hơn
+        if (userOfDepartmentCreate.isManager()) {
+            if (department.getParentDepartmentId() != null) {
+                this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                        authoticationService.GetUserIdByToken());
+            } else {
+                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+            }
+        }
+
+        userOfDepartmentRepository.insertUserToDepartment(userOfDepartmentCreate.getDepartmentId(),
+                userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.isManager());
+
+        return userOfDepartmentRepository
+                .findUserOfDepartment(userOfDepartmentCreate.getUserId(), userOfDepartmentCreate.getDepartmentId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
     }
 
     public void deleteUserOfDepartmentBy(String userId, String departmentId) {
+        this.checkManagerOfDepartment(departmentId, authoticationService.GetUserIdByToken());
         DepartmentUser departmentUser = userOfDepartmentRepository.findUserOfDepartment(userId, departmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
+        DepartmentDTO department = this.departmentRepository
+                .findDepartmentById(departmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+
+        if (departmentUser.isManager()) {
+            if (department.getParentDepartmentId() != null) {
+                this.checkManagerOfDepartment(department.getParentDepartmentId(),
+                        authoticationService.GetUserIdByToken());
+            } else {
+                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+            }
+        }
         userOfDepartmentRepository.delete(departmentUser);
 
     }

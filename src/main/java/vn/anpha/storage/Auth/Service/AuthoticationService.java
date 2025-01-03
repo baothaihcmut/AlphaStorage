@@ -52,6 +52,7 @@ public class AuthoticationService {
 
     public User checkPassword(AuthoticationDto authotication) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
         List<User> users = userRepository.findByEmail(authotication.getUsername());
         if (users.isEmpty()) {
             throw new AppException(ErrorCode.USER_PASSWORD_NOT_EXACTLY);

@@ -10,4 +10,7 @@ public interface DepartmentDTO {
     Integer getTotalSize();
 
     String getCompanyId();
+
+    String getParentDepartmentId();
+
 }
