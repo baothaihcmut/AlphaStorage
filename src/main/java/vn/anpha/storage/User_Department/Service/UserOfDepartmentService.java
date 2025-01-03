@@ -1,9 +1,13 @@
 package vn.anpha.storage.User_Department.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,8 @@ import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentCreate;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
+import vn.anpha.storage.User_Department.DTO.projection.DepartmentUserDto;
+import vn.anpha.storage.User_Department.DTO.projection.DepartmentUserDtoImpl;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
 import vn.anpha.storage.User_Department.Repository.UserOfDepartmentRepository;
@@ -32,6 +38,7 @@ public class UserOfDepartmentService {
     private AuthoticationService authoticationService;
     private CompanyService companyService;
     private DepartmentRepository departmentRepository;
+    private EntityManager entityManager;
 
     public void checkManagerOfDepartment(String departmentId, String user_id) {
 
@@ -43,16 +50,78 @@ public class UserOfDepartmentService {
 
     public void checkUserExistInDepartment(String departmentId, String userId) {
         userOfDepartmentRepository.findUserOfDepartment(userId,
-                departmentId).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_EXISTED));
+                departmentId).orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
 
+    }
+
+    public void insertMultipleUsersToDepartment(List<DepartmentUserDtoImpl> listUserDtoImpls) {
+        if (listUserDtoImpls == null || listUserDtoImpls.isEmpty()) {
+            return; // Không có người dùng để chèn
+        }
+
+        StringBuilder query = new StringBuilder(
+                "INSERT INTO department_of_user (department_id, user_id, created_at, updated_at, is_manager) VALUES ");
+
+        for (int i = 0; i < listUserDtoImpls.size(); i++) {
+            DepartmentUserDtoImpl user = listUserDtoImpls.get(i);
+            query.append(String.format("(%d, %d, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %b)", user.getDepartmentId(),
+                    user.getUserId(), user.getIsManager()));
+
+            if (i < listUserDtoImpls.size() - 1) {
+                query.append(", ");
+            }
+        }
+
+        // Sử dụng câu query đã xây dựng để thực thi với EntityManager hoặc JdbcTemplate
+        entityManager.createNativeQuery(query.toString()).executeUpdate();
+    }
+
+    private List<DepartmentUserDto> getManagerOfParentDepartment(String parentDepartmentId) {
+        return userOfDepartmentRepository.findManagerOfDepartment(parentDepartmentId);
+    }
+
+    // Phương thức chuyển đổi danh sách DepartmentUserDto sang DepartmentUserDtoImpl
+    private List<DepartmentUserDtoImpl> convertToDepartmentUserDtoImpl(
+            List<DepartmentUserDto> managerOfDepartmentParent, String departmentId) {
+        List<DepartmentUserDtoImpl> managerOfDepartmentChildren = new ArrayList<>();
+        for (DepartmentUserDto manager : managerOfDepartmentParent) {
+            DepartmentUserDtoImpl managerChildren = new DepartmentUserDtoImpl(
+                    manager.getUserId(),
+                    departmentId,
+                    true);
+            managerOfDepartmentChildren.add(managerChildren);
+        }
+        return managerOfDepartmentChildren;
     }
 
     @Transactional
-    public DepartmentUser createManager(String user, String departmentId) {
-        userOfDepartmentRepository.insertUserToDepartment(departmentId, user, true);
-        return userOfDepartmentRepository.findUserOfDepartment(user, departmentId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
+    public boolean createManager(String userId, DepartmentDTO department) {
+        try {
+            if (department.getParentDepartmentId() != null) {
+                // Lấy danh sách các quản lý của phòng ban cha
+
+                List<DepartmentUserDto> managerOfDepartmentParent = getManagerOfParentDepartment(
+                        department.getParentDepartmentId());
+
+                // Chuyển đổi danh sách các quản lý từ DTO gốc sang DTO mới
+                List<DepartmentUserDtoImpl> managerOfDepartmentChildren = convertToDepartmentUserDtoImpl(
+                        managerOfDepartmentParent, department.getDepartmentId());
+
+                // Chèn vào phòng ban mới
+                insertMultipleUsersToDepartment(managerOfDepartmentChildren);
+                return true;
+            } else {
+
+                // Nếu không có phòng ban cha, trực tiếp thêm người dùng vào phòng ban
+                userOfDepartmentRepository.insertUserToDepartment(department.getDepartmentId(), userId, true);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.CREATE_USER_OF_DEPARTMENT_ERROR);
+        }
     }
+
+    // Phương thức lấy danh sách các quản lý của phòng ban cha
 
     public DepartmentUser updateUserOfDepartment(
             UserDepartmentUpdate updateDTO) {

@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import vn.anpha.storage.User_Department.DTO.projection.DepartmentUserDto;
+import vn.anpha.storage.User_Department.DTO.projection.DepartmentUserDtoImpl;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser.DepartmentUserId;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
@@ -30,7 +32,7 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
         @Query(value = "SELECT * "
                         + "FROM department_of_user "
                         + "where is_manager=true And department_id=:department_id", nativeQuery = true)
-        List<DepartmentUser> findManagerOfDepartment(
+        List<DepartmentUserDto> findManagerOfDepartment(
                         @Param("department_id") String department_id);
 
         @Query(value = "SELECT count(department_id) "
@@ -39,7 +41,7 @@ public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser
         Long checkManagerDepartment(
                         @Param("department_id") String department_id, String user_id);
 
-        @Query(value = "SELECT DU.id, DU.department_id,DU.user_id,U.email,U.full_name " +
+        @Query(value = "SELECT  DU.department_id,DU.user_id,DU.is_manager,U.email,U.full_name " +
                         "FROM department_of_user as DU ,users as U "
                         + " where DU.department_id=:department_id And U.user_id=DU.user_id", nativeQuery = true)
 

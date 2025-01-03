@@ -30,7 +30,7 @@ public enum ErrorCode {
     // FOR User_of_Department
     USER_OF_DEPARTMENT_EXISTED("User of department already exists", HttpStatus.BAD_REQUEST),
     USER_OF_DEPARTMENT_NOT_EXISTED("User of department not exists", HttpStatus.BAD_REQUEST),
-
+    CREATE_USER_OF_DEPARTMENT_ERROR("Create user of department error", HttpStatus.BAD_REQUEST),
     USER_OF_DEPARTMENT_NOT_YOURS("User of department not yours", HttpStatus.BAD_REQUEST),
 
     // FOR User_of_Department
@@ -64,7 +64,8 @@ public enum ErrorCode {
     METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
     API_NOT_EXIST("API not Exist", HttpStatus.NOT_FOUND),
     // ELSE
-    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR), USER_ALREADY_IN_COMPANY("user already in company",HttpStatus.BAD_REQUEST );
+    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_ALREADY_IN_COMPANY("user already in company", HttpStatus.BAD_REQUEST);
 
     // FOR FOL
 

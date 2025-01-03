@@ -1,7 +1,6 @@
 package vn.anpha.storage.User_Department.Repository;
 
 public interface UserDepartmentResponseProjection {
-    String getId();
 
     String getEmail();
 
@@ -10,5 +9,7 @@ public interface UserDepartmentResponseProjection {
     String getDepartmentId();
 
     String getUserId();
+
+    Boolean getIsManager();
 
 }

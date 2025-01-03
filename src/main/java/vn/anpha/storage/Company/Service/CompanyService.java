@@ -45,8 +45,8 @@ public class CompanyService {
 
             // create company bucket
 
-            this.storageService.createBucket(companyId,
-                    companyCreationRequest.getHasVersion());
+            // this.storageService.createBucket(companyId,
+            // companyCreationRequest.getHasVersion());
             return this.companyRepository.findCompanyById(companyId)
                     .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         } catch (Exception e) {

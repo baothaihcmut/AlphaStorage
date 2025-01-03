@@ -49,7 +49,7 @@ public class UserOfCompanyService {
 
     public ApiResponseDto<String> addUserToCompany(@NotNull addUserToCompanyRequestDto data) throws AppException {
         authoticationService.getUserByToken();
-        log.info("after auth");
+
         User employee = this.GetUserByEmail(data.getEmployeeEmail());
         if (employee == null) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);

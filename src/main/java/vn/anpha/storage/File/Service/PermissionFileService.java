@@ -38,7 +38,7 @@ public class PermissionFileService {
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
                 this.userOfDepartmentRepository.findManagerOfDepartment(
                                 fileDTO.getDepartmentId()).stream()
-                                .anyMatch((userDepartment) -> userDepartment.getUser().getUserId()
+                                .anyMatch((userDepartment) -> userDepartment.getUserId()
                                                 .equals(user.getUserId()));
                 return true;
         }
