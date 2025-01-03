@@ -21,7 +21,7 @@ import lombok.Data;
 @Table(name = "file_details")
 public class FileDetail {
     @Id
-    @Column(name = "file_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "file_id")
     private String fileId;
 
     // file detail

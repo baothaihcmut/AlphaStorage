@@ -31,7 +31,7 @@ import vn.anpha.storage.Version.Entity.Version;
 @Table(name = "files")
 public class File {
     @Id
-    @Column(name = "file_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "file_id")
     private String fileId;
 
     // common detail

@@ -35,11 +35,11 @@ public interface TagRepository extends JpaRepository<Tag, String> {
 
     @Query(value = """
             SELECT
-                t.tag_id as tagId,
-                t.name as name,
-                t.is_company_tag as isCompanyTag
+            t.tag_id as tagId,
+            t.name as name,
+            t.is_company_tag as isCompanyTag
             FROM tags t
-            """)
+            """, nativeQuery = true)
     List<TagDTO> findAllTag();
 
     @Query(value = """

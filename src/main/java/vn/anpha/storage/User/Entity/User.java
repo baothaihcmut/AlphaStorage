@@ -18,13 +18,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.File.Entity.File;
+import vn.anpha.storage.Notification.Entity.Notification;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_company.Entity.UserOfCompany;
@@ -88,5 +88,13 @@ public class User {
     @OneToMany(mappedBy = "updateUser", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Version> updateVersions;
+
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Notification> recipientNotifications;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Notification> senderNotifications;
 
 }
