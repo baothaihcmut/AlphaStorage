@@ -79,11 +79,20 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
         // thêm công ty mới
         @Modifying
         @Query(value = """
+
                         INSERT INTO companies (company_id, owner_id, name, total_size, description, limit_size, has_version, created_at, updated_at)
+
                         VALUES (:companyId, :ownerId, :#{#company.name}, 0, :#{#company.description}, :#{#company.limit_size}, :#{#company.hasVersion}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                         """, nativeQuery = true)
         void insertCompany(@Param("company") CompanyCreationRequest company, @Param("companyId") String companyId,
                         @Param("ownerId") String ownerId);
+
+        @Modifying
+
+        @Query(value = """
+                        INSERT INTO users_of_company (company_id, employee_id, created_at, updated_at, status)
+                        VALUES (:#{#companyId}, :#{#userId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true)""", nativeQuery = true)
+        void insertUserToCompany(@Param("companyId") String companyId, @Param("userId") String userId);
 
         @Query(value = """
                         SELECT COUNT(*)
@@ -92,4 +101,7 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
                         """, nativeQuery = true)
         Long CheckOwnCompany(@Param("companyId") String companyId, @Param("ownerId") String ownerId);
 
+        Company findAllByCompanyId(String companyId);
+
+        Boolean existsCompanyByCompanyId(String companyId);
 }

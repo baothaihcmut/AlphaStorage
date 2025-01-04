@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 public class DepartmentUpdateManagerRequestDto {
     private UUID userId;
 
-    private boolean isManager;
+    private Boolean isManager;
 
     private UUID departmentId;
 

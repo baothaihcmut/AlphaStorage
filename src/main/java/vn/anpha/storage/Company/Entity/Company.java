@@ -21,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @ToString
 @Setter
+@Getter
 @Entity
 @Slf4j
 @Table(name = "companies")

@@ -11,10 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 import vn.anpha.storage.User.Entity.User;
 
 @Entity
 @Table(name = "notifications")
+@Getter
+@Setter
 public class Notification {
     @Id
     @Column(name = "notification_id")
@@ -25,9 +29,6 @@ public class Notification {
 
     @Column(nullable = false)
     private String content;
-
-    @Column(nullable = true)
-    private String actionUrl;
 
     @ManyToOne()
     @JoinColumn(name = "recipient_id", nullable = false)
@@ -40,7 +41,7 @@ public class Notification {
     @Column(columnDefinition = "enum('UNREAD', 'READ') default 'UNREAD'")
     private NotificationStatus status;
 
-    @Column(columnDefinition = "enum('INVITE', 'ACCEPT', 'REJECT', 'DELETE', 'UPDATE') default 'INVITE'")
+    @Column(columnDefinition = "enum('INVITECOMPANY', 'ACCEPTINVITECOMPANY', 'REJECT', 'DELETE', 'UPDATE') default 'INVITECOMPANY'")
     private NotificationType type;
 
     @CreationTimestamp

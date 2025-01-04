@@ -13,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
+import vn.anpha.storage.Company.Service.CompanyService;
+import vn.anpha.storage.Notification.DTO.request.NotificationRequestDto;
+import vn.anpha.storage.Notification.Entity.NotificationStatus;
+import vn.anpha.storage.Notification.Entity.NotificationType;
+import vn.anpha.storage.Notification.Service.NotificationService;
 import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.User_company.DTO.request.addUserToCompanyRequestDto;
@@ -32,6 +37,8 @@ public class UserOfCompanyService {
     AuthoticationService authoticationService;
     UserRepository userRepository;
     CompanyRepository companyRepository;
+    NotificationService notificationService;
+    CompanyService  companyService;
 
     public User GetUserByEmail(String email) {
 
@@ -48,8 +55,8 @@ public class UserOfCompanyService {
     }
 
     public ApiResponseDto<String> addUserToCompany(@NotNull addUserToCompanyRequestDto data) throws AppException {
-        authoticationService.getUserByToken();
-        log.info("after auth");
+        User Sender=authoticationService.getUserByToken();
+
         User employee = this.GetUserByEmail(data.getEmployeeEmail());
         if (employee == null) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -68,6 +75,14 @@ public class UserOfCompanyService {
 
             this.userCompanyRepository.insertUserToCompany(data.getCompanyId(), employee.getUserId());
             log.info("after add");
+            notificationService.createNotification(NotificationRequestDto.builder()
+                            .title("INVITE TO COMPANY")
+                            .type(NotificationType.INVITE)
+                            .content("")
+                            .recipientId(employee.getUserId())
+                            .senderId(Sender.getUserId())
+                            .status(NotificationStatus.UNREAD)
+                    .build());
             return ApiResponseDto.<String>builder()
                     .message("success invite")
                     .build();
@@ -100,6 +115,16 @@ public class UserOfCompanyService {
         }
         try {
             this.userCompanyRepository.acceptInviteFromCompany(companyId, employeeId);
+
+
+            notificationService.createNotification(NotificationRequestDto.builder()
+                    .title("INVITE TO COMPANY")
+                    .type(NotificationType.INVITE)
+                    .content("")
+                    .recipientId(companyService.findOwnerCompany(companyId).getUserId())
+                    .senderId(myInfo.getUserId())
+                    .status(NotificationStatus.UNREAD)
+                    .build());
             return "Accept invite successfully";
 
         } catch (Exception e) {

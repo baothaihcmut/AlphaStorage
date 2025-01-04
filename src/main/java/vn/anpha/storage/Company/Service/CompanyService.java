@@ -16,6 +16,7 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
+import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Storage.service.StorageService;
@@ -41,7 +42,7 @@ public class CompanyService {
             String companyId = UUID.randomUUID().toString();
             String OwnerId = authoticationService.GetUserIdByToken();
             companyRepository.insertCompany(companyCreationRequest, companyId, OwnerId);
-
+            companyRepository.insertUserToCompany(companyId, OwnerId);
             // create company bucket
 
             this.storageService.createBucket(companyId,
@@ -202,5 +203,14 @@ public class CompanyService {
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         BigInteger newSize = company.getTotalSize().subtract(BigInteger.valueOf(size.longValue()));
         this.companyRepository.updateCompanySize(companyId, newSize);
+    }
+
+    @Transactional
+    public User findOwnerCompany(String companyId) {
+        if (!companyRepository.existsCompanyByCompanyId(companyId)) {
+            throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
+        }
+        Company company = this.companyRepository.findAllByCompanyId(companyId);
+        return company.getOwner();
     }
 }

@@ -53,9 +53,11 @@ public class DepartmentService {
                 try {
                         String departmentId = UUID.randomUUID().toString();
                         departmentRepository.insertDepartment(departmentCreateRequest, departmentId);
-                        userOfDepartmentService.createManager(user_id, departmentId);
-                        return departmentRepository.findDepartmentById(departmentId)
+
+                        DepartmentDTO department = departmentRepository.findDepartmentById(departmentId)
                                         .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
+                        userOfDepartmentService.createManager(user_id, department);
+                        return department;
                 } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         throw new AppException(ErrorCode.SERVER_ERROR);
