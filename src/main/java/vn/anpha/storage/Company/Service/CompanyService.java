@@ -144,7 +144,7 @@ public class CompanyService {
     }
 
     public boolean deleteCompanyById(String id) {
-        checkOwnCompany(authoticationService.getUserByToken(), id);
+        checkOwnCompany(authoticationService.GetUserIdByToken(), id);
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         this.companyRepository.deleteById(id);
@@ -165,8 +165,8 @@ public class CompanyService {
         return companySize;
     }
 
-    public void checkOwnCompany(User user, String companyId) {
-        Long count = companyRepository.CheckOwnCompany(companyId, authoticationService.GetUserIdByToken());
+    public void checkOwnCompany(String userId, String companyId) {
+        Long count = companyRepository.CheckOwnCompany(companyId, userId);
         if (count == 0) {
             throw new AppException(ErrorCode.USER_NOT_OWNCOMPANY);
         }

@@ -23,6 +23,7 @@ import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.DTO.projection.TreeDepartment;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Service.DepartmentService;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
@@ -89,12 +90,12 @@ public class DepartmentController {
                 return response;
         }
 
-        @GetMapping("/employee/{employeeId}/company/{companyId}")
-        ApiResponseDto<List<TreeDepartment>> getDepartmentOfEmployee(@PathVariable String employeeId,
+        @GetMapping("/getAllDepartment/company/{companyId}")
+        ApiResponseDto<List<TreeDepartment>> getDepartmentOfEmployee(
                         @PathVariable String companyId) {
                 return ApiResponseDto.<List<TreeDepartment>>builder()
-                                .result(departmentService.getDepartmentOfEmployee(employeeId, companyId))
-                                .message("Get department by Id")
+                                .result(departmentService.getDepartmentOfEmployee(companyId))
+                                .message("Get department Of Employee")
                                 .success(true)
                                 .build();
         }
