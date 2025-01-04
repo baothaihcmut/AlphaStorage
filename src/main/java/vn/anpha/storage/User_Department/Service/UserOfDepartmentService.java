@@ -130,13 +130,12 @@ public class UserOfDepartmentService {
             UserDepartmentUpdate updateDTO) {
         DepartmentDTO department = this.departmentRepository.findDepartmentById(updateDTO.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-        companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                department.getCompanyId());
+
         if (department.getParentDepartmentId() != null) {
             this.checkManagerOfDepartment(department.getParentDepartmentId(),
                     authoticationService.GetUserIdByToken());
         } else {
-            companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+            companyService.checkOwnCompany(authoticationService.GetUserIdByToken(), department.getCompanyId());
         }
 
         log.info("updateDTO: {}", updateDTO);
@@ -180,7 +179,7 @@ public class UserOfDepartmentService {
                 this.checkManagerOfDepartment(department.getParentDepartmentId(),
                         authoticationService.GetUserIdByToken());
             } else {
-                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+                companyService.checkOwnCompany(authoticationService.GetUserIdByToken(), department.getCompanyId());
             }
         }
 
@@ -193,7 +192,7 @@ public class UserOfDepartmentService {
 
     }
 
-    public void deleteUserOfDepartmentBy(String userId, String departmentId) {
+    public void deleteUserOfDepartmentById(String userId, String departmentId) {
         this.checkManagerOfDepartment(departmentId, authoticationService.GetUserIdByToken());
         DepartmentUser departmentUser = userOfDepartmentRepository.getEntityDepartmentUser(userId, departmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_OF_DEPARTMENT_NOT_EXISTED));
@@ -207,7 +206,7 @@ public class UserOfDepartmentService {
                 this.checkManagerOfDepartment(department.getParentDepartmentId(),
                         authoticationService.GetUserIdByToken());
             } else {
-                companyService.checkOwnCompany(authoticationService.getUserByToken(), department.getCompanyId());
+                companyService.checkOwnCompany(authoticationService.GetUserIdByToken(), department.getCompanyId());
             }
         }
         userOfDepartmentRepository.delete(departmentUser);

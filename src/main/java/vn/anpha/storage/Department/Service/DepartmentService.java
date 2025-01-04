@@ -21,6 +21,7 @@ import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.DTO.projection.TreeDepartment;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
+import vn.anpha.storage.Department.Entity.Department;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
@@ -38,17 +39,20 @@ public class DepartmentService {
         UserOfDepartmentService userOfDepartmentService;
         CompanyService companyService;
 
-        @Transactional
-        public DepartmentDTO createDepartment(DepartmentCreationDTO departmentCreateRequest) {
-                String user_id = authoticationService.GetUserIdByToken();
-                if (departmentCreateRequest.getParentDepartmentId() == null) {
-                        companyService.checkOwnCompany(authoticationService.getUserByToken(),
-                                        departmentCreateRequest.getCompanyId());
+        void checkPermission(String userId, String departmentParentId, String companyId) {
+                if (departmentParentId == null) {
+                        companyService.checkOwnCompany(userId, companyId);
 
                 } else {
-                        this.userOfDepartmentService.checkManagerOfDepartment(
-                                        departmentCreateRequest.getParentDepartmentId(), user_id);
+                        this.userOfDepartmentService.checkManagerOfDepartment(departmentParentId, userId);
                 }
+        }
+
+        @Transactional
+        public DepartmentDTO createDepartment(DepartmentCreationDTO departmentCreateRequest) {
+                String userId = authoticationService.GetUserIdByToken();
+                checkPermission(userId, departmentCreateRequest.getParentDepartmentId(),
+                                departmentCreateRequest.getCompanyId());
 
                 try {
                         String departmentId = UUID.randomUUID().toString();
@@ -56,7 +60,7 @@ public class DepartmentService {
 
                         DepartmentDTO department = departmentRepository.findDepartmentById(departmentId)
                                         .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
-                        userOfDepartmentService.createManager(user_id, department);
+                        userOfDepartmentService.createManager(userId, department);
                         return department;
                 } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -67,15 +71,16 @@ public class DepartmentService {
 
         public DepartmentDTO getDepartmentById(String departmentId) {
 
-                userOfDepartmentService.checkUserExistInDepartment(departmentId,
-                                authoticationService.GetUserIdByToken());
+                userOfDepartmentService.checkUserExistInDepartment(
+                                authoticationService.GetUserIdByToken(), departmentId);
                 return departmentRepository.findDepartmentById(departmentId)
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
         }
 
-        public List<TreeDepartment> getDepartmentOfEmployee(String employeeId, String companyId) {
+        public List<TreeDepartment> getDepartmentOfEmployee(String companyId) {
 
-                List<DepartmentDTO> departmentOfUser = this.departmentRepository.findDepartmentOfUser(employeeId,
+                List<DepartmentDTO> departmentOfUser = this.departmentRepository.findDepartmentOfUser(
+                                authoticationService.GetUserIdByToken(),
                                 companyId);
                 return buildDepartmentTree(departmentOfUser);
         }
@@ -108,15 +113,23 @@ public class DepartmentService {
                 return rootDepartments;
         }
 
-        public Boolean deleteDepartmentById(String id) {
-                DepartmentDTO department = this.departmentRepository.findDepartmentById(id.toString())
+        public Boolean deleteDepartmentById(String departmentId) {
+                DepartmentDTO department = this.departmentRepository.findDepartmentById(departmentId)
                                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_EXISTED));
 
-                companyService.checkOwnCompany(authoticationService.getUserByToken(),
+                checkPermission(authoticationService.GetUserIdByToken(),
+                                department.getParentDepartmentId(),
                                 department.getCompanyId());
 
-                departmentRepository.deleteById(id);
-                return true;
+                try {
+                        List<Department> subDepartmentIds = departmentRepository.findAllSubDepartments(departmentId);
+
+                        departmentRepository.deleteAll(subDepartmentIds);
+                        return true;
+                } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        throw new AppException(ErrorCode.SERVER_ERROR);
+                }
 
         }
 

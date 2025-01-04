@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -60,10 +62,12 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<UserOfCompany> userOfCompanys;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference // Đánh dấu là thực thể cha
+
     private List<Department> departments;
 
     @Column(updatable = false)

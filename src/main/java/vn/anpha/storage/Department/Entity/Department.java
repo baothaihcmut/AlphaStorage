@@ -2,6 +2,8 @@ package vn.anpha.storage.Department.Entity;
 
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -45,6 +47,7 @@ public class Department {
     private Company company;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private List<DepartmentUser> employees;
 

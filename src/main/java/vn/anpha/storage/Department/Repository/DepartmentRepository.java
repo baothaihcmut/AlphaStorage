@@ -84,4 +84,23 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
                         "FROM departments d WHERE d.company_id = :companyId", countQuery = "SELECT COUNT(d.department_id) FROM departments d WHERE d.company_id = :companyId", nativeQuery = true)
         Page<DepartmentDTO> FindDepartmentOfCompany(@Param("companyId") String companyId, Pageable pageable);
 
+        @Query(value = """
+                        WITH RECURSIVE department_hierarchy AS (
+                            -- Initial query: Select the root department
+                            SELECT d.department_id, d.name, d.description,d.parent_department_id,d.total_size,d.company_id
+                            FROM departments as d
+                            WHERE department_id = :departmentId
+
+                            UNION ALL
+
+                            -- Recursive query: Select sub-departments
+                            SELECT d.department_id, d.name, d.description,d.parent_department_id,d.total_size,d.company_id
+                            FROM departments d
+                            INNER JOIN department_hierarchy dh ON d.parent_department_id = dh.department_id
+                        )
+                        SELECT d.department_id, d.name, d.description,d.parent_department_id,d.total_size,d.company_id
+                        FROM department_hierarchy as d
+                        """, nativeQuery = true)
+        List<Department> findAllSubDepartments(@Param("departmentId") String departmentId);
+
 }

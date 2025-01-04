@@ -69,7 +69,7 @@ public class UserOfDepartmentController {
 
     @DeleteMapping("/delete")
     ApiResponseDto<Boolean> deleteUserOfDepartment(@PathVariable UserDepartmentCreate payload) {
-        userOfDepartmentService.deleteUserOfDepartmentBy(payload.getUserId(),
+        userOfDepartmentService.deleteUserOfDepartmentById(payload.getUserId(),
                 payload.getDepartmentId());
         return ApiResponseDto.<Boolean>builder()
 
