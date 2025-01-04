@@ -95,4 +95,8 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
             """, nativeQuery = true)
     Long CheckOwnCompany(@Param("companyId") String companyId, @Param("ownerId") String ownerId);
 
+
+    Company findAllByCompanyId(String companyId);
+
+    Boolean existsCompanyByCompanyId(String companyId);
 }
