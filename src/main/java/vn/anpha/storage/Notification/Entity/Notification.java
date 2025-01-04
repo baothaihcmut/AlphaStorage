@@ -2,6 +2,9 @@ package vn.anpha.storage.Notification.Entity;
 
 import java.time.LocalDateTime;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +18,8 @@ import vn.anpha.storage.User.Entity.User;
 
 @Entity
 @Table(name = "notifications")
+@Getter
+@Setter
 public class Notification {
     @Id
     @Column(name = "notification_id")
@@ -25,9 +30,6 @@ public class Notification {
 
     @Column(nullable = false)
     private String content;
-
-    @Column(nullable = true)
-    private String actionUrl;
 
     @ManyToOne()
     @JoinColumn(name = "recipient_id", nullable = false)

@@ -33,6 +33,7 @@ import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @ToString
 @Setter
+@Getter
 @Entity
 @Slf4j
 @Table(name = "companies")

@@ -1,6 +1,7 @@
 package vn.anpha.storage.Company.Service;
 
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -204,5 +205,15 @@ public class CompanyService {
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
         BigInteger newSize = company.getTotalSize().subtract(BigInteger.valueOf(size.longValue()));
         this.companyRepository.updateCompanySize(companyId, newSize);
+    }
+
+    @Transactional
+    public User findOwnerCompany(String companyId)
+    {
+        if(!companyRepository.existsCompanyByCompanyId(companyId)){
+            throw new AppException(ErrorCode.COMPANY_NOT_EXISTED);
+        }
+        Company company= this.companyRepository.findAllByCompanyId(companyId);
+        return company.getOwner();
     }
 }
