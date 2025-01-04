@@ -48,27 +48,34 @@ public class UserOfDepartmentService {
         }
     }
 
-    @Transactional
     public void insertMultipleUsersToDepartment(List<DepartmentUserDtoImpl> listUserDtoImpls) {
-        if (listUserDtoImpls == null || listUserDtoImpls.isEmpty()) {
-            return; // Không có người dùng để chèn
-        }
 
-        StringBuilder query = new StringBuilder(
-                "INSERT INTO department_of_user (department_id, user_id, created_at, updated_at, is_manager) VALUES ");
-
-        for (int i = 0; i < listUserDtoImpls.size(); i++) {
-            DepartmentUserDtoImpl user = listUserDtoImpls.get(i);
-            query.append(String.format("(%d, %d, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %b)", user.getDepartmentId(),
-                    user.getUserId(), user.getIsManager()));
-
-            if (i < listUserDtoImpls.size() - 1) {
-                query.append(", ");
+        try {
+            if (listUserDtoImpls == null || listUserDtoImpls.isEmpty()) {
+                return; // Không có người dùng để chèn
             }
+
+            StringBuilder query = new StringBuilder(
+                    "INSERT INTO department_of_user (department_id, user_id, created_at, updated_at, is_manager) VALUES ");
+
+            for (int i = 0; i < listUserDtoImpls.size(); i++) {
+                DepartmentUserDtoImpl user = listUserDtoImpls.get(i);
+                query.append(
+                        String.format("('%s', '%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %b)", user.getDepartmentId(),
+                                user.getUserId(), user.getIsManager() ? 1 : 0));
+
+                if (i < listUserDtoImpls.size() - 1) {
+                    query.append(", ");
+                }
+            }
+
+            // Sử dụng câu query đã xây dựng để thực thi với EntityManager hoặc JdbcTemplate
+            entityManager.createNativeQuery(query.toString()).executeUpdate();
+        } catch (Exception e) {
+            log.error("Error creating: " + e);
+            // TODO: handle exception
         }
 
-        // Sử dụng câu query đã xây dựng để thực thi với EntityManager hoặc JdbcTemplate
-        entityManager.createNativeQuery(query.toString()).executeUpdate();
     }
 
     private List<DepartmentUserDto> getManagerOfParentDepartment(String parentDepartmentId) {
