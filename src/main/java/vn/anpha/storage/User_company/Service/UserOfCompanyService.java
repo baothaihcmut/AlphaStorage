@@ -125,7 +125,7 @@ public class UserOfCompanyService {
                     .senderId(myInfo.getUserId())
                     .status(NotificationStatus.UNREAD)
                     .build());
-            return "Accept invite successfully";g
+            return "Accept invite successfully";
 
         } catch (Exception e) {
             log.error(e.getMessage());
