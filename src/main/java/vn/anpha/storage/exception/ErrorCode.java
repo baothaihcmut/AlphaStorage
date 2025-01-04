@@ -51,6 +51,7 @@ public enum ErrorCode {
     FILE_NAME_EXIST_NAME("File name exist in directory", HttpStatus.CONFLICT),
     FILE_NOT_EXIST_OR_NOT_FILE("File not exist or file is directory", HttpStatus.BAD_REQUEST),
     FILE_NOT_UPLOAD("File is not uploaded", HttpStatus.NOT_FOUND),
+    FILE_IS_UPLOADING("File is uploading", HttpStatus.CONFLICT),
     // For Version
     VERSION_NOT_EXIST("Version not found or file not versioning", HttpStatus.NOT_FOUND),
 
@@ -64,7 +65,8 @@ public enum ErrorCode {
     METHOD_NOT_ALLOW("Method not Exist", HttpStatus.METHOD_NOT_ALLOWED),
     API_NOT_EXIST("API not Exist", HttpStatus.NOT_FOUND),
     // ELSE
-    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR), USER_ALREADY_IN_COMPANY("user already in company",HttpStatus.BAD_REQUEST );
+    SERVER_ERROR("Server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_ALREADY_IN_COMPANY("user already in company", HttpStatus.BAD_REQUEST);
 
     // FOR FOL
 

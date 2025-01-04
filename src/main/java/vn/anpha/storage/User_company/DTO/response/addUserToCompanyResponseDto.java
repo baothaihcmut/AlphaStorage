@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.User.Entity.User;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

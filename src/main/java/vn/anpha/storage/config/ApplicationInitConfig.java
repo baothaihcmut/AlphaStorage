@@ -7,24 +7,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Role.Entity.Role;
 import vn.anpha.storage.Role.Repository.RoleRepository;
-import vn.anpha.storage.User.Entity.User;
 import vn.anpha.storage.User.respository.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationInitConfig {
 
+    @SuppressWarnings("unused")
     @Bean
     ApplicationRunner applicationRunner(RoleRepository roleRepository, UserRepository userRepository) {
         return args -> {
             // Add some initial data to your database here.
             Role roleAdmin = new Role();
             if (roleRepository.findByName("ADMIN").isEmpty()) {
-                String companyId = UUID.randomUUID().toString();
+
                 roleAdmin.setName("ADMIN");
                 roleAdmin.setDescription("Admin role");
                 roleRepository.save(roleAdmin);

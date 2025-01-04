@@ -1,18 +1,22 @@
 package vn.anpha.storage.File.Interface;
 
+import vn.anpha.storage.File.DTO.Projection.FileDTO;
 import vn.anpha.storage.File.DTO.Projection.FileMetaDataDTO;
+import vn.anpha.storage.File.DTO.Projection.StorageDetailDTO;
 import vn.anpha.storage.File.DTO.Request.AnnounceUploadDTO;
 import vn.anpha.storage.File.DTO.Request.FileCreationDTO;
-import vn.anpha.storage.File.DTO.Request.UpdateFileDTO;
-import vn.anpha.storage.File.DTO.Response.FileDetailUploadLinkDTO;
-import vn.anpha.storage.File.DTO.Response.FileMetaDataLinkDTO;
+import vn.anpha.storage.File.DTO.Request.UpdateFileContentDTO;
+import vn.anpha.storage.File.DTO.Response.CreateFileResponse;
+import vn.anpha.storage.File.DTO.Response.UpdateFileContentResponse;
 
 public interface IFileService {
-    FileDetailUploadLinkDTO uploadFile(FileCreationDTO fileCreationDTO) throws Exception;
+    CreateFileResponse createFile(FileCreationDTO fileCreationDTO) throws Exception;
 
-    FileMetaDataLinkDTO downloadFile(String id) throws Exception;
+    StorageDetailDTO downloadFile(String id) throws Exception;
 
     FileMetaDataDTO announceUploadFile(String fileId, AnnounceUploadDTO annouceUploadDTO);
 
-    FileMetaDataLinkDTO updateFile(String fileId, UpdateFileDTO dto) throws Exception;
+    UpdateFileContentResponse updateFileContent(String fileId, UpdateFileContentDTO dto) throws Exception;
+
+    FileDTO getFileDetail(String fileId);
 }

@@ -1,17 +1,22 @@
 package vn.anpha.storage.File.Interface;
 
-import vn.anpha.storage.File.DTO.Projection.FileDetailDTO;
+import java.util.List;
+
+import vn.anpha.storage.File.DTO.Projection.FileDTO;
+import vn.anpha.storage.File.DTO.Projection.TreeFileDTO;
 import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.MoveFileDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
 
 public interface IFileStructureService {
 
-    public FileDetailDTO updateFileInfo(String fileId, FileUpdateInfoDTO fileUpdateInfoRequest);
+    public FileDTO updateFileDetail(String fileId, FileUpdateInfoDTO fileUpdateInfoRequest);
 
-    public void deleteFileSoft(String fileId);
+    public FileDTO deleteFileSoft(String fileId);
 
-    public void moveFile(String fileId, MoveFileDTO moveFileRequest);
+    public FileDTO moveFile(String fileId, MoveFileDTO moveFileRequest);
 
-    public FileDetailDTO recoverFile(String fileId, RecoverFileDTO recoverFileRequest);
+    public FileDTO recoverFile(String fileId, RecoverFileDTO recoverFileRequest);
+
+    public List<TreeFileDTO> getFileStructure(String departmentId);
 }

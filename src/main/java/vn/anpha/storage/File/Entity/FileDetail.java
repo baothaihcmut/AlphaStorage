@@ -31,6 +31,9 @@ public class FileDetail {
     @Column(length = 250, nullable = false)
     private String link;
 
+    @Column(nullable = false)
+    private String mimeType;
+
     @Column(columnDefinition = "BOOLEAN DEFAULT false", nullable = false)
     private Boolean isUploaded;
 

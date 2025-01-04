@@ -14,37 +14,38 @@ import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 public class GlobalExceptionHandle {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        ApiResponseDto response = new ApiResponseDto();
+    ResponseEntity<ApiResponseDto<Object>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception) {
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
         response.setMessage(exception.getFieldError().getDefaultMessage());
         return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponseDto> handleAppException(AppException exception) {
+    ResponseEntity<ApiResponseDto<Object>> handleAppException(AppException exception) {
 
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponseDto response = new ApiResponseDto();
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
         response.setMessage(errorCode.getMessage());
         return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponseDto> handleMethodArgumentNotValidException(AccessDeniedException exception) {
+    ResponseEntity<ApiResponseDto<Object>> handleMethodArgumentNotValidException(AccessDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-        ApiResponseDto response = new ApiResponseDto();
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
         response.setMessage(errorCode.getMessage());
         return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
-    ResponseEntity<ApiResponseDto> handleMethodArgumentNotValidException(
+    ResponseEntity<ApiResponseDto<Object>> handleMethodArgumentNotValidException(
             HttpRequestMethodNotSupportedException exception) {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOW;
-        ApiResponseDto response = new ApiResponseDto();
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
 
         response.setMessage(errorCode.getMessage());
@@ -53,9 +54,9 @@ public class GlobalExceptionHandle {
 
     // Method Not Allowed
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponseDto> handleRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponseDto<Object>> handleRuntimeException(RuntimeException exception) {
         System.out.println(exception);
-        ApiResponseDto response = new ApiResponseDto();
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
 
         response.setMessage(exception.getMessage());
@@ -64,10 +65,10 @@ public class GlobalExceptionHandle {
 
     // IllegalStateException
     @ExceptionHandler(value = NoResourceFoundException.class)
-    ResponseEntity<ApiResponseDto> handleNoResourceFoundException(
+    ResponseEntity<ApiResponseDto<Object>> handleNoResourceFoundException(
             NoResourceFoundException exception) {
         ErrorCode errorCode = ErrorCode.API_NOT_EXIST;
-        ApiResponseDto response = new ApiResponseDto();
+        ApiResponseDto<Object> response = new ApiResponseDto<Object>();
         response.setSuccess(false);
 
         response.setMessage("api not found");

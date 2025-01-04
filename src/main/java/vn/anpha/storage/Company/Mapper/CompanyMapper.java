@@ -8,7 +8,7 @@ import vn.anpha.storage.Company.DTO.response.CompanyResponse;
 import vn.anpha.storage.Company.DTO.response.CompanyUpdateResponse;
 import vn.anpha.storage.Company.Entity.Company;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface CompanyMapper {
     Company toCompany(CompanyCreationRequest company);
 

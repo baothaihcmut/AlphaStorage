@@ -74,7 +74,7 @@ public class AuthoticationService {
                 .issuer("hieu.com")
                 .issueTime(new Date())
                 .expirationTime(
-                        new Date(Instant.now().plus(15, ChronoUnit.MINUTES).toEpochMilli()))
+                        new Date(Instant.now().plus(15, ChronoUnit.HOURS).toEpochMilli()))
                 .claim("scope", user.getRole().getName())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
@@ -83,10 +83,8 @@ public class AuthoticationService {
             payloadJWSObject.sign(new MACSigner(this.SIGNER_KEY.getBytes()));
             return payloadJWSObject.serialize();
         } catch (KeyLengthException e) {
-            // TODO Auto-generated catch block
             throw new RuntimeException(e);
         } catch (JOSEException e) {
-            // TODO Auto-generated catch block
             throw new RuntimeException(e);
         }
     }
@@ -107,10 +105,8 @@ public class AuthoticationService {
             payloadJWSObject.sign(new MACSigner(this.SIGNER_KEY.getBytes()));
             return payloadJWSObject.serialize();
         } catch (KeyLengthException e) {
-            // TODO Auto-generated catch block
             throw new RuntimeException(e);
         } catch (JOSEException e) {
-            // TODO Auto-generated catch block
             throw new RuntimeException(e);
         }
     }

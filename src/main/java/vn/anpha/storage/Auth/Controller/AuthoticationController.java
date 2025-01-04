@@ -2,7 +2,6 @@ package vn.anpha.storage.Auth.Controller;
 
 import java.text.ParseException;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +42,8 @@ public class AuthoticationController {
     }
 
     @PostMapping("/auth/logout")
-    public ApiResponseDto Logout() {
-        ApiResponseDto response = new ApiResponseDto<>();
+    public ApiResponseDto<Object> Logout() {
+        ApiResponseDto<Object> response = new ApiResponseDto<>();
         authenticationService.Logout();
         response.setSuccess(true);
         response.setMessage("User logOut");
@@ -62,10 +61,8 @@ public class AuthoticationController {
             response.setMessage("refresh token");
             return response;
         } catch (JOSEException e) {
-            // TODO Auto-generated catch block
             throw new AppException(ErrorCode.RefreshToken_Not_Valid);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             throw new AppException(ErrorCode.RefreshToken_Not_Valid);
         }
     }

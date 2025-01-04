@@ -2,9 +2,7 @@ package vn.anpha.storage.User_Department.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser.DepartmentUserId;
-import vn.anpha.storage.User_company.Entity.UserOfCompany;
 
 @Repository
 public interface UserOfDepartmentRepository extends JpaRepository<DepartmentUser, DepartmentUserId> {

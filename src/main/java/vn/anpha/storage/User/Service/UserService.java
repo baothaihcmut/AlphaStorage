@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContext;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import vn.anpha.storage.Auth.Dto.RequestDto.AuthoticationDto;
 import vn.anpha.storage.Role.Service.RoleService;
 import vn.anpha.storage.User.Dto.Projection.UserDto;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
@@ -39,7 +37,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
     private final UserResponseMapper userResponseMapper;
 
     public UserService(RoleService roleService, UserRepository userRepository,
@@ -47,7 +44,6 @@ public class UserService {
         this.roleService = roleService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
         this.userResponseMapper = userResponseMapper;
     }
 

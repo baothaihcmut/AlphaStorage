@@ -44,6 +44,8 @@ public class FileCreationDTO {
     @NotNull(message = "isDirectory flag is required.")
     private Boolean isDirectory;
 
+    private Integer totalSize;
+
     @Size(max = 10, min = 0, message = "You can associate up to 10 tags only.")
     private String[] tagIds;
 

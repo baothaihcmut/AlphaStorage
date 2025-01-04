@@ -3,8 +3,6 @@ package vn.anpha.storage.Department.DTO.projection;
 import java.util.ArrayList;
 import java.util.List;
 
-import vn.anpha.storage.Department.Entity.Department;
-
 public class TreeDepartment {
      private DepartmentDTO department;
      private List<TreeDepartment> subDepartments = new ArrayList<>();

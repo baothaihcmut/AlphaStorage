@@ -38,6 +38,10 @@ public interface FileDetailDTO {
 
     public Boolean getFileDetailIsVersion();
 
+    public String getFileDetailLink();
+
+    public String getFileDetailMimeType();
+
     public LocalDateTime getCreateAt();
 
     public LocalDateTime getUpdatedAt();

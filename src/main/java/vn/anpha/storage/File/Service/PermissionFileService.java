@@ -23,7 +23,7 @@ public class PermissionFileService {
                                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
         }
 
-        public boolean hasCreatePermission(String departmentId) {
+        public boolean hasDepartmentPermission(String departmentId) {
                 User user = this.authService.getUserByToken();
                 this.userOfDepartmentRepository.findUserOfDepartment(
                                 user.getUserId(),

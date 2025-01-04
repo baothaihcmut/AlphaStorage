@@ -15,19 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import vn.anpha.storage.Department.Entity.Department;
-import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
-import vn.anpha.storage.User.Entity.User;
-import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentCreate;
 import vn.anpha.storage.User_Department.DTO.Request.UserDepartmentUpdate;
 import vn.anpha.storage.User_Department.Entity.DepartmentUser;
+import vn.anpha.storage.User_Department.Repository.UserDepartmentResponseProjection;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
@@ -39,8 +35,6 @@ public class UserOfDepartmentController {
     @PersistenceContext
     private EntityManager entityManager;
     UserOfDepartmentService userOfDepartmentService;
-    DepartmentRepository departmentRepository;
-    UserRepository userRepository;
 
     @PostMapping("/add")
     public ApiResponseDto<DepartmentUser> addUserDepartment(@RequestBody UserDepartmentCreate payload) {
@@ -82,7 +76,7 @@ public class UserOfDepartmentController {
     }
 
     @GetMapping("/getAllUserOfDepartment/{departmentId}")
-    public ApiResponseDto<PaginateResponseDto> getAllDepartment(
+    public ApiResponseDto<PaginateResponseDto<UserDepartmentResponseProjection>> getAllDepartment(
             @RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional,
             @PathVariable String departmentId) {
@@ -91,7 +85,7 @@ public class UserOfDepartmentController {
         int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
-        ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
+        ApiResponseDto<PaginateResponseDto<UserDepartmentResponseProjection>> response = new ApiResponseDto<>();
         response.setResult(this.userOfDepartmentService.GetAllUser(pageable, departmentId));
         return response;
     }

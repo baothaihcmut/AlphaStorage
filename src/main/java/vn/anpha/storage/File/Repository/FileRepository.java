@@ -24,11 +24,11 @@ public interface FileRepository extends CrudRepository<File, String>, PagingAndS
     @Modifying
     @Query(value = """
                 INSERT INTO files (file_id, name, description, password, has_password, is_in_directory,
-                                   is_directory, is_deleted, department_id, create_user_id, parent_file_id,
+                                   is_directory, is_deleted, total_size ,department_id, create_user_id, parent_file_id,
                                    created_at, updated_at)
                 VALUES (:#{#file.fileId}, :#{#file.name}, :#{#file.description}, :#{#file.password},
                         :#{#file.hasPassword}, :#{#file.isInDirectory}, :#{#file.isDirectory},
-                        false, :#{#file.departmentId}, :#{#file.createUserId},
+                        false, :#{#file.totalSize} ,:#{#file.departmentId}, :#{#file.createUserId},
                         :#{#file.parentFileId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             """, nativeQuery = true)
     void insertFile(@Param("file") FileCreationDTO fileCreationDTO);
@@ -128,6 +128,7 @@ public interface FileRepository extends CrudRepository<File, String>, PagingAndS
                     is_in_directory AS isInDirectory,
                     is_directory AS isDirectory,
                     is_deleted AS isDeleted,
+                    total_size AS totalSize,
                     department_id AS departmentId,
                     create_user_id AS createUserId,
                     parent_file_id AS parentFileId,
@@ -156,6 +157,8 @@ public interface FileRepository extends CrudRepository<File, String>, PagingAndS
                     f.deleted_at AS deletedAt,
                     f.parent_file_id AS parentFileId,
                     fd.size AS fileDetailSize,
+                    fd.link AS fileDetailLink,
+                    fd.mimeType AS fileDetailMimeType,
                     fd.is_uploaded AS fileDetailIsUploaded,
                     fd.is_uploading AS fileDetailIsUploading,
                     fd.is_version AS fileDetailIsVersion,
@@ -183,6 +186,7 @@ public interface FileRepository extends CrudRepository<File, String>, PagingAndS
                     is_in_directory AS isInDirectory,
                     is_directory AS isDirectory,
                     is_deleted AS isDeleted,
+                    total_size AS totalSize,
                     department_id AS departmentId,
                     create_user_id AS createUserId,
                     parent_file_id AS parentFileId,
@@ -197,4 +201,69 @@ public interface FileRepository extends CrudRepository<File, String>, PagingAndS
     public Optional<FileDTO> findFileById(@Param("fileId") String fileId,
             @Param("isDeleted") boolean isDeleted);
 
+    @Query(value = """
+                SELECT
+                    file_id AS fileId,
+                    name,
+                    description,
+                    has_password AS hasPassword,
+                    is_in_directory AS isInDirectory,
+                    is_directory AS isDirectory,
+                    is_deleted AS isDeleted,
+                    total_size AS totalSize,
+                    department_id AS departmentId,
+                    create_user_id AS createUserId,
+                    parent_file_id AS parentFileId,
+                    created_at AS createdAt,
+                    updated_at AS updatedAt,
+                    deleted_at AS deletedAt
+                FROM files
+                WHERE department_id=:departmentId
+                AND is_deleted=:isDeleted
+            """, nativeQuery = true)
+    public List<FileDTO> findFileByDepartmentId(@Param("departmentId") String departmentId,
+            @Param("isDeleted") boolean isDeleted);
+
+    @Modifying
+    @Query(value = """
+            WITH RECURSIVE file_system(parent_file_id) AS (
+                SELECT f.parent_file_id
+                FROM files f
+                WHERE f.file_id = :fileId
+                UNION ALL
+                SELECT f.parent_file_id
+                FROM files f
+                INNER JOIN file_system fs
+                ON f.file_id = fs.parent_file_id
+            )
+                UPDATE files
+                SET total_size = total_size + :fileSize
+                WHERE file_id IN (SELECT parent_file_id FROM file_system)
+            """, nativeQuery = true)
+    void updateTotalSizeFileSystem(@Param("fileId") String fileId, @Param("fileSize") Integer fileSize);
+
+    @Modifying
+    @Query(value = """
+            DELETE FROM files
+            WHERE file_id = :fileId
+            """, nativeQuery = true)
+    void hardDeleteFile(@Param("fileId") String fileId);
+
+    @Modifying
+    @Query(value = """
+            WITH RECURSIVE file_system(file_id) AS (
+                SELECT f.file_id
+                FROM files f
+                WHERE f.parent_file_id = :fileId
+                UNION ALL
+                SELECT f.file_id
+                FROM files f
+                INNER JOIN file_system fs
+                ON f.parent_file_id = fs.file_id
+            )
+            DELETE FROM files
+            WHERE file_id IN
+                (SELECT file_id from file_system)
+            """, nativeQuery = true)
+    void hardDeleteChild(@Param("fileId") String fileId);
 }

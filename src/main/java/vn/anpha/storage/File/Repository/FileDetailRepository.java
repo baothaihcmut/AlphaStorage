@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import vn.anpha.storage.File.DTO.Projection.FileMetaDataDTO;
 import vn.anpha.storage.File.DTO.Request.FileDetailCreationDTO;
+import vn.anpha.storage.File.DTO.Request.UpdateFileContentDTO;
 import vn.anpha.storage.File.Entity.FileDetail;
 
 public interface FileDetailRepository
@@ -17,8 +18,8 @@ public interface FileDetailRepository
 
         @Modifying
         @Query(value = """
-                        INSERT INTO file_details (file_id, size, link, is_uploaded,is_uploading, bucket_name, is_version, created_at, updated_at)
-                        VALUES (:#{#fileDetail.fileId}, :#{#fileDetail.size}, :#{#fileDetail.link}, :#{#fileDetail.isUploaded}, :#{#fileDetail.isUploading},
+                        INSERT INTO file_details (file_id, size, mime_type, link, is_uploaded,is_uploading, bucket_name, is_version, created_at, updated_at)
+                        VALUES (:#{#fileDetail.fileId}, :#{#fileDetail.size}, :#{#fileDetail.mimeType}, :#{#fileDetail.link}, :#{#fileDetail.isUploaded}, :#{#fileDetail.isUploading},
                                 :#{#fileDetail.bucketName}, :#{#fileDetail.isVersion}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)""", nativeQuery = true)
         void insertFileDetail(
                         @Param("fileDetail") FileDetailCreationDTO fileDetail);
@@ -38,13 +39,17 @@ public interface FileDetailRepository
         @Query(value = """
                         UPDATE file_details
                         SET
-                                size = :fileSize
+                                size = COALESCE(:#{#fileDetail.size}, size),
+                                mime_type = COALESCE(:#{#fileDetail.mimeType}, mime_type),
+                                is_uploaded = COALESCE(:#{#fileDetail.isUploaded}, is_uploaded),
+                                is_uploading = COALESCE(:#{#fileDetail.isUploading}, is_uploading)
                         WHERE file_id = :detailId
                         """, nativeQuery = true)
-        void updateFileSize(@Param("detailId") String detailId, @Param("fileSize") Integer fileSize);
+        void updateFileMetaData(@Param("detailId") String detailId,
+                        @Param("fileDetail") UpdateFileContentDTO fileDetail);
 
         @Query(value = """
-                                SELECT
+                        SELECT
                             fd.file_id as fileId,
                             fd.size as size,
                             fd.link as link,

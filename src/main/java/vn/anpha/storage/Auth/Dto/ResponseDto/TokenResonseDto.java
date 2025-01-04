@@ -3,7 +3,6 @@ package vn.anpha.storage.Auth.Dto.ResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 
 @Getter
 @Setter

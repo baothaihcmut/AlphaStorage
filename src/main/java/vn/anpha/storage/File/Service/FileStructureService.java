@@ -1,13 +1,16 @@
 package vn.anpha.storage.File.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.File.DTO.Projection.FileDTO;
-import vn.anpha.storage.File.DTO.Projection.FileDetailDTO;
+import vn.anpha.storage.File.DTO.Projection.TreeFileDTO;
 import vn.anpha.storage.File.DTO.Request.FileUpdateInfoDTO;
 import vn.anpha.storage.File.DTO.Request.MoveFileDTO;
 import vn.anpha.storage.File.DTO.Request.RecoverFileDTO;
@@ -30,7 +33,7 @@ public class FileStructureService implements IFileStructureService {
     }
 
     @Transactional
-    public FileDetailDTO updateFileInfo(String fileId, FileUpdateInfoDTO fileUpdateInfoRequest) {
+    public FileDTO updateFileDetail(String fileId, FileUpdateInfoDTO fileUpdateInfoRequest) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
@@ -41,12 +44,12 @@ public class FileStructureService implements IFileStructureService {
         // update file in db
         this.fileRepository.updateFile(fileId, fileUpdateInfoRequest);
         // response file info
-        return this.fileRepository.findFileDetailById(fileId.toString(), false)
+        return this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
     }
 
     @Transactional
-    public void deleteFileSoft(String fileId) {
+    public FileDTO deleteFileSoft(String fileId) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
@@ -57,10 +60,12 @@ public class FileStructureService implements IFileStructureService {
         if (fileDTO.getIsDirectory()) {
             this.fileRepository.softDeleteChild(fileId);
         }
+        return this.fileRepository.findFileById(fileId, true)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
     }
 
     @Transactional
-    public void moveFile(String fileId, MoveFileDTO moveFileRequest) {
+    public FileDTO moveFile(String fileId, MoveFileDTO moveFileRequest) {
         FileDTO file = this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
 
@@ -80,10 +85,12 @@ public class FileStructureService implements IFileStructureService {
 
         // update in db
         this.fileRepository.moveFile(fileId, moveFileRequest);
+        return this.fileRepository.findFileById(fileId, false)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
     }
 
     @Transactional
-    public FileDetailDTO recoverFile(String fileId, RecoverFileDTO recoverFileRequest) {
+    public FileDTO recoverFile(String fileId, RecoverFileDTO recoverFileRequest) {
         // get file in db
         FileDTO fileDTO = this.fileRepository.findFileById(fileId, true)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_IN_TRASH));
@@ -104,7 +111,7 @@ public class FileStructureService implements IFileStructureService {
             this.fileRepository.recoverChild(fileId);
         }
         // response file information
-        return this.fileRepository.findFileDetailById(fileId.toString(), false)
+        return this.fileRepository.findFileById(fileId, false)
                 .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_EXIST));
 
     }
@@ -114,4 +121,27 @@ public class FileStructureService implements IFileStructureService {
                 .orElseThrow(() -> new AppException(ErrorCode.PARENT_FILE_NOT_EXIST));
         return file;
     }
+
+    public List<TreeFileDTO> getFileStructure(String departmentId) {
+        List<FileDTO> files = this.fileRepository.findFileByDepartmentId(departmentId, false);
+        List<TreeFileDTO> treeFiles = new ArrayList<>();
+        Map<String, TreeFileDTO> fileMap = new HashMap<>();
+        for (FileDTO file : files) {
+            TreeFileDTO treeFile = new TreeFileDTO(file);
+            fileMap.put(file.getFileId(), treeFile);
+        }
+        for (FileDTO file : files) {
+            TreeFileDTO treeFile = fileMap.get(file.getFileId());
+            if (file.getParentFileId() != null) {
+                TreeFileDTO parent = fileMap.get(file.getParentFileId());
+                if (parent != null) {
+                    parent.addSubFile(treeFile);
+                }
+            } else {
+                treeFiles.add(treeFile);
+            }
+        }
+        return treeFiles;
+    }
+
 }

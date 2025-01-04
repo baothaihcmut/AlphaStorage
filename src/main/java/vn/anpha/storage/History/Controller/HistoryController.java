@@ -1,15 +1,12 @@
 package vn.anpha.storage.History.Controller;
-import java.util.List;
-import java.util.UUID;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.History.Repository.LogUserResponseProjection;
@@ -27,18 +24,18 @@ public class HistoryController {
     HistoryService historyService;
 
     @GetMapping("getHistory")
-    public ApiResponseDto<PaginateResponseDto> getHistory(
+    public ApiResponseDto<PaginateResponseDto<LogUserResponseProjection>> getHistory(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "") String email,
             @RequestParam(defaultValue = "") String status,
-            @RequestParam(defaultValue = "")String date,
-            @RequestParam(defaultValue = "desc")String sort) {
+            @RequestParam(defaultValue = "") String date,
+            @RequestParam(defaultValue = "desc") String sort) {
 
-            return ApiResponseDto.<PaginateResponseDto>builder()
-                    .result(historyService.getHistory(date,sort,page,size,email,status))
-                    .message("success")
-                    .build();
+        return ApiResponseDto.<PaginateResponseDto<LogUserResponseProjection>>builder()
+                .result(historyService.getHistory(date, sort, page, size, email, status))
+                .message("success")
+                .build();
     }
 
 }

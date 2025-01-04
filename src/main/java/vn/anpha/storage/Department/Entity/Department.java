@@ -1,6 +1,5 @@
 package vn.anpha.storage.Department.Entity;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import org.hibernate.annotations.UuidGenerator;

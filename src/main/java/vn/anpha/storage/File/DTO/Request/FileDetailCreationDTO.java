@@ -19,6 +19,9 @@ public class FileDetailCreationDTO {
     @NotNull(message = "File size is required")
     private Integer size;
 
+    @NotNull(message = "File type is required")
+    private String mimeType;
+
     private String link;
 
     private Boolean isUploaded;

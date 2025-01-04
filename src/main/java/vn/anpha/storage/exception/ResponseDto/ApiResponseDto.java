@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto<T> {
 
+    @Builder.Default
     private boolean success = true;
 
     private String message;

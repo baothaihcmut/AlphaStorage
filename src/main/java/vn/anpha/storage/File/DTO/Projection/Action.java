@@ -1,4 +1,4 @@
-package vn.anpha.storage.File.DTO.Response;
+package vn.anpha.storage.File.DTO.Projection;
 
 public enum Action {
     UPLOAD("upload"),

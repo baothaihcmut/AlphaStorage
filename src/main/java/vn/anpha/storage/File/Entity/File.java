@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -57,6 +58,9 @@ public class File {
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isDeleted;
 
+    @Column(columnDefinition = "INTEGER DEFAULT 0")
+    private Integer totalSize;
+
     // relation department
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "department_id", nullable = false)
@@ -76,6 +80,7 @@ public class File {
     private File parentFile;
 
     @OneToMany(mappedBy = "parentFile", cascade = CascadeType.REMOVE)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JsonManagedReference
     private List<File> containFiles;
 
@@ -91,20 +96,24 @@ public class File {
 
     // logs
     @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private List<LogUser> logs;
 
     // version
     @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JsonManagedReference // Đánh dấu là thực thể cha
     private List<Version> versions;
 
     // tags
     @OneToMany(mappedBy = "file", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JsonManagedReference
     private List<FileTag> tags;
 
     // filedetail
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @OneToOne(mappedBy = "file", cascade = CascadeType.ALL)
     @JsonManagedReference
     private FileDetail fileDetail;

@@ -1,9 +1,7 @@
 package vn.anpha.storage.User.Dto.ResponseDto;
 
-import java.util.UUID;
-
-import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

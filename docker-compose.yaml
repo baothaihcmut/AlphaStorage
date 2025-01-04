@@ -1,0 +1,5 @@
+services:
+  api:
+    image: baothaihcmut/alphastorage-app:v1
+    ports:
+      - "8080:8080"

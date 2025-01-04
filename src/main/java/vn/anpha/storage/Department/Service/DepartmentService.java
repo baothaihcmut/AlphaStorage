@@ -21,7 +21,6 @@ import vn.anpha.storage.Department.DTO.projection.DepartmentDTO;
 import vn.anpha.storage.Department.DTO.projection.TreeDepartment;
 import vn.anpha.storage.Department.DTO.request.DepartmentCreationDTO;
 import vn.anpha.storage.Department.DTO.request.DepartmentUpdateDTO;
-import vn.anpha.storage.Department.Mapper.DepartmentMapper;
 import vn.anpha.storage.Department.Repository.DepartmentRepository;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
 import vn.anpha.storage.User_Department.Service.UserOfDepartmentService;
@@ -35,7 +34,6 @@ import vn.anpha.storage.exception.ResponseDto.MetaPaginate;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DepartmentService {
         DepartmentRepository departmentRepository;
-        DepartmentMapper departmentMapper;
         AuthoticationService authoticationService;
         UserOfDepartmentService userOfDepartmentService;
         CompanyService companyService;

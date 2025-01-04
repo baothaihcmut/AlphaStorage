@@ -16,7 +16,6 @@ import vn.anpha.storage.Auth.Service.AuthoticationService;
 import vn.anpha.storage.Company.DTO.request.CompanyCreationRequest;
 import vn.anpha.storage.Company.DTO.request.CompanyUpdateRequest;
 import vn.anpha.storage.Company.DTO.request.UpGradeCompanyRequest;
-import vn.anpha.storage.Company.Entity.Company;
 import vn.anpha.storage.Company.Repository.CompanyRepository;
 import vn.anpha.storage.Company.interfaceCompany.CompanyInterface;
 import vn.anpha.storage.Storage.service.StorageService;
@@ -145,8 +144,7 @@ public class CompanyService {
 
     public boolean deleteCompanyById(String id) {
         checkOwnCompany(authoticationService.getUserByToken(), id);
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXISTED));
+
         this.companyRepository.deleteById(id);
         return true;
 

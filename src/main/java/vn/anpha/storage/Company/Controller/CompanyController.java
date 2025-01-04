@@ -66,13 +66,13 @@ public class CompanyController {
         }
 
         @GetMapping("/getOwn")
-        ApiResponseDto<PaginateResponseDto> getCompanyProperties(
+        ApiResponseDto<PaginateResponseDto<CompanyInterface>> getCompanyProperties(
                         @RequestParam("current") Optional<String> currentOptional,
                         @RequestParam("pageSize") Optional<String> pageSizeOptional) {
                 int current = currentOptional.map(Integer::parseInt).orElse(1);
                 int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
                 Pageable pageable = PageRequest.of(current - 1, pageSize);
-                return ApiResponseDto.<PaginateResponseDto>builder()
+                return ApiResponseDto.<PaginateResponseDto<CompanyInterface>>builder()
                                 .result(companyService.getCompaniesOwn(pageable))
                                 .message("Get All OwnCompanies")
                                 .success(true)

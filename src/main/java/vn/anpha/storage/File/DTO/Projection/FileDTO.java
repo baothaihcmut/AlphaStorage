@@ -17,6 +17,8 @@ public interface FileDTO {
 
     Boolean getIsDeleted();
 
+    Integer getTotalSize();
+
     String getDepartmentId();
 
     String getCreateUserId();

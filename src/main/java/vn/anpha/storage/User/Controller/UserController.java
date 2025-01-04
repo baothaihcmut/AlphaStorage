@@ -13,31 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.anpha.storage.User.Dto.Projection.UserDto;
 import vn.anpha.storage.User.Dto.RequestDto.ChangePasswordDto;
 import vn.anpha.storage.User.Dto.RequestDto.CreateUserDto;
 import vn.anpha.storage.User.Dto.RequestDto.UpdateUserDto;
 import vn.anpha.storage.User.Dto.ResponseDto.PaginateResponseDto;
+import vn.anpha.storage.User.Dto.ResponseDto.UserResponseDto;
 import vn.anpha.storage.User.Service.UserService;
-import vn.anpha.storage.User.mapper.UserResponseMapper;
-import vn.anpha.storage.User.respository.UserRepository;
 import vn.anpha.storage.exception.ResponseDto.ApiResponseDto;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final UserResponseMapper userResponseMapper;
-    private final UserRepository userRepository;
-
-    public UserController(UserService userService, UserResponseMapper userResponseMapper,
-            UserRepository userRepository) {
-        this.userService = userService;
-        this.userResponseMapper = userResponseMapper;
-        this.userRepository = userRepository;
-    }
 
     @GetMapping("user/myInfo")
     public ApiResponseDto<UserDto> getMyInfo() {
@@ -58,13 +50,14 @@ public class UserController {
 
     // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/getAll")
-    public ApiResponseDto<PaginateResponseDto> getAllUser(@RequestParam("current") Optional<String> currentOptional,
+    public ApiResponseDto<PaginateResponseDto<UserResponseDto>> getAllUser(
+            @RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional) {
         int current = currentOptional.map(Integer::parseInt).orElse(1);
         int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
         Pageable pageable = PageRequest.of(current - 1, pageSize);
 
-        ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
+        ApiResponseDto<PaginateResponseDto<UserResponseDto>> response = new ApiResponseDto<>();
         response.setResult(userService.GetAllUser(pageable));
         response.setMessage("Get Info All Users");
         return response;
@@ -88,8 +81,8 @@ public class UserController {
     }
 
     @PatchMapping("/user/changePassword")
-    public ApiResponseDto ChangePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
-        ApiResponseDto response = new ApiResponseDto<>();
+    public ApiResponseDto<?> ChangePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
+        ApiResponseDto<?> response = new ApiResponseDto<>();
         this.userService.ChangePassword(changePasswordDto);
         response.setMessage("User Change Password ");
 

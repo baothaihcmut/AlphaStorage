@@ -73,7 +73,7 @@ public class DepartmentController {
         }
 
         @GetMapping("/getAllDepartment/{companyId}")
-        public ApiResponseDto<PaginateResponseDto> getAllDepartment(
+        public ApiResponseDto<PaginateResponseDto<DepartmentDTO>> getAllDepartment(
                         @RequestParam("current") Optional<String> currentOptional,
                         @RequestParam("pageSize") Optional<String> pageSizeOptional,
                         @PathVariable String companyId) {
@@ -82,7 +82,7 @@ public class DepartmentController {
                 int pageSize = pageSizeOptional.map(Integer::parseInt).orElse(10);
                 Pageable pageable = PageRequest.of(current - 1, pageSize);
 
-                ApiResponseDto<PaginateResponseDto> response = new ApiResponseDto<>();
+                ApiResponseDto<PaginateResponseDto<DepartmentDTO>> response = new ApiResponseDto<>();
                 response.setResult(departmentService.GetAllDepartment(pageable, companyId));
                 response.setSuccess(true);
                 response.setMessage("Get all department of the company");
