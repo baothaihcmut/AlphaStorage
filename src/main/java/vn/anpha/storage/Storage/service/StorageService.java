@@ -3,7 +3,7 @@ package vn.anpha.storage.Storage.service;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -19,14 +19,28 @@ import io.minio.SetBucketVersioningArgs;
 import io.minio.http.Method;
 import io.minio.messages.Item;
 import io.minio.messages.VersioningConfiguration;
+import lombok.RequiredArgsConstructor;
 import vn.anpha.storage.Storage.DTO.VersionLinkDTO;
 import vn.anpha.storage.exception.AppException;
 import vn.anpha.storage.exception.ErrorCode;
 
 @Service
+@RequiredArgsConstructor
 public class StorageService {
-    @Autowired
-    private MinioClient minioClient;
+    private final MinioClient minioClient;
+
+    @Value("${minio.host}")
+    private String MINIO_HOST;
+
+    @Value("${minio.url}")
+    private String MINIO_ENDPOINT;
+
+    @Value("${env}")
+    private String APP_ENV;
+
+    private String replaceHost(String presignUrl) {
+        return presignUrl.replaceAll(MINIO_ENDPOINT, MINIO_HOST);
+    }
 
     public void createBucket(String bucketName, boolean version) throws HttpClientErrorException, Exception {
         boolean bucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
@@ -65,7 +79,7 @@ public class StorageService {
                         .expiry(duration, TimeUnit.HOURS)
                         // .extraQueryParams(param)
                         .build());
-        return url;
+        return APP_ENV.equals("dev") ? url : this.replaceHost(url);
     }
 
     public String getPresignUrlForPut(String bucketName, String objectName, int expireration)
@@ -78,8 +92,7 @@ public class StorageService {
                         .expiry(expireration, TimeUnit.HOURS)
                         // .extraQueryParams(param)
                         .build());
-        return url;
-
+        return APP_ENV.equals("dev") ? url : this.replaceHost(url);
     }
 
     public void removeFile(String bucketName, String objName) throws Exception {
